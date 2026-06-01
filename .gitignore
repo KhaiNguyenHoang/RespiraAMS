@@ -1,0 +1,109 @@
+# =========================
+# .NET
+# =========================
+bin/
+obj/
+TestResults/
+
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+.vs/
+_ReSharper*/
+*.DotSettings.user
+
+# Rider
+.idea/
+
+# EF Core
+Migrations/*.Designer.cs
+
+# ASP.NET
+appsettings.Development.json
+
+# =========================
+# Next.js
+# =========================
+node_modules/
+
+.next/
+out/
+
+.vercel/
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Turbopack
+.turbo/
+
+# =========================
+# Flutter
+# =========================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+build/
+
+.flutter-plugins-dependencies
+
+# Android
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+
+# =========================
+# Common
+# =========================
+.env
+.env.*
+
+*.log
+
+.DS_Store
+Thumbs.db
+
+.cache/
+tmp/
+temp/
+
+coverage/
+coverage-report/
+
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+!.vscode/tasks.json
+
+# Secrets
+*.pfx
+*.snk
+*.key
+*.pem
+*.crt
+
+# Aspire
+aspire-manifest.json
+
+# Docker
+docker-compose.override.yml
