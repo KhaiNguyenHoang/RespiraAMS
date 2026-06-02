@@ -53,7 +53,7 @@ namespace Application.Sagas.CreateDoctorSaga
             return (nextCommand, state);
         }
 
-        public static CreateDoctorCommand Handle(
+        public CreateDoctorCommand Handle(
             CreateAuthDoctorCompleted @event,
             CreateDoctorSagaState state
         )
@@ -91,7 +91,7 @@ namespace Application.Sagas.CreateDoctorSaga
             return new RollbackAuthDoctorCommand(@event.Id);
         }
 
-        public static CreateMediaCommand Handle(
+        public CreateMediaCommand Handle(
             CreateDoctorCompleted @event,
             CreateDoctorSagaState state
         )

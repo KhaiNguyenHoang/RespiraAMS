@@ -6,6 +6,10 @@ namespace Infrastructure.Persistence
 {
     public class AuthDbContext : DbContext, IAuthDbContext
     {
+        public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
+        {
+        }
+
         public DbSet<AuthDoctor> AuthDoctors => Set<AuthDoctor>();
 
         public DbSet<BlacklistToken> BlacklistTokens => Set<BlacklistToken>();

@@ -1,5 +1,8 @@
 using Application.Sagas.CreateDoctorSaga;
+using Infrastructure;
+using RespiraAMS_Platform.Shared.Extensions;
 using Scalar.AspNetCore;
+using Serilog;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
 using Wolverine.Postgresql;
@@ -7,7 +10,13 @@ using Wolverine.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddCustomSerilog();
+
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddCustomErrorHandling();
+builder.AddServiceDefaults();
+builder.AddInfrastructureAndApplication();
 
 builder.Host.UseWolverine(opts =>
 {
@@ -18,7 +27,7 @@ builder.Host.UseWolverine(opts =>
         builder.Configuration.GetConnectionString("authDb")
         ?? throw new InvalidOperationException("No connection string for authDb");
 
-    opts.PersistMessagesWithPostgresql(connectionString, "authDb");
+    opts.PersistMessagesWithPostgresql(connectionString, "authdb");
     opts.UseEntityFrameworkCoreTransactions();
     opts.UseRabbitMqUsingNamedConnection("rabbitmq").AutoProvision();
 
@@ -27,9 +36,16 @@ builder.Host.UseWolverine(opts =>
     opts.PublishMessage<CreateMediaCommand>().ToRabbitQueue("media-service-command");
     opts.PublishMessage<CreateDoctorCommand>().ToRabbitQueue("doctor-service-command");
     opts.PublishMessage<UpdateDoctorMediaCommand>().ToRabbitQueue("doctor-service-command");
+
+    opts.Durability.Mode = DurabilityMode.Solo;
 });
 
+builder.Services.AddOpenTelemetry().WithTracing(tracing => tracing.AddSource("Wolverine"));
+
 var app = builder.Build();
+
+app.UseCustomErrorHandling();
+app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
@@ -39,4 +55,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+app.ApplyMigrations();
 app.Run();

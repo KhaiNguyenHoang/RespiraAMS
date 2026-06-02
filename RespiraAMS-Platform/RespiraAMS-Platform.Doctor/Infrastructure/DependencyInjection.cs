@@ -1,10 +1,8 @@
-using Application.Abstracts.Authentication;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
 using Application.Abstracts.Mapping;
 using Application.Sagas.CreateDoctorSaga;
 using FluentValidation;
-using Infrastructure.Authentication;
 using Infrastructure.Caching;
 using Infrastructure.Mapping;
 using Infrastructure.Persistence;
@@ -18,10 +16,10 @@ namespace Infrastructure
     {
         public static void AddInfrastructureAndApplication(this IHostApplicationBuilder builder)
         {
-            builder.AddNpgsqlDbContext<AuthDbContext>("authDb");
+            builder.AddNpgsqlDbContext<DoctorDbContext>("doctorDb");
 
-            builder.Services.AddScoped<IAuthDbContext>(provider =>
-                provider.GetRequiredService<AuthDbContext>()
+            builder.Services.AddScoped<IDoctorDbContext>(provider =>
+                provider.GetRequiredService<DoctorDbContext>()
             );
 
             builder.AddRedisClient("cache");
@@ -29,12 +27,7 @@ namespace Infrastructure
             builder.Services.AddFusionCache();
             builder.Services.AddSingleton<ICacheService, CacheService>();
 
-            builder.Services.Configure<JwtSettings>(
-                builder.Configuration.GetSection("JwtSettings")
-            );
-            builder.Services.AddScoped<IJwtService, JwtService>();
-
-            builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorSagaValidation>();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorCommandHandler>();
 
             builder.Services.AddMappingProfiles();
         }
@@ -42,7 +35,7 @@ namespace Infrastructure
         public static void ApplyMigrations(this IHost host)
         {
             using var scope = host.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
+            var context = scope.ServiceProvider.GetRequiredService<DoctorDbContext>();
             try
             {
                 context.Database.Migrate();
@@ -56,7 +49,7 @@ namespace Infrastructure
 
         private static IServiceCollection AddMappingProfiles(this IServiceCollection services)
         {
-            var mappingTypes = typeof(CreateAuthDoctorMapping)
+            var mappingTypes = typeof(CreateDoctorCommandMapping)
                 .Assembly.GetTypes()
                 .Where(t =>
                     !t.IsAbstract

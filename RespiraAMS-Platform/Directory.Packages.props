@@ -2,7 +2,7 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <EFCoreVersion>10.0.8</EFCoreVersion>
-    <AspireVersion>13.3.5</AspireVersion>
+    <AspireVersion>13.4.0</AspireVersion>
     <WolverineVersion>6.3.1</WolverineVersion>
     <MicrosoftExtensionsVersion>10.0.8</MicrosoftExtensionsVersion>
   </PropertyGroup>
@@ -88,6 +88,14 @@
   <ItemGroup>
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+  </ItemGroup>
+
+  <!-- Serilog packages -->
+  <ItemGroup>
+    <PackageVersion Include="Serilog" Version="4.0.0" />
+    <PackageVersion Include="Serilog.AspNetCore" Version="8.0.2" />
+    <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0" />
   </ItemGroup>
 
   <!-- Mapping packages -->

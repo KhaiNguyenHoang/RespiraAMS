@@ -22,7 +22,13 @@ Migrations/*.Designer.cs
 
 # ASP.NET
 appsettings.Development.json
-
+[Ll]ogs/
+[Dd]ebug/
+[Rr]elease/
+[Pp]ackages/
+[Tt]ools/
+!packages.config
+[Cc]onfig/
 # =========================
 # Next.js
 # =========================

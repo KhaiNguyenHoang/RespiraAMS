@@ -1,41 +1,56 @@
+using Application.Sagas.CreateDoctorSaga;
+using Infrastructure;
+using RespiraAMS_Platform.Shared.Extensions;
+using Scalar.AspNetCore;
+using Serilog;
+using Wolverine;
+using Wolverine.EntityFrameworkCore;
+using Wolverine.Postgresql;
+using Wolverine.RabbitMQ;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.AddCustomSerilog();
+
 builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddCustomErrorHandling();
+builder.AddServiceDefaults();
+builder.AddInfrastructureAndApplication();
+
+builder.Host.UseWolverine(opts =>
+{
+    opts.RestoreV5Defaults();
+    opts.Discovery.IncludeAssembly(typeof(CreateDoctorSagaHandler).Assembly);
+
+    var connectionString =
+        builder.Configuration.GetConnectionString("doctorDb")
+        ?? throw new InvalidOperationException("No connection string for doctorDb");
+
+    opts.PersistMessagesWithPostgresql(connectionString, "doctordb");
+    opts.UseEntityFrameworkCoreTransactions();
+    opts.UseRabbitMqUsingNamedConnection("rabbitmq").AutoProvision();
+
+    opts.ListenToRabbitQueue("doctor-service-command");
+
+    opts.PublishMessage<CreateDoctorCompleted>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<CreateDoctorFailed>().ToRabbitQueue("auth-user-media");
+});
+
+builder.Services.AddOpenTelemetry().WithTracing(tracing => tracing.AddSource("Wolverine"));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseCustomErrorHandling();
+app.UseSerilogRequestLogging();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference();
 }
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
-
+app.MapControllers();
+app.ApplyMigrations();
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
