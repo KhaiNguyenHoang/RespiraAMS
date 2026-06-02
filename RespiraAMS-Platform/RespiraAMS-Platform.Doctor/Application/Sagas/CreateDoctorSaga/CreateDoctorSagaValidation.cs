@@ -2,25 +2,19 @@ using FluentValidation;
 
 namespace Application.Sagas.CreateDoctorSaga
 {
-    public class CreateDoctorCommandHandler : AbstractValidator<CreateDoctorCommand>
+    public class CreateDoctorSagaValidation : AbstractValidator<CreateDoctorCommand>
     {
-        public CreateDoctorCommandHandler()
+        public CreateDoctorSagaValidation()
         {
-            RuleFor(x => x.Address)
-                .NotEmpty()
-                .WithMessage("Address is required.");
+            RuleFor(x => x.Address).NotEmpty().WithMessage("Address is required.");
 
-            RuleFor(x => x.Degrees)
-                .NotEmpty()
-                .WithMessage("Degrees are required.");
+            RuleFor(x => x.Degrees).NotEmpty().WithMessage("Degrees are required.");
 
             RuleFor(x => x.CitizenIdentificationCard)
                 .NotEmpty()
                 .WithMessage("Citizen Identification Card is required.");
 
-            RuleFor(x => x.Position)
-                .NotEmpty()
-                .WithMessage("Position is required.");
+            RuleFor(x => x.Position).NotEmpty().WithMessage("Position is required.");
 
             RuleFor(x => x.DateOfBirth)
                 .NotEmpty()

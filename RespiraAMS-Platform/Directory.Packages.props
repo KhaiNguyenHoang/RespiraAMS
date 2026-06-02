@@ -2,8 +2,8 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <EFCoreVersion>10.0.8</EFCoreVersion>
-    <AspireVersion>13.4.0</AspireVersion>
-    <WolverineVersion>6.3.1</WolverineVersion>
+    <AspireVersion>13.3.5</AspireVersion>
+    <WolverineVersion>6.3.2</WolverineVersion>
     <MicrosoftExtensionsVersion>10.0.8</MicrosoftExtensionsVersion>
   </PropertyGroup>
 

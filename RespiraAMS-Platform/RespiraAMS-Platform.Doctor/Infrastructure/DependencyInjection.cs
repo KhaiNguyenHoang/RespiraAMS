@@ -27,7 +27,7 @@ namespace Infrastructure
             builder.Services.AddFusionCache();
             builder.Services.AddSingleton<ICacheService, CacheService>();
 
-            builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorCommandHandler>();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorSagaValidation>();
 
             builder.Services.AddMappingProfiles();
         }
