@@ -2,6 +2,7 @@ using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
 using Application.Abstracts.Mapping;
 using Domain.Entities;
+using Microsoft.Extensions.Logging;
 using Wolverine;
 
 namespace Application.Sagas.CreateDoctorSaga
@@ -10,13 +11,15 @@ namespace Application.Sagas.CreateDoctorSaga
         IAuthDbContext dbContext,
         IMessageBus bus,
         IMap<CreateAuthDoctorCommand, AuthDoctor> map,
-        ICacheService cache
+        ICacheService cache,
+        ILogger<CreateDoctorSagaHandler> logger
     )
     {
         private readonly IMessageBus _bus = bus;
         private readonly IAuthDbContext _dbContext = dbContext;
         private readonly IMap<CreateAuthDoctorCommand, AuthDoctor> _map = map;
         private readonly ICacheService _cache = cache;
+        private readonly ILogger<CreateDoctorSagaHandler> _logger = logger;
 
         public async Task Handle(CreateAuthDoctorCommand command)
         {
@@ -42,9 +45,11 @@ namespace Application.Sagas.CreateDoctorSaga
                 await _cache.SetAsync(guidKey, authDoctor);
                 await _cache.SetAsync(emailKey, authDoctor);
                 await _bus.PublishAsync(new CreateAuthDoctorCompleted(command.Id));
+                _logger.LogInformation("Doctor created successfully");
             }
             catch (Exception e)
             {
+                _logger.LogError(e, "Doctor creation failed");
                 await _bus.PublishAsync(new CreateAuthDoctorFailed(command.Id, e.Message));
             }
         }
