@@ -20,9 +20,7 @@ namespace Infrastructure
         {
             builder.AddNpgsqlDbContext<AuthDbContext>("authDb");
 
-            builder.Services.AddScoped<IAuthDbContext>(provider =>
-                provider.GetRequiredService<AuthDbContext>()
-            );
+            builder.Services.AddScoped<IAuthDbContext, AuthDbContext>();
 
             builder.AddRedisClient("cache");
 
@@ -34,7 +32,7 @@ namespace Infrastructure
             );
             builder.Services.AddScoped<IJwtService, JwtService>();
 
-            builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorSagaValidation>();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorSagaValidation>(ServiceLifetime.Transient);
 
             builder.Services.AddMappingProfiles();
         }

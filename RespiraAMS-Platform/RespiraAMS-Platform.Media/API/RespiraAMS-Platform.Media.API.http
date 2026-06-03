@@ -1,0 +1,6 @@
+@RespiraAMS_Platform.Media.API_HostAddress = http://localhost:5201
+
+GET {{RespiraAMS_Platform.Media.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

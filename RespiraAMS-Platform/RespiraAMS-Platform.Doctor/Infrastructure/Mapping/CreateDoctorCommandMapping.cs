@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Application.Abstracts.Mapping;
 using Application.Sagas.CreateDoctorSaga;
 using Domain.Entities;
@@ -9,19 +10,52 @@ namespace Infrastructure.Mapping
     {
         public Doctor Map(CreateDoctorCommand source)
         {
+            var degreeStrings = new List<string>();
+            if (source.Degrees != null)
+            {
+                foreach (var d in source.Degrees)
+                {
+                    if (string.IsNullOrWhiteSpace(d))
+                        continue;
+
+                    var trimmed = d.Trim();
+                    if (trimmed.StartsWith('[') && trimmed.EndsWith(']'))
+                    {
+                        try
+                        {
+                            var parsed = JsonSerializer.Deserialize<List<string>>(trimmed);
+                            if (parsed != null)
+                            {
+                                degreeStrings.AddRange(parsed);
+                            }
+                        }
+                        catch
+                        {
+                            degreeStrings.Add(trimmed);
+                        }
+                    }
+                    else
+                    {
+                        degreeStrings.Add(trimmed);
+                    }
+                }
+            }
+
             return new Doctor
             {
                 Id = source.Id,
                 Address = source.Address,
-                Degrees = source.Degrees.Select(d => Enum.Parse<DegreeEnum>(d, true)).ToList(),
-                AcademicTitle = string.IsNullOrEmpty(source.AcademicTitle) 
-                    ? null 
-                    : Enum.Parse<AcademicTitleEnum>(source.AcademicTitle, true),
+                Degrees = [.. degreeStrings.Select(d => Enum.Parse<DegreeEnum>(d.Trim(), true))],
+                AcademicTitle =
+                    string.IsNullOrWhiteSpace(source.AcademicTitle)
+                    || source.AcademicTitle.Equals("None", StringComparison.OrdinalIgnoreCase)
+                        ? null
+                        : Enum.Parse<AcademicTitleEnum>(source.AcademicTitle.Trim(), true),
                 CitizenIdentificationCard = source.CitizenIdentificationCard,
                 Gender = source.Gender,
-                DateOfBirth = source.DateOfBirth,
-                Position = Enum.Parse<PositionEnum>(source.Position, true),
-                CreatedAt = DateTimeOffset.UtcNow
+                DateOfBirth = source.DateOfBirth?.ToUniversalTime(),
+                Position = Enum.Parse<PositionEnum>(source.Position.Trim(), true),
+                CreatedAt = DateTimeOffset.UtcNow,
             };
         }
     }

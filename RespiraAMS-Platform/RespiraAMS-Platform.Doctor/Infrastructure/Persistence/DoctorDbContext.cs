@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class DoctorDbContext : DbContext, IDoctorDbContext
+    public class DoctorDbContext(DbContextOptions<DoctorDbContext> options)
+        : DbContext(options),
+            IDoctorDbContext
     {
-        public DoctorDbContext(DbContextOptions<DoctorDbContext> options) : base(options)
-        {
-        }
-
         public DbSet<Doctor> Doctors => Set<Doctor>();
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

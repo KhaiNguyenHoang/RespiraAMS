@@ -25,9 +25,18 @@ var doctorApi = builder.AddProject<Projects.RespiraAMS_Platform_Doctor_API>("doc
     .WaitFor(cache)
     .WaitFor(rabbitmq);
 
+var mediaApi = builder.AddProject<Projects.RespiraAMS_Platform_Media_API>("media-api")
+    .WithReference(mediaDb)
+    .WithReference(cache)
+    .WithReference(rabbitmq)
+    .WaitFor(mediaDb)
+    .WaitFor(cache)
+    .WaitFor(rabbitmq);
+
 var frontend = builder.AddNextJsApp("frontend", "../frontend/", "dev")
     .WithReference(authenticationApi)
     .WithReference(doctorApi)
+    .WithReference(mediaApi)
     .WithExternalHttpEndpoints();
 
 builder.Build().Run();

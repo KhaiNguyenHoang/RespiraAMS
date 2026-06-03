@@ -58,6 +58,12 @@ namespace Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid?>("MediaId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("MediaUrl")
+                        .HasColumnType("text");
+
                     b.Property<int>("Position")
                         .HasColumnType("integer");
 

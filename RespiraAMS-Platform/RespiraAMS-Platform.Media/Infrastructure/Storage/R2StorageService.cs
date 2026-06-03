@@ -1,0 +1,96 @@
+using Amazon.S3;
+using Amazon.S3.Model;
+using Application.Abstracts.Storage;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+
+namespace Infrastructure.Storage
+{
+    public class R2StorageService : IStorageService
+    {
+        private readonly IAmazonS3 _s3Client;
+        private readonly ILogger<R2StorageService> _logger;
+        private readonly string? _publicUrl;
+
+        public R2StorageService(
+            IAmazonS3 s3Client,
+            IConfiguration configuration,
+            ILogger<R2StorageService> logger
+        )
+        {
+            _s3Client = s3Client;
+            _logger = logger;
+            _publicUrl = configuration["R2:PublicUrl"];
+        }
+
+        public async Task<string> UploadAsync(
+            byte[] content,
+            string fileName,
+            string contentType,
+            string bucketName,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                using var stream = new MemoryStream(content);
+                var putRequest = new PutObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = fileName,
+                    InputStream = stream,
+                    ContentType = contentType,
+                    DisablePayloadSigning = true
+                };
+
+                await _s3Client.PutObjectAsync(putRequest, cancellationToken);
+
+                if (!string.IsNullOrEmpty(_publicUrl))
+                {
+                    return $"{_publicUrl.TrimEnd('/')}/{fileName}";
+                }
+
+                var serviceUrl = _s3Client.Config.ServiceURL;
+                if (!string.IsNullOrEmpty(serviceUrl))
+                {
+                    return $"{serviceUrl.TrimEnd('/')}/{bucketName}/{fileName}";
+                }
+
+                return $"https://{bucketName}.r2.cloudflarestorage.com/{fileName}";
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to upload file {FileName} to Cloudflare R2 bucket {BucketName}",
+                    fileName,
+                    bucketName
+                );
+                throw;
+            }
+        }
+
+        public async Task DeleteAsync(
+            string objectKey,
+            string bucketName,
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var deleteRequest = new DeleteObjectRequest { BucketName = bucketName, Key = objectKey };
+
+                await _s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to delete file {ObjectKey} from Cloudflare R2 bucket {BucketName}",
+                    objectKey,
+                    bucketName
+                );
+            }
+        }
+    }
+}

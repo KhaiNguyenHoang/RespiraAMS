@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class AuthDbContext : DbContext, IAuthDbContext
+    public class AuthDbContext(DbContextOptions<AuthDbContext> options)
+        : DbContext(options),
+            IAuthDbContext
     {
-        public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options)
-        {
-        }
-
         public DbSet<AuthDoctor> AuthDoctors => Set<AuthDoctor>();
 
         public DbSet<BlacklistToken> BlacklistTokens => Set<BlacklistToken>();
@@ -21,6 +19,17 @@ namespace Infrastructure.Persistence
         public async Task<int> SaveChangesAsync()
         {
             return await base.SaveChangesAsync();
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<AuthDoctor>(entity =>
+            {
+                entity.HasIndex(e => e.Email).IsUnique();
+                entity.HasIndex(e => e.PhoneNumber).IsUnique();
+            });
         }
     }
 }

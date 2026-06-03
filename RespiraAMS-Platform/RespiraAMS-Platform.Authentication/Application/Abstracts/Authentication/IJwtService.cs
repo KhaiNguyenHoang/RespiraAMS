@@ -7,8 +7,10 @@ namespace Application.Abstracts.Authentication
     {
         string GenerateAccessToken(AuthDoctor user);
 
-        string GenerateRefreshToken();
+        (string RefreshToken, DateTimeOffset ExpirationDate) GenerateRefreshToken();
 
         ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
+
+        string TokenHash(string token);
     }
 }

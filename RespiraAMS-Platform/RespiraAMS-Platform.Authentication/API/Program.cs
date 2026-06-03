@@ -5,6 +5,7 @@ using Scalar.AspNetCore;
 using Serilog;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
+using Wolverine.FluentValidation;
 using Wolverine.Postgresql;
 using Wolverine.RabbitMQ;
 
@@ -21,6 +22,7 @@ builder.AddInfrastructureAndApplication();
 builder.Host.UseWolverine(opts =>
 {
     opts.RestoreV5Defaults();
+    opts.UseFluentValidation(RegistrationBehavior.ExplicitRegistration);
     opts.Discovery.IncludeAssembly(typeof(CreateDoctorSagaHandler).Assembly);
 
     var connectionString =
@@ -35,7 +37,9 @@ builder.Host.UseWolverine(opts =>
 
     opts.PublishMessage<CreateMediaCommand>().ToRabbitQueue("media-service-command");
     opts.PublishMessage<CreateDoctorCommand>().ToRabbitQueue("doctor-service-command");
-    opts.PublishMessage<UpdateDoctorMediaCommand>().ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.UpdateDoctorMediaCommand>().ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.RollbackDoctorCommand>().ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.RollbackMediaCommand>().ToRabbitQueue("media-service-command");
 
     opts.Durability.Mode = DurabilityMode.Solo;
 });

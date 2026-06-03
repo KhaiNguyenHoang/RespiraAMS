@@ -12,5 +12,7 @@ namespace Domain.Entities
         public bool Gender { get; set; } // true = female, false = male
         public DateTimeOffset? DateOfBirth { get; set; }
         public required PositionEnum Position { get; set; }
+        public Guid? MediaId { get; set; }
+        public string? MediaUrl { get; set; }
     }
 }

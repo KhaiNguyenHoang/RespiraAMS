@@ -15,7 +15,7 @@ namespace Infrastructure.Mapping
                 LastName = inObject.LastName,
                 Email = inObject.Email,
                 PhoneNumber = inObject.PhoneNumber,
-                Password = inObject.Password,
+                Password = BCrypt.Net.BCrypt.HashPassword(inObject.Password),
                 Role = inObject.Role,
                 CreatedAt = DateTimeOffset.UtcNow,
             };

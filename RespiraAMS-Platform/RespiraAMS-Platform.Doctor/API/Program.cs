@@ -5,6 +5,7 @@ using Scalar.AspNetCore;
 using Serilog;
 using Wolverine;
 using Wolverine.EntityFrameworkCore;
+using Wolverine.FluentValidation;
 using Wolverine.Postgresql;
 using Wolverine.RabbitMQ;
 
@@ -21,6 +22,7 @@ builder.AddInfrastructureAndApplication();
 builder.Host.UseWolverine(opts =>
 {
     opts.RestoreV5Defaults();
+    opts.UseFluentValidation(RegistrationBehavior.ExplicitRegistration);
     opts.Discovery.IncludeAssembly(typeof(CreateDoctorSagaHandler).Assembly);
 
     var connectionString =
@@ -35,6 +37,10 @@ builder.Host.UseWolverine(opts =>
 
     opts.PublishMessage<CreateDoctorCompleted>().ToRabbitQueue("auth-user-media");
     opts.PublishMessage<CreateDoctorFailed>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.UpdateDoctorMediaCompleted>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.UpdateDoctorMediaFailed>().ToRabbitQueue("auth-user-media");
+
+    opts.Durability.Mode = DurabilityMode.Solo;
 });
 
 builder.Services.AddOpenTelemetry().WithTracing(tracing => tracing.AddSource("Wolverine"));

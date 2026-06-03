@@ -18,16 +18,14 @@ namespace Infrastructure
         {
             builder.AddNpgsqlDbContext<DoctorDbContext>("doctorDb");
 
-            builder.Services.AddScoped<IDoctorDbContext>(provider =>
-                provider.GetRequiredService<DoctorDbContext>()
-            );
+            builder.Services.AddScoped<IDoctorDbContext, DoctorDbContext>();
 
             builder.AddRedisClient("cache");
 
             builder.Services.AddFusionCache();
             builder.Services.AddSingleton<ICacheService, CacheService>();
 
-            builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorSagaValidation>();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorSagaValidation>(ServiceLifetime.Transient);
 
             builder.Services.AddMappingProfiles();
         }

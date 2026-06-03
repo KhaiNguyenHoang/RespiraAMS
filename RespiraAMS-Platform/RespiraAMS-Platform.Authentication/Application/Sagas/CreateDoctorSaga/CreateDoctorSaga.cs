@@ -1,17 +1,43 @@
 using Application.Abstracts.Data;
 using Domain.Entities;
+using Domain.Enums;
 using Wolverine;
 
 namespace Application.Sagas.CreateDoctorSaga
 {
     public class CreateDoctorSaga : Saga
     {
-        public async Task<(CreateAuthDoctorCommand, CreateDoctorSagaState)> Start(
+        // Saga state properties
+        public Guid Id { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public RoleEnum Role { get; set; } = RoleEnum.Doctor;
+        public string Address { get; set; } = string.Empty;
+        public ICollection<string> Degrees { get; set; } = [];
+        public string AcademicTitle { get; set; } = string.Empty;
+        public string CitizenIdentificationCard { get; set; } = string.Empty;
+        public DateTimeOffset? DateOfBirth { get; set; }
+        public bool Gender { get; set; }
+        public string Position { get; set; } = string.Empty;
+        public Guid? MediaId { get; set; }
+        public string? MediaUrl { get; set; }
+        public byte[]? Avatar { get; set; } = [];
+
+        // Tracing states of saga
+        public bool IsAuthenticateCompleted { get; set; }
+        public bool IsDoctorCompleted { get; set; }
+        public bool IsMediaCompleted { get; set; }
+        public bool IsDoctorMediaUpdated { get; set; }
+
+        public static async Task<(CreateAuthDoctorCommand, CreateDoctorSaga)> Start(
             StartCreateDoctorSaga command,
             IAuthDbContext dbContext
         )
         {
-            var state = new CreateDoctorSagaState
+            var state = new CreateDoctorSaga
             {
                 Id = command.Id,
                 FirstName = command.FirstName,
@@ -53,33 +79,29 @@ namespace Application.Sagas.CreateDoctorSaga
             return (nextCommand, state);
         }
 
-        public CreateDoctorCommand Handle(
-            CreateAuthDoctorCompleted @event,
-            CreateDoctorSagaState state
-        )
+        public CreateDoctorCommand Handle(CreateAuthDoctorCompleted @event)
         {
-            state.IsAuthenticateCompleted = true;
+            IsAuthenticateCompleted = true;
             return new CreateDoctorCommand(
                 @event.Id,
-                state.Address,
-                state.Degrees,
-                state.AcademicTitle,
-                state.CitizenIdentificationCard,
-                state.DateOfBirth,
-                state.Gender,
-                state.Position
+                Address,
+                Degrees,
+                AcademicTitle,
+                CitizenIdentificationCard,
+                DateOfBirth,
+                Gender,
+                Position
             );
         }
 
         public async Task<RollbackAuthDoctorCommand> Handle(
             CreateAuthDoctorFailed @event,
-            CreateDoctorSagaState state,
             IAuthDbContext dbContext
         )
         {
-            state.IsAuthenticateCompleted = false;
+            IsAuthenticateCompleted = false;
 
-            var tracker = await dbContext.ProcessTrackers.FindAsync(state.Id);
+            var tracker = await dbContext.ProcessTrackers.FindAsync(Id);
             if (tracker != null)
             {
                 tracker.Status = "Failed";
@@ -91,24 +113,20 @@ namespace Application.Sagas.CreateDoctorSaga
             return new RollbackAuthDoctorCommand(@event.Id);
         }
 
-        public CreateMediaCommand Handle(
-            CreateDoctorCompleted @event,
-            CreateDoctorSagaState state
-        )
+        public CreateMediaCommand Handle(CreateDoctorCompleted @event)
         {
-            state.IsDoctorCompleted = true;
-            return new CreateMediaCommand(@event.Id, state.Avatar);
+            IsDoctorCompleted = true;
+            return new CreateMediaCommand(@event.Id, Avatar);
         }
 
         public async Task<RollbackAuthDoctorCommand> Handle(
             CreateDoctorFailed @event,
-            CreateDoctorSagaState state,
             IAuthDbContext dbContext
         )
         {
-            state.IsDoctorCompleted = false;
+            IsDoctorCompleted = false;
 
-            var tracker = await dbContext.ProcessTrackers.FindAsync(state.Id);
+            var tracker = await dbContext.ProcessTrackers.FindAsync(Id);
             if (tracker != null)
             {
                 tracker.Status = "Failed";
@@ -120,29 +138,25 @@ namespace Application.Sagas.CreateDoctorSaga
             return new RollbackAuthDoctorCommand(@event.Id);
         }
 
-        public UpdateDoctorMediaCommand Handle(MediaCreated @event, CreateDoctorSagaState state)
+        public UpdateDoctorMediaCommand Handle(MediaCreated @event)
         {
-            state.IsMediaCompleted = true;
-            state.MediaId = @event.MediaId;
-            state.MediaUrl = @event.MediaUrl;
+            IsMediaCompleted = true;
+            MediaId = @event.MediaId;
+            MediaUrl = @event.MediaUrl;
 
-            return new UpdateDoctorMediaCommand(state.Id, @event.MediaId, @event.MediaUrl);
+            return new UpdateDoctorMediaCommand(Id, @event.MediaId, @event.MediaUrl);
         }
 
-        public async Task Handle(
-            UpdateDoctorMediaCompleted @event,
-            CreateDoctorSagaState state,
-            IAuthDbContext dbContext
-        )
+        public async Task Handle(UpdateDoctorMediaCompleted @event, IAuthDbContext dbContext)
         {
-            state.IsDoctorMediaUpdated = true;
+            IsDoctorMediaUpdated = true;
 
-            var tracker = await dbContext.ProcessTrackers.FindAsync(state.Id);
+            var tracker = await dbContext.ProcessTrackers.FindAsync(Id);
             if (tracker != null)
             {
                 tracker.Status = "Success";
                 tracker.OutputDataJson = System.Text.Json.JsonSerializer.Serialize(
-                    new { state.MediaId, state.MediaUrl }
+                    new { MediaId, MediaUrl }
                 );
                 await dbContext.SaveChangesAsync();
             }
@@ -154,11 +168,11 @@ namespace Application.Sagas.CreateDoctorSaga
             RollbackAuthDoctorCommand,
             RollbackDoctorCommand,
             RollbackMediaCommand
-        )> Handle(UpdateDoctorMediaFailed @event, CreateDoctorSagaState state, IAuthDbContext dbContext)
+        )> Handle(UpdateDoctorMediaFailed @event, IAuthDbContext dbContext)
         {
-            state.IsDoctorMediaUpdated = false;
+            IsDoctorMediaUpdated = false;
 
-            var tracker = await dbContext.ProcessTrackers.FindAsync(state.Id);
+            var tracker = await dbContext.ProcessTrackers.FindAsync(Id);
             if (tracker != null)
             {
                 tracker.Status = "Failed";
@@ -176,13 +190,12 @@ namespace Application.Sagas.CreateDoctorSaga
 
         public async Task<(RollbackAuthDoctorCommand, RollbackDoctorCommand)> Handle(
             CreateMediaFailed @event,
-            CreateDoctorSagaState state,
             IAuthDbContext dbContext
         )
         {
-            state.IsMediaCompleted = false;
+            IsMediaCompleted = false;
 
-            var tracker = await dbContext.ProcessTrackers.FindAsync(state.Id);
+            var tracker = await dbContext.ProcessTrackers.FindAsync(Id);
             if (tracker != null)
             {
                 tracker.Status = "Failed";
