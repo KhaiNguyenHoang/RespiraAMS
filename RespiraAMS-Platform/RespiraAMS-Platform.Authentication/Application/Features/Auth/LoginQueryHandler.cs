@@ -30,7 +30,7 @@ namespace Application.Features.Auth
             if (user == null)
             {
                 user = await _dbContext.AuthDoctors.FirstOrDefaultAsync(u =>
-                    u.Email == query.Email
+                    u.Email == query.Email && !u.IsDeleted
                 );
                 if (user != null)
                 {
@@ -39,7 +39,7 @@ namespace Application.Features.Auth
                 }
             }
 
-            if (user == null)
+            if (user == null || user.IsDeleted)
             {
                 return null;
             }
@@ -50,6 +50,15 @@ namespace Application.Features.Auth
             if (!isPasswordCorrect)
             {
                 return null;
+            }
+
+            if (!user.IsEmailVerified)
+            {
+                throw new FluentValidation.ValidationException(
+                    new[]
+                    {
+                        new FluentValidation.Results.ValidationFailure("Email", "Email address has not been verified. Please verify your email.")
+                    });
             }
 
             var token = _jwtService.GenerateAccessToken(user);

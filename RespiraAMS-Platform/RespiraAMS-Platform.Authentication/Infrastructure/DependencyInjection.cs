@@ -1,3 +1,4 @@
+using Application.Abstracts;
 using Application.Abstracts.Authentication;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
@@ -8,6 +9,7 @@ using Infrastructure.Authentication;
 using Infrastructure.Caching;
 using Infrastructure.Mapping;
 using Infrastructure.Persistence;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,10 +33,16 @@ namespace Infrastructure
                 builder.Configuration.GetSection("JwtSettings")
             );
             builder.Services.AddScoped<IJwtService, JwtService>();
+            builder.Services.AddSingleton<IEmailService, EmailService>();
 
             builder.Services.AddValidatorsFromAssemblyContaining<CreateDoctorSagaValidation>(ServiceLifetime.Transient);
 
             builder.Services.AddMappingProfiles();
+
+            builder.Services.AddHttpClient<IDoctorServiceClient, DoctorServiceClient>(client =>
+            {
+                client.BaseAddress = new Uri("http://doctor-api");
+            });
         }
 
         public static void ApplyMigrations(this IHost host)

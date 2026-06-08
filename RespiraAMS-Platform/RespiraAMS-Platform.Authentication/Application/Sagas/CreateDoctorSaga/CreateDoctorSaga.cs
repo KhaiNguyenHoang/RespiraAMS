@@ -1,4 +1,5 @@
 using Application.Abstracts.Data;
+using Application.Abstracts;
 using Domain.Entities;
 using Domain.Enums;
 using Wolverine;
@@ -147,7 +148,12 @@ namespace Application.Sagas.CreateDoctorSaga
             return new UpdateDoctorMediaCommand(Id, @event.MediaId, @event.MediaUrl);
         }
 
-        public async Task Handle(UpdateDoctorMediaCompleted @event, IAuthDbContext dbContext)
+        public async Task Handle(
+            UpdateDoctorMediaCompleted @event,
+            IAuthDbContext dbContext,
+            IEmailService emailService,
+            Application.Abstracts.Authentication.IJwtService jwtService
+        )
         {
             IsDoctorMediaUpdated = true;
 
@@ -160,6 +166,26 @@ namespace Application.Sagas.CreateDoctorSaga
                 );
                 await dbContext.SaveChangesAsync();
             }
+
+            var tokenString = new Random().Next(100000, 999999).ToString();
+            var hashedToken = jwtService.TokenHash(tokenString);
+
+            var verificationToken = new Token
+            {
+                HashedToken = hashedToken,
+                DoctorId = Id,
+                TokenType = TokenType.EmailVerification,
+                ExpirationDate = DateTimeOffset.UtcNow.AddMinutes(15).UtcDateTime,
+                IsRevoked = false,
+                CreatedAt = DateTimeOffset.UtcNow,
+            };
+
+            await dbContext.Tokens.AddAsync(verificationToken);
+            await dbContext.SaveChangesAsync();
+
+            var subject = "Welcome to RespiraAMS - Verify Your Email";
+            var body = $"Welcome to RespiraAMS! Your verification code is: {tokenString}. It will expire in 15 minutes.";
+            await emailService.SendEmailAsync(Email, subject, body);
 
             MarkCompleted();
         }

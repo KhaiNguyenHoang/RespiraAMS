@@ -1,4 +1,6 @@
 using Application.Sagas.CreateDoctorSaga;
+using Application.Sagas.DeleteDoctorSaga;
+using Application.Sagas.UpdateDoctorSaga;
 using Infrastructure;
 using RespiraAMS_Platform.Shared.Extensions;
 using Scalar.AspNetCore;
@@ -37,9 +39,26 @@ builder.Host.UseWolverine(opts =>
 
     opts.PublishMessage<CreateMediaCommand>().ToRabbitQueue("media-service-command");
     opts.PublishMessage<CreateDoctorCommand>().ToRabbitQueue("doctor-service-command");
-    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.UpdateDoctorMediaCommand>().ToRabbitQueue("doctor-service-command");
-    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.RollbackDoctorCommand>().ToRabbitQueue("doctor-service-command");
-    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.RollbackMediaCommand>().ToRabbitQueue("media-service-command");
+    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.UpdateDoctorMediaCommand>()
+        .ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.RollbackDoctorCommand>()
+        .ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<Application.Sagas.CreateDoctorSaga.RollbackMediaCommand>()
+        .ToRabbitQueue("media-service-command");
+    opts.PublishMessage<UpdateDoctorCommand>().ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<UpdateMediaCommand>().ToRabbitQueue("media-service-command");
+    opts.PublishMessage<Application.Sagas.UpdateDoctorSaga.DeleteMediaCommand>()
+        .ToRabbitQueue("media-service-command");
+    opts.PublishMessage<Application.Sagas.UpdateDoctorSaga.RollbackDoctorCommand>()
+        .ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<Application.Sagas.UpdateDoctorSaga.RollbackMediaCommand>()
+        .ToRabbitQueue("media-service-command");
+    opts.PublishMessage<Application.Sagas.UpdateDoctorSaga.UpdateDoctorMediaCommand>()
+        .ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<DeleteDoctorCommand>().ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<RollbackDeleteDoctorCommand>().ToRabbitQueue("doctor-service-command");
+    opts.PublishMessage<Application.Sagas.DeleteDoctorSaga.DeleteMediaCommand>()
+        .ToRabbitQueue("media-service-command");
 
     opts.Durability.Mode = DurabilityMode.Solo;
 });

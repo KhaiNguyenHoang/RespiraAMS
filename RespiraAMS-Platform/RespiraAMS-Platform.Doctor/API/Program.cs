@@ -1,4 +1,6 @@
 using Application.Sagas.CreateDoctorSaga;
+using Application.Sagas.UpdateDoctorSaga;
+using Application.Sagas.DeleteDoctorSaga;
 using Infrastructure;
 using RespiraAMS_Platform.Shared.Extensions;
 using Scalar.AspNetCore;
@@ -39,6 +41,12 @@ builder.Host.UseWolverine(opts =>
     opts.PublishMessage<CreateDoctorFailed>().ToRabbitQueue("auth-user-media");
     opts.PublishMessage<Application.Sagas.CreateDoctorSaga.UpdateDoctorMediaCompleted>().ToRabbitQueue("auth-user-media");
     opts.PublishMessage<Application.Sagas.CreateDoctorSaga.UpdateDoctorMediaFailed>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<UpdateDoctorCompleted>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<UpdateDoctorFailed>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<Application.Sagas.UpdateDoctorSaga.UpdateDoctorMediaCompleted>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<Application.Sagas.UpdateDoctorSaga.UpdateDoctorMediaFailed>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<DeleteDoctorCompleted>().ToRabbitQueue("auth-user-media");
+    opts.PublishMessage<DeleteDoctorFailed>().ToRabbitQueue("auth-user-media");
 
     opts.Durability.Mode = DurabilityMode.Solo;
 });

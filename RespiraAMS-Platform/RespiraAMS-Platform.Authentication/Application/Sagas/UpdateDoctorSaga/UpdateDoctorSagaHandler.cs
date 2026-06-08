@@ -1,0 +1,102 @@
+using System;
+using System.Threading.Tasks;
+using Application.Abstracts.Caching;
+using Application.Abstracts.Data;
+using Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Wolverine;
+
+namespace Application.Sagas.UpdateDoctorSaga
+{
+    public class UpdateDoctorSagaHandler(
+        IAuthDbContext dbContext,
+        IMessageBus bus,
+        ICacheService cache,
+        ILogger<UpdateDoctorSagaHandler> logger
+    )
+    {
+        private readonly IAuthDbContext _dbContext = dbContext;
+        private readonly IMessageBus _bus = bus;
+        private readonly ICacheService _cache = cache;
+        private readonly ILogger<UpdateDoctorSagaHandler> _logger = logger;
+
+        public async Task Handle(UpdateAuthDoctorCommand command)
+        {
+            try
+            {
+                var authDoctor = await _dbContext.AuthDoctors.FindAsync(command.DoctorId);
+                if (authDoctor == null)
+                {
+                    await _bus.PublishAsync(new UpdateAuthDoctorFailed(command.Id, "Doctor not found in authentication database."));
+                    return;
+                }
+
+                // If email has changed, we need to clean up the old email cache entry
+                var oldEmail = authDoctor.Email;
+                if (!string.Equals(oldEmail, command.Email, StringComparison.OrdinalIgnoreCase))
+                {
+                    await _cache.RemoveAsync("user:email:" + oldEmail);
+                }
+
+                // Update properties
+                authDoctor.FirstName = command.FirstName;
+                authDoctor.LastName = command.LastName;
+                authDoctor.Email = command.Email;
+                authDoctor.PhoneNumber = command.PhoneNumber;
+                authDoctor.UpdatedAt = DateTimeOffset.UtcNow;
+
+                await _dbContext.SaveChangesAsync();
+
+                // Update Cache
+                var guidKey = "user:id:" + authDoctor.Id;
+                var emailKey = "user:email:" + authDoctor.Email;
+                await _cache.SetAsync(guidKey, authDoctor);
+                await _cache.SetAsync(emailKey, authDoctor);
+
+                await _bus.PublishAsync(new UpdateAuthDoctorCompleted(command.Id, command.DoctorId));
+                _logger.LogInformation("Auth Doctor credentials updated successfully for Doctor ID {DoctorId}", command.DoctorId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to update Auth Doctor credentials for Doctor ID {DoctorId}", command.DoctorId);
+                await _bus.PublishAsync(new UpdateAuthDoctorFailed(command.Id, ex.Message));
+            }
+        }
+
+        public async Task Handle(RollbackAuthDoctorCommand command)
+        {
+            try
+            {
+                var authDoctor = await _dbContext.AuthDoctors.FindAsync(command.DoctorId);
+                if (authDoctor != null)
+                {
+                    var currentEmail = authDoctor.Email;
+                    if (!string.Equals(currentEmail, command.Email, StringComparison.OrdinalIgnoreCase))
+                    {
+                        await _cache.RemoveAsync("user:email:" + currentEmail);
+                    }
+
+                    authDoctor.FirstName = command.FirstName;
+                    authDoctor.LastName = command.LastName;
+                    authDoctor.Email = command.Email;
+                    authDoctor.PhoneNumber = command.PhoneNumber;
+                    authDoctor.UpdatedAt = DateTimeOffset.UtcNow;
+
+                    await _dbContext.SaveChangesAsync();
+
+                    var guidKey = "user:id:" + authDoctor.Id;
+                    var emailKey = "user:email:" + authDoctor.Email;
+                    await _cache.SetAsync(guidKey, authDoctor);
+                    await _cache.SetAsync(emailKey, authDoctor);
+
+                    _logger.LogInformation("Auth Doctor credentials rolled back successfully for Doctor ID {DoctorId}", command.DoctorId);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to rollback Auth Doctor credentials for Doctor ID {DoctorId}", command.DoctorId);
+            }
+        }
+    }
+}

@@ -7,28 +7,19 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Sagas.CreateDoctorSaga
 {
-    public class CreateDoctorSagaHandler
+    public class CreateDoctorSagaHandler(
+        IDoctorDbContext dbContext,
+        ICacheService cacheService,
+        IMap<CreateDoctorCommand, Doctor> mapper,
+        IValidator<CreateDoctorCommand> validator,
+        ILogger<CreateDoctorSagaHandler> logger
+    )
     {
-        private readonly IDoctorDbContext _dbContext;
-        private readonly ICacheService _cacheService;
-        private readonly IMap<CreateDoctorCommand, Doctor> _mapper;
-        private readonly IValidator<CreateDoctorCommand> _validator;
-        private readonly ILogger<CreateDoctorSagaHandler> _logger;
-
-        public CreateDoctorSagaHandler(
-            IDoctorDbContext dbContext,
-            ICacheService cacheService,
-            IMap<CreateDoctorCommand, Doctor> mapper,
-            IValidator<CreateDoctorCommand> validator,
-            ILogger<CreateDoctorSagaHandler> logger
-        )
-        {
-            _dbContext = dbContext;
-            _cacheService = cacheService;
-            _mapper = mapper;
-            _validator = validator;
-            _logger = logger;
-        }
+        private readonly IDoctorDbContext _dbContext = dbContext;
+        private readonly ICacheService _cacheService = cacheService;
+        private readonly IMap<CreateDoctorCommand, Doctor> _mapper = mapper;
+        private readonly IValidator<CreateDoctorCommand> _validator = validator;
+        private readonly ILogger<CreateDoctorSagaHandler> _logger = logger;
 
         public async Task<object> Handle(CreateDoctorCommand command)
         {
@@ -37,8 +28,15 @@ namespace Application.Sagas.CreateDoctorSaga
                 var validationResult = await _validator.ValidateAsync(command);
                 if (!validationResult.IsValid)
                 {
-                    var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
-                    _logger.LogWarning("CreateDoctorCommand validation failed for ID {Id}: {Errors}", command.Id, errors);
+                    var errors = string.Join(
+                        "; ",
+                        validationResult.Errors.Select(e => e.ErrorMessage)
+                    );
+                    _logger.LogWarning(
+                        "CreateDoctorCommand validation failed for ID {Id}: {Errors}",
+                        command.Id,
+                        errors
+                    );
                     return new CreateDoctorFailed(command.Id, errors);
                 }
 
@@ -54,7 +52,12 @@ namespace Application.Sagas.CreateDoctorSaga
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "CreateDoctorCommand execution failed for ID {Id}: {Message}", command.Id, ex.Message);
+                _logger.LogError(
+                    ex,
+                    "CreateDoctorCommand execution failed for ID {Id}: {Message}",
+                    command.Id,
+                    ex.Message
+                );
                 return new CreateDoctorFailed(command.Id, ex.Message);
             }
         }
@@ -78,7 +81,10 @@ namespace Application.Sagas.CreateDoctorSaga
                 var doctor = await _dbContext.Doctors.FindAsync(command.Id);
                 if (doctor == null)
                 {
-                    _logger.LogWarning("UpdateDoctorMediaCommand failed: Doctor with ID {Id} not found.", command.Id);
+                    _logger.LogWarning(
+                        "UpdateDoctorMediaCommand failed: Doctor with ID {Id} not found.",
+                        command.Id
+                    );
                     return new UpdateDoctorMediaFailed(command.Id, "Doctor not found.");
                 }
 
@@ -94,7 +100,12 @@ namespace Application.Sagas.CreateDoctorSaga
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "UpdateDoctorMediaCommand failed for ID {Id}: {Message}", command.Id, ex.Message);
+                _logger.LogError(
+                    ex,
+                    "UpdateDoctorMediaCommand failed for ID {Id}: {Message}",
+                    command.Id,
+                    ex.Message
+                );
                 return new UpdateDoctorMediaFailed(command.Id, ex.Message);
             }
         }
