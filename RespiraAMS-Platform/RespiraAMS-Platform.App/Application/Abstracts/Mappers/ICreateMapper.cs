@@ -1,0 +1,6 @@
+﻿namespace Application.Abstracts.Mappers;
+
+public interface ICreateMapper<out TModel, in TCreateCommand>
+{
+    TModel ToModel(TCreateCommand command);
+}
