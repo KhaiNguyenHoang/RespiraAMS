@@ -1,14 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
-using Domain.Entities;
 using Domain.Enums;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Application.Sagas.UpdateDoctorSaga
 {
@@ -92,8 +87,8 @@ namespace Application.Sagas.UpdateDoctorSaga
                 // Update properties
                 doctor.Address = command.Address;
                 doctor.Degrees = ParseDegrees(command.Degrees);
-                doctor.AcademicTitle = string.IsNullOrWhiteSpace(command.AcademicTitle) || command.AcademicTitle.Equals("None", StringComparison.OrdinalIgnoreCase) 
-                    ? null 
+                doctor.AcademicTitle = string.IsNullOrWhiteSpace(command.AcademicTitle) || command.AcademicTitle.Equals("None", StringComparison.OrdinalIgnoreCase)
+                    ? null
                     : Enum.Parse<AcademicTitleEnum>(command.AcademicTitle.Trim(), true);
                 doctor.CitizenIdentificationCard = command.CitizenIdentificationCard;
                 doctor.DateOfBirth = command.DateOfBirth;
@@ -137,8 +132,8 @@ namespace Application.Sagas.UpdateDoctorSaga
                 {
                     doctor.Address = command.Address;
                     doctor.Degrees = ParseDegrees(command.Degrees);
-                    doctor.AcademicTitle = string.IsNullOrWhiteSpace(command.AcademicTitle) || command.AcademicTitle.Equals("None", StringComparison.OrdinalIgnoreCase) 
-                        ? null 
+                    doctor.AcademicTitle = string.IsNullOrWhiteSpace(command.AcademicTitle) || command.AcademicTitle.Equals("None", StringComparison.OrdinalIgnoreCase)
+                        ? null
                         : Enum.Parse<AcademicTitleEnum>(command.AcademicTitle.Trim(), true);
                     doctor.CitizenIdentificationCard = command.CitizenIdentificationCard;
                     doctor.Gender = command.Gender;

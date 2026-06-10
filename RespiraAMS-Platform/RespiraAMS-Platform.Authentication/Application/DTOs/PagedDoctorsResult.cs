@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace RespiraAMS_Platform.Shared.DTOs
 {
     public record PagingMetadata(

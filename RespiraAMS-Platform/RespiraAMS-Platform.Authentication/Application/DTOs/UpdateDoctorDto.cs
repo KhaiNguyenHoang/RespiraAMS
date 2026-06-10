@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace RespiraAMS_Platform.Shared.DTOs
+namespace Application.DTOs
 {
     public record UpdateDoctorDto(
         string FirstName,

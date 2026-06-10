@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-
-namespace RespiraAMS_Platform.Shared.DTOs
+namespace Application.DTOs
 {
     public record DoctorProfileDto(
         Guid Id,

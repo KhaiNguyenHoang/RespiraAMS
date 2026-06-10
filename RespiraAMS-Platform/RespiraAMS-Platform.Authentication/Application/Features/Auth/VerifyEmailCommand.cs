@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
 using Domain.Enums;

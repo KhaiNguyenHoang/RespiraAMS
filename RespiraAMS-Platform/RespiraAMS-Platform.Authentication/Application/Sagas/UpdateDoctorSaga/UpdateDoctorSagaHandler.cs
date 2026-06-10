@@ -1,9 +1,5 @@
-using System;
-using System.Threading.Tasks;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
-using Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Wolverine;
 

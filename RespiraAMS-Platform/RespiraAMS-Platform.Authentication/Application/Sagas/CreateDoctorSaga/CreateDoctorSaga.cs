@@ -1,5 +1,5 @@
-using Application.Abstracts.Data;
 using Application.Abstracts;
+using Application.Abstracts.Data;
 using Domain.Entities;
 using Domain.Enums;
 using Wolverine;

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Events;
-using System.IO;
 
 namespace RespiraAMS_Platform.Shared.Extensions
 {

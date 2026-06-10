@@ -1,6 +1,6 @@
 using Application.Sagas.CreateDoctorSaga;
-using Application.Sagas.UpdateDoctorSaga;
 using Application.Sagas.DeleteDoctorSaga;
+using Application.Sagas.UpdateDoctorSaga;
 using Infrastructure;
 using RespiraAMS_Platform.Shared.Extensions;
 using Scalar.AspNetCore;

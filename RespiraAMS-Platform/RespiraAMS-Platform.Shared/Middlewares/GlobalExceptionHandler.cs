@@ -1,9 +1,9 @@
-using System.Text.Json;
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.DTOs;
+using System.Text.Json;
 
 namespace RespiraAMS_Platform.Shared.Middlewares
 {

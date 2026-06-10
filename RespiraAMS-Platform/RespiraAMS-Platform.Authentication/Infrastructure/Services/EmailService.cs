@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Application.Abstracts;
 using MailKit.Net.Smtp;
 using MailKit.Security;
@@ -48,8 +46,8 @@ namespace Infrastructure.Services
             {
                 client.ServerCertificateValidationCallback = (s, c, h, e) => true;
 
-                var secureSocketOptions = _enableSsl 
-                    ? SecureSocketOptions.SslOnConnect 
+                var secureSocketOptions = _enableSsl
+                    ? SecureSocketOptions.SslOnConnect
                     : SecureSocketOptions.StartTlsWhenAvailable;
 
                 await client.ConnectAsync(_host, _port, secureSocketOptions);

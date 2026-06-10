@@ -1,7 +1,7 @@
+using Application.Abstracts;
 using System.Net;
 using System.Net.Http.Json;
-using Application.Abstracts;
-using RespiraAMS_Platform.Shared.DTOs;
+using Application.DTOs;
 
 namespace Infrastructure.Services
 {

@@ -1,6 +1,5 @@
 using Application.Abstracts.Data;
 using Domain.Entities;
-using Wolverine;
 
 namespace Application.Features.Tokens
 {

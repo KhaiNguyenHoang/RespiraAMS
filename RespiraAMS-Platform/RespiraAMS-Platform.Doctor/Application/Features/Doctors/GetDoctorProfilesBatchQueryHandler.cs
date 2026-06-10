@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Application.Abstracts.Data;
+using Application.DTOs;
 using Microsoft.EntityFrameworkCore;
-using RespiraAMS_Platform.Shared.DTOs;
 
 namespace Application.Features.Doctors
 {
