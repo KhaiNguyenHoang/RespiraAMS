@@ -4,8 +4,8 @@ namespace RespiraAMS_Platform.Shared.Entities
     {
         public Guid Id { get; set; }
         public bool IsDeleted { get; set; }
-        public required DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
-        public required DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+        public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset? DeletedAt { get; set; }
     }
 }
