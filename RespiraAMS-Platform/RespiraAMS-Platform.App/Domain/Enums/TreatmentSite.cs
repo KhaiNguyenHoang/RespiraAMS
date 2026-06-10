@@ -1,0 +1,11 @@
+﻿namespace Domain.Enums;
+
+/// <summary>
+/// Where to receive treatment. It can also be used to deduce the severity of the patient
+/// </summary>
+public enum TreatmentSite
+{
+    Outpatient,
+    Inpatient, 
+    IntensiveCareUnit, 
+}
