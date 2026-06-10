@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using RespiraAMS_Platform.Shared.DTOs;
+using Application.DTOs;
 
 namespace Application.Abstracts
 {

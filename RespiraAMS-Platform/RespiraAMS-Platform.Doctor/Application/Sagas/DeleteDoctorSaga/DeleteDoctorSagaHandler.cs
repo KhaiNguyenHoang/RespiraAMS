@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Extensions.Logging;
+using System.Text.Json;
 
 namespace Application.Sagas.DeleteDoctorSaga
 {
@@ -128,8 +124,8 @@ namespace Application.Sagas.DeleteDoctorSaga
                         Id = command.DoctorId,
                         Address = command.Address,
                         Degrees = ParseDegrees(command.Degrees),
-                        AcademicTitle = string.IsNullOrWhiteSpace(command.AcademicTitle) || command.AcademicTitle.Equals("None", StringComparison.OrdinalIgnoreCase) 
-                            ? null 
+                        AcademicTitle = string.IsNullOrWhiteSpace(command.AcademicTitle) || command.AcademicTitle.Equals("None", StringComparison.OrdinalIgnoreCase)
+                            ? null
                             : Enum.Parse<AcademicTitleEnum>(command.AcademicTitle.Trim(), true),
                         CitizenIdentificationCard = command.CitizenIdentificationCard,
                         DateOfBirth = command.DateOfBirth,

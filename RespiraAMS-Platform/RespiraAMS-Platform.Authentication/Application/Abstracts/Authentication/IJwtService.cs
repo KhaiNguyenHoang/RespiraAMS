@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using Domain.Entities;
+using System.Security.Claims;
 
 namespace Application.Abstracts.Authentication
 {

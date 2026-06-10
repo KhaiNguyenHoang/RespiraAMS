@@ -1,4 +1,4 @@
-namespace RespiraAMS_Platform.Shared.DTOs
+namespace Application.DTOs
 {
     public record ResendVerificationDto(string Email);
 }

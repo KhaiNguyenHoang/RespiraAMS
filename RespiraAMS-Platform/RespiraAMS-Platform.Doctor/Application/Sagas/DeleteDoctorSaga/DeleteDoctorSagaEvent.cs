@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Application.Sagas.DeleteDoctorSaga
 {
     public record StartDeleteDoctorSaga(Guid DoctorId);

@@ -1,9 +1,6 @@
-using System;
-using System.Threading.Tasks;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
 using Application.Abstracts.Storage;
-using Domain.Entities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 

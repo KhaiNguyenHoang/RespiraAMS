@@ -1,8 +1,8 @@
-using System.Text.Json;
 using Application.Abstracts.Mapping;
 using Application.Sagas.CreateDoctorSaga;
 using Domain.Entities;
 using Domain.Enums;
+using System.Text.Json;
 
 namespace Infrastructure.Mapping
 {

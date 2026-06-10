@@ -1,6 +1,7 @@
 using Application.Abstracts.Authentication;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
+using Application.DTOs;
 using Application.Features.Tokens;
 using Domain.Entities;
 using Domain.Enums;

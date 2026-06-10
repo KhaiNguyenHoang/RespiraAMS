@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace Application.Abstracts
 {
     public interface IEmailService

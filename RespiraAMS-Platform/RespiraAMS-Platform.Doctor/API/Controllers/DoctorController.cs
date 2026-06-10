@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Application.DTOs;
 using Application.Features.Doctors;
 using Microsoft.AspNetCore.Mvc;
-using RespiraAMS_Platform.Shared.DTOs;
 using Wolverine;
 
 namespace RespiraAMS_Platform.Doctor.API.Controllers
