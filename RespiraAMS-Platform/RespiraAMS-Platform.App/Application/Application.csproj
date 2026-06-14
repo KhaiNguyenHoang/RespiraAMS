@@ -17,5 +17,9 @@
       <ProjectReference Include="..\..\RespiraAMS-Platform.Shared\RespiraAMS-Platform.Shared.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Shared\" />
+    </ItemGroup>
     
 </Project>
