@@ -1,9 +1,9 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
-using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
+using RespiraAMS_Platform.Shared.Exceptions;
 
 namespace Application.Features.Diseases.UpdateDisease;
 

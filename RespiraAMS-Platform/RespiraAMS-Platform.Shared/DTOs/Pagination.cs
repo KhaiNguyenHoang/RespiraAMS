@@ -1,6 +1,6 @@
 ﻿using X.PagedList;
 
-namespace Application.Shared.Dtos;
+namespace RespiraAMS_Platform.Shared.DTOs;
 
 public class PaginationParam
 {

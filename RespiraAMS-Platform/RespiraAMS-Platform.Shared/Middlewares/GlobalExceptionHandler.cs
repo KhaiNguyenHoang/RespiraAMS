@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.DTOs;
 using System.Text.Json;
+using RespiraAMS_Platform.Shared.Exceptions;
 
 namespace RespiraAMS_Platform.Shared.Middlewares
 {
@@ -38,6 +39,22 @@ namespace RespiraAMS_Platform.Shared.Middlewares
                 KeyNotFoundException => (
                     StatusCodes.Status404NotFound,
                     "The requested resource was not found."
+                ),
+                BadRequestException => (
+                    StatusCodes.Status400BadRequest,
+                    $"Bad request: {exception.Message}"
+                ),
+                NotFoundException => (
+                    StatusCodes.Status404NotFound,
+                    "The requested resource was not found."
+                ),
+                UnexpectedException => (
+                    StatusCodes.Status500InternalServerError,
+                    "An unexpected error occurred."
+                ),
+                InternalServerErrorException => (
+                    StatusCodes.Status500InternalServerError,
+                    "An unexpected system error occurred. Please try again later."
                 ),
                 _ => (
                     StatusCodes.Status500InternalServerError,

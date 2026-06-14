@@ -1,10 +1,10 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
 using Application.Shared.Mappers;
-using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using RespiraAMS_Platform.Shared.Exceptions;
 
 namespace Application.Features.TreatmentProtocols.AddNewCriteria;
 

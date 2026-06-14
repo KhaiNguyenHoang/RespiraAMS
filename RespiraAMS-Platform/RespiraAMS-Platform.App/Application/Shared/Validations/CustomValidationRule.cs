@@ -1,5 +1,6 @@
 ﻿using Application.Shared.Dtos;
 using FluentValidation;
+using RespiraAMS_Platform.Shared.DTOs;
 
 namespace Application.Shared.Validations;
 

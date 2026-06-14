@@ -1,4 +1,4 @@
-﻿namespace Domain.Exceptions;
+﻿namespace RespiraAMS_Platform.Shared.Exceptions;
 
 /// <summary>
 /// Bad request exception. Use for client side error

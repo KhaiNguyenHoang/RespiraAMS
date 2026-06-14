@@ -72,6 +72,7 @@
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="$(MicrosoftExtensionsVersion)" />
     <PackageVersion Include="Asp.Versioning.Mvc" Version="10.0.0" />
     <PackageVersion Include="X.PagedList.EF" Version="10.5.9" />
+    <PackageVersion Include="X.PagedList" Version="10.5.9" />
     <PackageVersion Include="MailKit" Version="4.16.0" />
     <PackageVersion Include="MimeKit" Version="4.16.0" />
   </ItemGroup>

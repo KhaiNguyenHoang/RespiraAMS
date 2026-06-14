@@ -1,11 +1,11 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
 using Domain.Enums;
-using Domain.Exceptions;
 using Domain.Models;
 using Domain.Services.Abstracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using RespiraAMS_Platform.Shared.Exceptions;
 
 namespace Application.Features.Diagnose;
 

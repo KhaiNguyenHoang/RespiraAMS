@@ -1,8 +1,8 @@
 ﻿using Application.Abstracts.Mappers;
 using Application.Shared.Dtos;
 using Domain.Enums;
-using Domain.Exceptions;
 using Domain.Models;
+using RespiraAMS_Platform.Shared.Exceptions;
 
 namespace Application.Shared.Mappers;
 

@@ -1,4 +1,4 @@
-﻿namespace Domain.Exceptions;
+﻿namespace RespiraAMS_Platform.Shared.Exceptions;
 
 /// <summary>
 /// Exception when something unexpectedly happen. The source of the exception can either be client

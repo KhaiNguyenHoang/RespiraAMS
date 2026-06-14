@@ -2,10 +2,10 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Application.Shared.Dtos;
-using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using RespiraAMS_Platform.Shared.Exceptions;
 
 namespace Application.Features.Diseases.GetDiagnosisTemplate;
 

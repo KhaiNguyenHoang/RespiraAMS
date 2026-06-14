@@ -1,5 +1,6 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Shared.Dtos;
+using RespiraAMS_Platform.Shared.DTOs;
 
 namespace Application.Features.Diseases.GetPagedDiseases;
 

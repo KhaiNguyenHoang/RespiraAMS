@@ -1,4 +1,4 @@
-﻿namespace Domain.Exceptions;
+﻿namespace RespiraAMS_Platform.Shared.Exceptions;
 
 /// <summary>
 /// Client side error, where the entity with the identifier is not found

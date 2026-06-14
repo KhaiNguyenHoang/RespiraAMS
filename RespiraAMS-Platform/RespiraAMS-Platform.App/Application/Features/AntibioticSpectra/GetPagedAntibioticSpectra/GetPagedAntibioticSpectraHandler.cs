@@ -1,6 +1,7 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
 using Application.Shared.Dtos;
+using RespiraAMS_Platform.Shared.DTOs;
 using X.PagedList.EF;
 
 namespace Application.Features.AntibioticSpectra.GetPagedAntibioticSpectra;

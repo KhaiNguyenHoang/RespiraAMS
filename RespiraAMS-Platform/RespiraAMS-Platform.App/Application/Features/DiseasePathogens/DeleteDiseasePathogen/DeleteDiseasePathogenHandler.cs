@@ -1,8 +1,8 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
-using Domain.Exceptions;
 using Domain.Models;
 using Microsoft.Extensions.Logging;
+using RespiraAMS_Platform.Shared.Exceptions;
 
 namespace Application.Features.DiseasePathogens.DeleteDiseasePathogen;
 

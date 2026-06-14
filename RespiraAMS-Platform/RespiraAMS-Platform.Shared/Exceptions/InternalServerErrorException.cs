@@ -1,4 +1,4 @@
-﻿namespace Domain.Exceptions;
+﻿namespace RespiraAMS_Platform.Shared.Exceptions;
 
 /// <summary>
 /// Internal server error exception. Use for when the error is from the server side
