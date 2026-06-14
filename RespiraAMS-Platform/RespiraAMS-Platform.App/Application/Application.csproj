@@ -18,5 +18,10 @@
       <ProjectReference Include="..\..\RespiraAMS-Platform.Shared\RespiraAMS-Platform.Shared.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\ResistanceRiskFactors\" />
+      <Folder Include="Features\TreatmentProtocols\" />
+    </ItemGroup>
     
 </Project>
