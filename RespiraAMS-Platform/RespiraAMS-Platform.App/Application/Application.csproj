@@ -11,15 +11,12 @@
         <PackageReference Include="X.PagedList.EF" />
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
         <PackageReference Include="WolverineFx" />
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\RespiraAMS-Platform.Shared\RespiraAMS-Platform.Shared.csproj" />
       <ProjectReference Include="..\Domain\Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Shared\" />
     </ItemGroup>
     
 </Project>
