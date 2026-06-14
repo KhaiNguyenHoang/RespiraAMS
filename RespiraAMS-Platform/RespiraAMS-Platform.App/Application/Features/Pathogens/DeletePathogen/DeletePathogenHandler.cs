@@ -1,0 +1,56 @@
+﻿using Application.Abstracts.CQRS;
+using Application.Abstracts.Data;
+using Domain.Exceptions;
+using Domain.Models;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+
+namespace Application.Features.Pathogens.DeletePathogen;
+
+public class DeletePathogenHandler(IDbContext context, ILogger<DeletePathogenHandler> logger)
+    : ICommandHandler<DeletePathogenCommand>
+{
+    public async Task HandleAsync(DeletePathogenCommand command)
+    {
+        // Get pathogen by ID
+        var pathogen = await context.Pathogens.FirstOrDefaultAsync(x => x.Id == command.Id);
+        if (pathogen is null)
+        {
+            logger.LogWarning("Pathogen ID not found");
+            throw new NotFoundException(nameof(Pathogen), command.Id);
+        }
+
+        // Delete cascade in transaction
+        await context.ExecuteInTransactionAsync(async () =>
+        {
+            // Delete pathogen
+            pathogen.IsDeleted = true;
+            pathogen.UpdatedAt = DateTimeOffset.UtcNow;
+
+            // Cascade delete: ResistanceRiskFactor, DiseasePathogen, TreatmentProtocol
+            var protocolCount = await context.TreatmentProtocols
+                .Where(x => x.SpecialInfectionId == command.Id)
+                .ExecuteUpdateAsync(x => x
+                    .SetProperty(p => p.IsDeleted, true)
+                    .SetProperty(p => p.UpdatedAt, DateTimeOffset.UtcNow));
+            var riskCount = await context.ResistanceRiskFactors
+                .Where(x => x.PathogenId == pathogen.Id)
+                .ExecuteUpdateAsync(x => x
+                    .SetProperty(r => r.IsDeleted, true)
+                    .SetProperty(r => r.UpdatedAt, DateTimeOffset.UtcNow));
+            var diseasePathogenCount = await context.DiseasePathogens
+                .Where(x => x.PathogenId == pathogen.Id)
+                .ExecuteUpdateAsync(x => x
+                    .SetProperty(dp => dp.IsDeleted, true)
+                    .SetProperty(dp => dp.UpdatedAt, DateTimeOffset.UtcNow));
+            
+            // Log result
+            logger.LogInformation("Cascade delete pathogen: {result}", new
+            {
+                TreatmentProtocolCount = protocolCount,
+                ResistanceRiskFactorCount = riskCount,
+                DiseasePathogenCount = diseasePathogenCount
+            });
+        });
+    }
+}
