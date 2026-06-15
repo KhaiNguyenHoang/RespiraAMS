@@ -1,9 +1,9 @@
 <Solution>
   <Folder Name="/RespiraAMS-Platform.App/">
-    <Project Path="RespiraAMS-Platform.App/API/API.csproj" />
     <Project Path="RespiraAMS-Platform.App/Application/Application.csproj" />
     <Project Path="RespiraAMS-Platform.App/Domain/Domain.csproj" />
     <Project Path="RespiraAMS-Platform.App/Infrastructure/Infrastructure.csproj" />
+    <Project Path="RespiraAMS-Platform.App/RespiraAMS-Platform.App.API/RespiraAMS-Platform.App.API.csproj" />
   </Folder>
   <Folder Name="/RespiraAMS-Platform.Authentication/">
     <Project Path="RespiraAMS-Platform.Authentication/API/RespiraAMS-Platform.Authentication.API.csproj" />

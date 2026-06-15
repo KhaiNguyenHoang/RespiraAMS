@@ -7,6 +7,7 @@ var postgres = builder.AddPostgres("postgres").WithPgWeb().WithDataVolume();
 var authDb = postgres.AddDatabase("authDb");
 var doctorDb = postgres.AddDatabase("doctorDb");
 var mediaDb = postgres.AddDatabase("mediaDb");
+var appDb = postgres.AddDatabase("appDb");
 var rabbitmq = builder.AddRabbitMQ("rabbitmq");
 
 var doctorApi = builder.AddProject<Projects.RespiraAMS_Platform_Doctor_API>("doctor-api")
@@ -34,6 +35,9 @@ var authenticationApi = builder.AddProject<Projects.RespiraAMS_Platform_Authenti
     .WaitFor(cache)
     .WaitFor(rabbitmq)
     .WaitFor(doctorApi);
+
+var appApi = builder.AddProject<Projects.RespiraAMS_Platform_App_API>("app-api")
+    .WithReference(appDb);
 
 var frontend = builder.AddNextJsApp("frontend", "../frontend/", "dev")
     .WithReference(authenticationApi)
