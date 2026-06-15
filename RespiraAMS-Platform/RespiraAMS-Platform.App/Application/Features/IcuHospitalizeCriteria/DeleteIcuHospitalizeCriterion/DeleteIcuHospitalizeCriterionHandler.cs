@@ -22,7 +22,7 @@ public class DeleteIcuHospitalizeCriterionHandler(
         
         // Delete entity
         icu.IsDeleted = true;
-        icu.UpdatedAt = DateTimeOffset.UtcNow;
+        icu.DeletedAt = DateTimeOffset.UtcNow;
         
         // Save changes to database
         if (await context.SaveChangesAsync() <= 0)

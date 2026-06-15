@@ -21,7 +21,7 @@ public class DeleteResistanceRiskFactorHandler(IDbContext context, ILogger<Delet
 
         // Delete entity
         risk.IsDeleted = true;
-        risk.UpdatedAt = DateTimeOffset.UtcNow;
+        risk.DeletedAt = DateTimeOffset.UtcNow;
         if (await context.SaveChangesAsync() <= 0)
         {
             logger.LogError("Failed to delete resistance risk factor");

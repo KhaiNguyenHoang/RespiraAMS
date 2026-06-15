@@ -19,7 +19,7 @@ public class DeleteTreatmentProtocolHandler(IDbContext context, ILogger<DeleteTr
         }
 
         protocol.IsDeleted = true;
-        protocol.UpdatedAt = DateTimeOffset.UtcNow;
+        protocol.DeletedAt = DateTimeOffset.UtcNow;
 
         if (await context.SaveChangesAsync() <= 0)
         {

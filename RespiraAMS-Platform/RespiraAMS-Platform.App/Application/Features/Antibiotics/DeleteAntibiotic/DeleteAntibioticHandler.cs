@@ -19,7 +19,7 @@ public class DeleteAntibioticHandler(IDbContext context, ILogger<DeleteAntibioti
         }
 
         antibiotic.IsDeleted = true;
-        antibiotic.UpdatedAt = DateTimeOffset.UtcNow;
+        antibiotic.DeletedAt = DateTimeOffset.UtcNow;
 
         if (await context.SaveChangesAsync() <= 0)
         {
