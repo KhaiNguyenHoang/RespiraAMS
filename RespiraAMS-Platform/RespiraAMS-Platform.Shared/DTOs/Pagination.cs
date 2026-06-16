@@ -28,17 +28,20 @@ public class Pagination<T>
         Metadata = metadata;
         Items = items;
     }
-    
+
     public static Pagination<T> Create(IPagedList<T> pagedList)
     {
-        return new Pagination<T>(new PaginationMetadata
-        {
-            CurrentPage = pagedList.PageNumber,
-            HasNextPage = pagedList.HasNextPage,
-            HasPreviousPage = pagedList.HasPreviousPage,
-            PageCount = pagedList.PageCount,
-            PageSize = pagedList.PageSize,
-            TotalItemCount = pagedList.TotalItemCount,
-        }, pagedList);
+        return new Pagination<T>(
+            new PaginationMetadata
+            {
+                CurrentPage = pagedList.PageNumber,
+                HasNextPage = pagedList.HasNextPage,
+                HasPreviousPage = pagedList.HasPreviousPage,
+                PageCount = pagedList.PageCount,
+                PageSize = pagedList.PageSize,
+                TotalItemCount = pagedList.TotalItemCount,
+            },
+            pagedList
+        );
     }
 }

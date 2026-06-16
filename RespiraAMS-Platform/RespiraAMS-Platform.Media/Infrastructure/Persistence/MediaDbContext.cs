@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class MediaDbContext : DbContext, IMediaDbContext
+    public class MediaDbContext(DbContextOptions<MediaDbContext> options)
+        : DbContext(options),
+            IMediaDbContext
     {
-        public MediaDbContext(DbContextOptions<MediaDbContext> options) : base(options)
-        {
-        }
-
         public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

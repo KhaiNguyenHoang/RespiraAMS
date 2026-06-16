@@ -1,6 +1,5 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
-using Application.Shared.Dtos;
 using RespiraAMS_Platform.Shared.DTOs;
 using X.PagedList.EF;
 
@@ -11,8 +10,8 @@ public class GetPagedDiseasesHandler(IDbContext context)
 {
     public async Task<Pagination<DiseaseItem>> HandleAsync(GetPagedDiseasesQuery query)
     {
-        var diseases = await context.Diseases
-            .OrderByDescending(x => x.CreatedAt)
+        var diseases = await context
+            .Diseases.OrderByDescending(x => x.CreatedAt)
             .Select(x => new DiseaseItem()
             {
                 Id = x.Id,

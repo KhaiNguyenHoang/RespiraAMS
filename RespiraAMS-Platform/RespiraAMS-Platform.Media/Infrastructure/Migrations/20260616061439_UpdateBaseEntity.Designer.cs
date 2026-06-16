@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -10,10 +11,12 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
-    [DbContext(typeof(DoctorDbContext))]
-    partial class DoctorDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(MediaDbContext))]
+    [Migration("20260616061439_UpdateBaseEntity")]
+    partial class UpdateBaseEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,57 +25,46 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Domain.Entities.Doctor", b =>
+            modelBuilder.Entity("Domain.Entities.MediaAsset", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int?>("AcademicTitle")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Address")
-                        .IsRequired()
+                    b.Property<string>("BucketName")
                         .HasColumnType("text");
 
-                    b.Property<string>("CitizenIdentificationCard")
-                        .IsRequired()
+                    b.Property<string>("ContentType")
                         .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTimeOffset?>("DateOfBirth")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.PrimitiveCollection<int[]>("Degrees")
-                        .IsRequired()
-                        .HasColumnType("integer[]");
-
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("Gender")
-                        .HasColumnType("boolean");
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
-                    b.Property<Guid?>("MediaId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("MediaUrl")
+                    b.Property<string>("ObjectKey")
                         .HasColumnType("text");
 
-                    b.Property<int>("Position")
-                        .HasColumnType("integer");
+                    b.Property<long?>("Size")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Url")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Doctors");
+                    b.ToTable("MediaAssets");
                 });
 #pragma warning restore 612, 618
         }

@@ -7,28 +7,19 @@ using Microsoft.Extensions.Configuration;
 
 namespace Application.Sagas.CreateDoctorSaga
 {
-    public class CreateDoctorMediaSagaHandler
+    public class CreateDoctorMediaSagaHandler(
+        IMediaDbContext dbContext,
+        ICacheService cacheService,
+        IStorageService storageService,
+        IValidator<CreateMediaCommand> validator,
+        IConfiguration configuration
+    )
     {
-        private readonly IMediaDbContext _dbContext;
-        private readonly ICacheService _cacheService;
-        private readonly IStorageService _storageService;
-        private readonly IValidator<CreateMediaCommand> _validator;
-        private readonly string _bucketName;
-
-        public CreateDoctorMediaSagaHandler(
-            IMediaDbContext dbContext,
-            ICacheService cacheService,
-            IStorageService storageService,
-            IValidator<CreateMediaCommand> validator,
-            IConfiguration configuration
-        )
-        {
-            _dbContext = dbContext;
-            _cacheService = cacheService;
-            _storageService = storageService;
-            _validator = validator;
-            _bucketName = configuration["R2:BucketName"] ?? "avatars";
-        }
+        private readonly IMediaDbContext _dbContext = dbContext;
+        private readonly ICacheService _cacheService = cacheService;
+        private readonly IStorageService _storageService = storageService;
+        private readonly IValidator<CreateMediaCommand> _validator = validator;
+        private readonly string _bucketName = configuration["R2:BucketName"] ?? "avatars";
 
         public async Task<object> Handle(CreateMediaCommand command)
         {
@@ -37,15 +28,18 @@ namespace Application.Sagas.CreateDoctorSaga
                 var validationResult = await _validator.ValidateAsync(command);
                 if (!validationResult.IsValid)
                 {
-                    var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+                    string errors = string.Join(
+                        "; ",
+                        validationResult.Errors.Select(e => e.ErrorMessage)
+                    );
                     return new CreateMediaFailed(command.Id, errors);
                 }
 
-                var fileName = $"avatar_{command.Id}.png";
-                var contentType = "image/png";
+                string fileName = $"avatar_{command.Id}.png";
+                const string contentType = "image/png";
 
                 string mediaUrl = string.Empty;
-                if (command.Avatar != null && command.Avatar.Length > 0)
+                if (command.Avatar?.Length > 0)
                 {
                     mediaUrl = await _storageService.UploadAsync(
                         command.Avatar,
@@ -64,7 +58,7 @@ namespace Application.Sagas.CreateDoctorSaga
                     BucketName = _bucketName,
                     ContentType = contentType,
                     Size = command.Avatar?.Length ?? 0,
-                    CreatedAt = DateTimeOffset.UtcNow
+                    CreatedAt = DateTimeOffset.UtcNow,
                 };
 
                 _dbContext.MediaAssets.Add(mediaAsset);
@@ -87,7 +81,10 @@ namespace Application.Sagas.CreateDoctorSaga
             {
                 if (!string.IsNullOrEmpty(mediaAsset.FileName))
                 {
-                    await _storageService.DeleteAsync(mediaAsset.FileName, mediaAsset.BucketName ?? _bucketName);
+                    await _storageService.DeleteAsync(
+                        mediaAsset.FileName,
+                        mediaAsset.BucketName ?? _bucketName
+                    );
                 }
 
                 _dbContext.MediaAssets.Remove(mediaAsset);

@@ -6,7 +6,6 @@ using Application.Features.Tokens;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
-using RespiraAMS_Platform.Shared.DTOs;
 using Wolverine;
 
 namespace Application.Features.Auth
@@ -40,13 +39,12 @@ namespace Application.Features.Auth
                 }
             }
 
-            if (user == null || user.IsDeleted)
+            if (user?.IsDeleted != false)
             {
                 return null;
             }
 
-            bool isPasswordCorrect = false;
-            isPasswordCorrect = BCrypt.Net.BCrypt.Verify(query.Password, user.Password);
+            var isPasswordCorrect = BCrypt.Net.BCrypt.Verify(query.Password, user.Password);
 
             if (!isPasswordCorrect)
             {
@@ -55,11 +53,12 @@ namespace Application.Features.Auth
 
             if (!user.IsEmailVerified)
             {
-                throw new FluentValidation.ValidationException(
-                    new[]
-                    {
-                        new FluentValidation.Results.ValidationFailure("Email", "Email address has not been verified. Please verify your email.")
-                    });
+                throw new FluentValidation.ValidationException([
+                    new FluentValidation.Results.ValidationFailure(
+                        "Email",
+                        "Email address has not been verified. Please verify your email."
+                    ),
+                ]);
             }
 
             var token = _jwtService.GenerateAccessToken(user);

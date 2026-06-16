@@ -6,22 +6,15 @@ using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Storage
 {
-    public class R2StorageService : IStorageService
+    public class R2StorageService(
+        IAmazonS3 s3Client,
+        IConfiguration configuration,
+        ILogger<R2StorageService> logger
+    ) : IStorageService
     {
-        private readonly IAmazonS3 _s3Client;
-        private readonly ILogger<R2StorageService> _logger;
-        private readonly string? _publicUrl;
-
-        public R2StorageService(
-            IAmazonS3 s3Client,
-            IConfiguration configuration,
-            ILogger<R2StorageService> logger
-        )
-        {
-            _s3Client = s3Client;
-            _logger = logger;
-            _publicUrl = configuration["R2:PublicUrl"];
-        }
+        private readonly IAmazonS3 _s3Client = s3Client;
+        private readonly ILogger<R2StorageService> _logger = logger;
+        private readonly string? _publicUrl = configuration["R2:PublicUrl"];
 
         public async Task<string> UploadAsync(
             byte[] content,
@@ -40,7 +33,7 @@ namespace Infrastructure.Storage
                     Key = fileName,
                     InputStream = stream,
                     ContentType = contentType,
-                    DisablePayloadSigning = true
+                    DisablePayloadSigning = true,
                 };
 
                 await _s3Client.PutObjectAsync(putRequest, cancellationToken);
@@ -78,7 +71,11 @@ namespace Infrastructure.Storage
         {
             try
             {
-                var deleteRequest = new DeleteObjectRequest { BucketName = bucketName, Key = objectKey };
+                var deleteRequest = new DeleteObjectRequest
+                {
+                    BucketName = bucketName,
+                    Key = objectKey,
+                };
 
                 await _s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
             }

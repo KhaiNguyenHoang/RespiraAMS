@@ -13,6 +13,7 @@
     <ProjectReference Include="..\RespiraAMS-Platform.Authentication\API\RespiraAMS-Platform.Authentication.API.csproj" />
     <ProjectReference Include="..\RespiraAMS-Platform.Doctor\API\RespiraAMS-Platform.Doctor.API.csproj" />
     <ProjectReference Include="..\RespiraAMS-Platform.Media\API\RespiraAMS-Platform.Media.API.csproj" />
+    <ProjectReference Include="..\RespiraAMS-Platform.Gateway\RespiraAMS-Platform.Gateway.csproj" />
   </ItemGroup>
 
   <ItemGroup>

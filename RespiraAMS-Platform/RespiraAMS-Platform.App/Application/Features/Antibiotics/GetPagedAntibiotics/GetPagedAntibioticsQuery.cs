@@ -1,5 +1,4 @@
 ﻿using Application.Abstracts.CQRS;
-using Application.Shared.Dtos;
 using Domain.Enums;
 using RespiraAMS_Platform.Shared.DTOs;
 
