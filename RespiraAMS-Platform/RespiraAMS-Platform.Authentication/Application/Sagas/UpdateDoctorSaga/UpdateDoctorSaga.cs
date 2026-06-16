@@ -11,7 +11,6 @@ namespace Application.Sagas.UpdateDoctorSaga
 
         public Guid DoctorId { get; set; }
 
-        // --- Target/New Values ---
         public string NewFirstName { get; set; } = string.Empty;
         public string NewLastName { get; set; } = string.Empty;
         public string NewEmail { get; set; } = string.Empty;
@@ -25,7 +24,6 @@ namespace Application.Sagas.UpdateDoctorSaga
         public string NewPosition { get; set; } = string.Empty;
         public byte[]? NewAvatar { get; set; }
 
-        // --- Original/Old Values (For Rollback) ---
         public string OldFirstName { get; set; } = string.Empty;
         public string OldLastName { get; set; } = string.Empty;
         public string OldEmail { get; set; } = string.Empty;
@@ -155,7 +153,7 @@ namespace Application.Sagas.UpdateDoctorSaga
             OldMediaId = @event.OldMediaId;
             OldMediaUrl = @event.OldMediaUrl;
 
-            if (NewAvatar != null && NewAvatar.Length > 0)
+            if (NewAvatar?.Length > 0)
             {
                 // Send command to upload new avatar
                 await bus.PublishAsync(new UpdateMediaCommand(Id, DoctorId, NewAvatar));

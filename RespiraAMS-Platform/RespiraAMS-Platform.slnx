@@ -1,29 +1,30 @@
 <Solution>
-  <Folder Name="/RespiraAMS-Platform.App/">
-    <Project Path="RespiraAMS-Platform.App/Application/Application.csproj" />
-    <Project Path="RespiraAMS-Platform.App/Domain/Domain.csproj" />
-    <Project Path="RespiraAMS-Platform.App/Infrastructure/Infrastructure.csproj" />
-    <Project Path="RespiraAMS-Platform.App/RespiraAMS-Platform.App.API/RespiraAMS-Platform.App.API.csproj" />
-  </Folder>
-  <Folder Name="/RespiraAMS-Platform.Authentication/">
-    <Project Path="RespiraAMS-Platform.Authentication/API/RespiraAMS-Platform.Authentication.API.csproj" />
-    <Project Path="RespiraAMS-Platform.Authentication/Application/Application.csproj" />
-    <Project Path="RespiraAMS-Platform.Authentication/Domain/Domain.csproj" />
-    <Project Path="RespiraAMS-Platform.Authentication/Infrastructure/Infrastructure.csproj" />
-  </Folder>
-  <Folder Name="/RespiraAMS-Platform.Doctor/">
-    <Project Path="RespiraAMS-Platform.Doctor/API/RespiraAMS-Platform.Doctor.API.csproj" />
-    <Project Path="RespiraAMS-Platform.Doctor/Application/Application.csproj" />
-    <Project Path="RespiraAMS-Platform.Doctor/Domain/Domain.csproj" />
-    <Project Path="RespiraAMS-Platform.Doctor/Infrastructure/Infrastructure.csproj" />
-  </Folder>
-  <Folder Name="/RespiraAMS-Platform.Media/">
-    <Project Path="RespiraAMS-Platform.Media/Application/Application.csproj" />
-    <Project Path="RespiraAMS-Platform.Media/Domain/Domain.csproj" />
-    <Project Path="RespiraAMS-Platform.Media/Infrastructure/Infrastructure.csproj" />
-    <Project Path="RespiraAMS-Platform.Media/API/RespiraAMS-Platform.Media.API.csproj" />
-  </Folder>
-  <Project Path="RespiraAMS-Platform.AppHost/RespiraAMS-Platform.AppHost.csproj" />
-  <Project Path="RespiraAMS-Platform.ServiceDefaults/RespiraAMS-Platform.ServiceDefaults.csproj" />
-  <Project Path="RespiraAMS-Platform.Shared/RespiraAMS-Platform.Shared.csproj" />
+	<Folder Name="/RespiraAMS-Platform.App/">
+		<Project Path="RespiraAMS-Platform.App/Application/Application.csproj" />
+		<Project Path="RespiraAMS-Platform.App/Domain/Domain.csproj" />
+		<Project Path="RespiraAMS-Platform.App/Infrastructure/Infrastructure.csproj" />
+		<Project Path="RespiraAMS-Platform.App/RespiraAMS-Platform.App.API/RespiraAMS-Platform.App.API.csproj" />
+	</Folder>
+	<Folder Name="/RespiraAMS-Platform.Authentication/">
+		<Project Path="RespiraAMS-Platform.Authentication/API/RespiraAMS-Platform.Authentication.API.csproj" />
+		<Project Path="RespiraAMS-Platform.Authentication/Application/Application.csproj" />
+		<Project Path="RespiraAMS-Platform.Authentication/Domain/Domain.csproj" />
+		<Project Path="RespiraAMS-Platform.Authentication/Infrastructure/Infrastructure.csproj" />
+	</Folder>
+	<Folder Name="/RespiraAMS-Platform.Doctor/">
+		<Project Path="RespiraAMS-Platform.Doctor/API/RespiraAMS-Platform.Doctor.API.csproj" />
+		<Project Path="RespiraAMS-Platform.Doctor/Application/Application.csproj" />
+		<Project Path="RespiraAMS-Platform.Doctor/Domain/Domain.csproj" />
+		<Project Path="RespiraAMS-Platform.Doctor/Infrastructure/Infrastructure.csproj" />
+	</Folder>
+	<Folder Name="/RespiraAMS-Platform.Media/">
+		<Project Path="RespiraAMS-Platform.Media/Application/Application.csproj" />
+		<Project Path="RespiraAMS-Platform.Media/Domain/Domain.csproj" />
+		<Project Path="RespiraAMS-Platform.Media/Infrastructure/Infrastructure.csproj" />
+		<Project Path="RespiraAMS-Platform.Media/API/RespiraAMS-Platform.Media.API.csproj" />
+	</Folder>
+	<Project Path="RespiraAMS-Platform.AppHost/RespiraAMS-Platform.AppHost.csproj" />
+	<Project Path="RespiraAMS-Platform.ServiceDefaults/RespiraAMS-Platform.ServiceDefaults.csproj" />
+	<Project Path="RespiraAMS-Platform.Shared/RespiraAMS-Platform.Shared.csproj" />
+	<Poject Path="RespiraAMS-Platform.Gateway/RespiraAMS-Platform.Gateway.csproj" />
 </Solution>

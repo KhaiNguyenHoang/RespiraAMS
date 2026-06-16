@@ -53,7 +53,7 @@ namespace Infrastructure.Migrations
                     b.Property<long?>("Size")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset?>("UpdatedAt")
+                    b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Url")

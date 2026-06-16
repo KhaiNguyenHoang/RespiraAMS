@@ -4,9 +4,12 @@ using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using RespiraAMS_Platform.Shared.DTOs;
 
-namespace Application.Features.Auth
+namespace Application.Features.Profile
 {
-    public class GetDoctorsPagedQueryHandler(IAuthDbContext dbContext, IDoctorServiceClient doctorServiceClient)
+    public class GetDoctorsPagedQueryHandler(
+        IAuthDbContext dbContext,
+        IDoctorServiceClient doctorServiceClient
+    )
     {
         private readonly IAuthDbContext _dbContext = dbContext;
         private readonly IDoctorServiceClient _doctorServiceClient = doctorServiceClient;
@@ -16,8 +19,9 @@ namespace Application.Features.Auth
             var skip = Math.Max(0, query.Skip);
             var take = query.Take <= 0 ? 10 : query.Take;
 
-            var dbQuery = _dbContext.AuthDoctors
-                .Where(d => d.Role == RoleEnum.Doctor && !d.IsDeleted);
+            var dbQuery = _dbContext.AuthDoctors.Where(d =>
+                d.Role == RoleEnum.Doctor && !d.IsDeleted
+            );
 
             var totalItems = await dbQuery.CountAsync();
 
@@ -27,10 +31,10 @@ namespace Application.Features.Auth
                 .Take(take)
                 .ToListAsync();
 
-            var doctorIds = authDoctors.Select(d => d.Id).ToList();
+            var doctorIds = authDoctors.ConvertAll(d => d.Id);
             var profilesDict = await _doctorServiceClient.GetDoctorProfilesBatchAsync(doctorIds);
 
-            var items = authDoctors.Select(doctor =>
+            var items = authDoctors.ConvertAll(doctor =>
             {
                 profilesDict.TryGetValue(doctor.Id, out var profile);
                 return new DoctorResponseDto(
@@ -51,7 +55,7 @@ namespace Application.Features.Auth
                     profile?.MediaId,
                     profile?.MediaUrl
                 );
-            }).ToList();
+            });
 
             var pageIndex = (skip / take) + 1;
             var totalPages = (int)Math.Ceiling((double)totalItems / take);

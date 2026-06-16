@@ -1,6 +1,5 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
-using Application.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
 using RespiraAMS_Platform.Shared.DTOs;
 using X.PagedList.EF;
@@ -19,14 +18,17 @@ public class GetPagedAntibioticsHandler(IDbContext context)
             // Search by name (contains, case-insensitive)
             if (query.Filter.Name is not null)
             {
-                queryable = queryable
-                    .Where(x => EF.Functions.ILike(x.Name, $"%{query.Filter.Name}%"));
+                queryable = queryable.Where(x =>
+                    EF.Functions.ILike(x.Name, $"%{query.Filter.Name}%")
+                );
             }
 
             // Filter by spectrum
             if (query.Filter.AntibioticSpectrumId is not null)
             {
-                queryable = queryable.Where(x => x.AntibioticSpectrumId == query.Filter.AntibioticSpectrumId);
+                queryable = queryable.Where(x =>
+                    x.AntibioticSpectrumId == query.Filter.AntibioticSpectrumId
+                );
             }
 
             // Filter by category
@@ -54,13 +56,13 @@ public class GetPagedAntibioticsHandler(IDbContext context)
                 Dosages = x.Dosages,
             })
             .ToPagedListAsync(query.Param.Page, query.Param.Size);
-        
+
         // Extract the route of administrations from dosages
         foreach (var antibiotic in antibiotics)
         {
             antibiotic.RouteOfAdministrations = antibiotic.Dosages.Keys.ToList();
         }
-        
+
         return Pagination<AntibioticItem>.Create(antibiotics);
     }
 }

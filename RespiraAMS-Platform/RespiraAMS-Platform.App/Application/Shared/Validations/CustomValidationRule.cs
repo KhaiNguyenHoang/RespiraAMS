@@ -1,5 +1,4 @@
-﻿using Application.Shared.Dtos;
-using FluentValidation;
+﻿using FluentValidation;
 using RespiraAMS_Platform.Shared.DTOs;
 
 namespace Application.Shared.Validations;
@@ -7,7 +6,8 @@ namespace Application.Shared.Validations;
 public static class CustomValidationRule
 {
     public static IRuleBuilderOptions<T, PaginationParam> IsValidPaginationParam<T>(
-        this IRuleBuilder<T, PaginationParam> ruleBuilder)
+        this IRuleBuilder<T, PaginationParam> ruleBuilder
+    )
     {
         return ruleBuilder
             .Must(p => p.Page > 0)

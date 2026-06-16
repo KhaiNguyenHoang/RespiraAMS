@@ -21,7 +21,7 @@ public class DeleteDiseasePathogenHandler(IDbContext context, ILogger<DeleteDise
 
         // Delete record
         diseasePathogen.IsDeleted = true;
-        diseasePathogen.UpdatedAt = DateTimeOffset.UtcNow;
+        diseasePathogen.DeletedAt = DateTimeOffset.UtcNow;
         if (await context.SaveChangesAsync() <= 0)
         {
             logger.LogError("Failed to delete disease pathogen");

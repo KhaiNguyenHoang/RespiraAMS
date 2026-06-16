@@ -50,12 +50,16 @@ builder.Host.UseWolverine(opts =>
     opts.Durability.Mode = DurabilityMode.Solo;
 });
 builder.Services.AddOpenTelemetry().WithTracing(tracing => tracing.AddSource("Wolverine"));
+builder.Services.AddAuthorization();
 
 
 var app = builder.Build();
 
 app.UseCustomErrorHandling();
 app.UseSerilogRequestLogging();
+
+app.UseClaimsPropagation();
+app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {

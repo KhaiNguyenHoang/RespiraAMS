@@ -4,7 +4,7 @@ using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using RespiraAMS_Platform.Shared.DTOs;
 
-namespace Application.Features.Auth
+namespace Application.Features.Profile
 {
     public class GetDoctorByEmailQueryHandler(IAuthDbContext dbContext, IDoctorServiceClient doctorServiceClient)
     {

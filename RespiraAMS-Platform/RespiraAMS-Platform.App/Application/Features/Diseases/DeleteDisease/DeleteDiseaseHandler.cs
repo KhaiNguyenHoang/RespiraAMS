@@ -25,29 +25,29 @@ public class DeleteDiseaseHandler(IDbContext context, ILogger<DeleteDiseaseHandl
         {
             // Delete disease
             disease.IsDeleted = true;
-            disease.UpdatedAt = DateTimeOffset.UtcNow;
+            disease.DeletedAt = DateTimeOffset.UtcNow;
 
             // Cascade delete
             var riskCount = await context.ResistanceRiskFactors
                 .Where(x => x.DiseaseId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(r => r.IsDeleted, true)
-                    .SetProperty(r => r.UpdatedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(r => r.DeletedAt, DateTimeOffset.UtcNow));
             var diseasePathogenCount = await context.DiseasePathogens
                 .Where(x => x.DiseaseId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(dp => dp.IsDeleted, true)
-                    .SetProperty(dp => dp.UpdatedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(dp => dp.DeletedAt, DateTimeOffset.UtcNow));
             var icuCount = await context.IcuHospitalizeCriteria
                 .Where(x => x.DiseaseId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(icu => icu.IsDeleted, true)
-                    .SetProperty(icu => icu.UpdatedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(icu => icu.DeletedAt, DateTimeOffset.UtcNow));
             var protocolCount = await context.TreatmentProtocols
                 .Where(x => x.DiseaseId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(p => p.IsDeleted, true)
-                    .SetProperty(p => p.UpdatedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(p => p.DeletedAt, DateTimeOffset.UtcNow));
             
             // Log result
             logger.LogInformation("Cascade delete disease: deleted {result}", new

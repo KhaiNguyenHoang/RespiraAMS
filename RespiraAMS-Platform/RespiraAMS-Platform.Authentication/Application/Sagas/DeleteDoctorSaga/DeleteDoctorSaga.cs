@@ -49,19 +49,23 @@ namespace Application.Sagas.DeleteDoctorSaga
             var authDoctor = await dbContext.AuthDoctors.FindAsync(command.DoctorId);
             var sagaId = Guid.NewGuid();
 
-            if (authDoctor == null || authDoctor.IsDeleted)
+            if (authDoctor?.IsDeleted != false)
             {
                 var failureTracker = new ProcessTracker
                 {
                     Id = sagaId,
                     ProcessName = "DeleteDoctor",
                     Status = "Failed",
-                    ErrorMessage = "Doctor not found or already deleted in authentication database.",
+                    ErrorMessage =
+                        "Doctor not found or already deleted in authentication database.",
                     CreatedAt = DateTimeOffset.UtcNow,
                 };
                 dbContext.ProcessTrackers.Add(failureTracker);
                 await dbContext.SaveChangesAsync();
-                return (new DeleteAuthDoctorFailed(sagaId, "Doctor not found or already deleted."), null);
+                return (
+                    new DeleteAuthDoctorFailed(sagaId, "Doctor not found or already deleted."),
+                    null
+                );
             }
 
             var state = new DeleteDoctorSaga
@@ -73,7 +77,7 @@ namespace Application.Sagas.DeleteDoctorSaga
                 OldRole = authDoctor.Role,
                 OldEmail = authDoctor.Email,
                 OldPassword = authDoctor.Password,
-                OldPhoneNumber = authDoctor.PhoneNumber
+                OldPhoneNumber = authDoctor.PhoneNumber,
             };
 
             var tracker = new ProcessTracker

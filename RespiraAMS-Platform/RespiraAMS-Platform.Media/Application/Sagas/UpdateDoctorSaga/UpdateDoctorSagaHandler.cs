@@ -8,31 +8,21 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.Sagas.UpdateDoctorSaga
 {
-    public class UpdateDoctorSagaHandler
+    public class UpdateDoctorSagaHandler(
+        IMediaDbContext dbContext,
+        ICacheService cacheService,
+        IStorageService storageService,
+        IValidator<UpdateMediaCommand> validator,
+        IConfiguration configuration,
+        ILogger<UpdateDoctorSagaHandler> logger
+    )
     {
-        private readonly IMediaDbContext _dbContext;
-        private readonly ICacheService _cacheService;
-        private readonly IStorageService _storageService;
-        private readonly IValidator<UpdateMediaCommand> _validator;
-        private readonly ILogger<UpdateDoctorSagaHandler> _logger;
-        private readonly string _bucketName;
-
-        public UpdateDoctorSagaHandler(
-            IMediaDbContext dbContext,
-            ICacheService cacheService,
-            IStorageService storageService,
-            IValidator<UpdateMediaCommand> validator,
-            IConfiguration configuration,
-            ILogger<UpdateDoctorSagaHandler> logger
-        )
-        {
-            _dbContext = dbContext;
-            _cacheService = cacheService;
-            _storageService = storageService;
-            _validator = validator;
-            _logger = logger;
-            _bucketName = configuration["R2:BucketName"] ?? "avatars";
-        }
+        private readonly IMediaDbContext _dbContext = dbContext;
+        private readonly ICacheService _cacheService = cacheService;
+        private readonly IStorageService _storageService = storageService;
+        private readonly IValidator<UpdateMediaCommand> _validator = validator;
+        private readonly ILogger<UpdateDoctorSagaHandler> _logger = logger;
+        private readonly string _bucketName = configuration["R2:BucketName"] ?? "avatars";
 
         public async Task<object> Handle(UpdateMediaCommand command)
         {
@@ -41,8 +31,15 @@ namespace Application.Sagas.UpdateDoctorSaga
                 var validationResult = await _validator.ValidateAsync(command);
                 if (!validationResult.IsValid)
                 {
-                    var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
-                    _logger.LogWarning("UpdateMediaCommand validation failed for Saga ID {SagaId}: {Errors}", command.Id, errors);
+                    var errors = string.Join(
+                        "; ",
+                        validationResult.Errors.Select(e => e.ErrorMessage)
+                    );
+                    _logger.LogWarning(
+                        "UpdateMediaCommand validation failed for Saga ID {SagaId}: {Errors}",
+                        command.Id,
+                        errors
+                    );
                     return new UpdateMediaFailed(command.Id, errors);
                 }
 
@@ -51,7 +48,7 @@ namespace Application.Sagas.UpdateDoctorSaga
                 var contentType = "image/png";
 
                 string mediaUrl = string.Empty;
-                if (command.Avatar != null && command.Avatar.Length > 0)
+                if (command.Avatar?.Length > 0)
                 {
                     mediaUrl = await _storageService.UploadAsync(
                         command.Avatar,
@@ -70,20 +67,28 @@ namespace Application.Sagas.UpdateDoctorSaga
                     BucketName = _bucketName,
                     ContentType = contentType,
                     Size = command.Avatar?.Length ?? 0,
-                    CreatedAt = DateTimeOffset.UtcNow
+                    CreatedAt = DateTimeOffset.UtcNow,
                 };
 
                 _dbContext.MediaAssets.Add(mediaAsset);
                 await _dbContext.SaveChangesAsync();
 
                 await _cacheService.SetAsync($"media:id:{mediaAsset.Id}", mediaAsset);
-                _logger.LogInformation("New media asset created successfully for Doctor ID {DoctorId} with Media ID {MediaId}", command.DoctorId, mediaId);
+                _logger.LogInformation(
+                    "New media asset created successfully for Doctor ID {DoctorId} with Media ID {MediaId}",
+                    command.DoctorId,
+                    mediaId
+                );
 
                 return new MediaUpdated(command.Id, mediaAsset.Id, mediaAsset.Url ?? string.Empty);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "UpdateMediaCommand failed for Doctor ID {DoctorId}", command.DoctorId);
+                _logger.LogError(
+                    ex,
+                    "UpdateMediaCommand failed for Doctor ID {DoctorId}",
+                    command.DoctorId
+                );
                 return new UpdateMediaFailed(command.Id, ex.Message);
             }
         }
@@ -97,19 +102,29 @@ namespace Application.Sagas.UpdateDoctorSaga
                 {
                     if (!string.IsNullOrEmpty(mediaAsset.FileName))
                     {
-                        await _storageService.DeleteAsync(mediaAsset.FileName, mediaAsset.BucketName ?? _bucketName);
+                        await _storageService.DeleteAsync(
+                            mediaAsset.FileName,
+                            mediaAsset.BucketName ?? _bucketName
+                        );
                     }
 
                     _dbContext.MediaAssets.Remove(mediaAsset);
                     await _dbContext.SaveChangesAsync();
 
                     await _cacheService.RemoveAsync($"media:id:{command.MediaId}");
-                    _logger.LogInformation("Media asset rolled back successfully for Media ID {MediaId}", command.MediaId);
+                    _logger.LogInformation(
+                        "Media asset rolled back successfully for Media ID {MediaId}",
+                        command.MediaId
+                    );
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "RollbackMediaCommand failed for Media ID {MediaId}", command.MediaId);
+                _logger.LogError(
+                    ex,
+                    "RollbackMediaCommand failed for Media ID {MediaId}",
+                    command.MediaId
+                );
             }
         }
 
@@ -122,19 +137,29 @@ namespace Application.Sagas.UpdateDoctorSaga
                 {
                     if (!string.IsNullOrEmpty(mediaAsset.FileName))
                     {
-                        await _storageService.DeleteAsync(mediaAsset.FileName, mediaAsset.BucketName ?? _bucketName);
+                        await _storageService.DeleteAsync(
+                            mediaAsset.FileName,
+                            mediaAsset.BucketName ?? _bucketName
+                        );
                     }
 
                     _dbContext.MediaAssets.Remove(mediaAsset);
                     await _dbContext.SaveChangesAsync();
 
                     await _cacheService.RemoveAsync($"media:id:{command.MediaId}");
-                    _logger.LogInformation("Deleted old media asset {MediaId} successfully", command.MediaId);
+                    _logger.LogInformation(
+                        "Deleted old media asset {MediaId} successfully",
+                        command.MediaId
+                    );
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "DeleteMediaCommand failed for Media ID {MediaId}", command.MediaId);
+                _logger.LogError(
+                    ex,
+                    "DeleteMediaCommand failed for Media ID {MediaId}",
+                    command.MediaId
+                );
             }
         }
     }

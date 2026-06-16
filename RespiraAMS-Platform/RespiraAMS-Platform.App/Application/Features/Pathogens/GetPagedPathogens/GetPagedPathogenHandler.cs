@@ -1,6 +1,5 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
-using Application.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
 using RespiraAMS_Platform.Shared.DTOs;
 using X.PagedList.EF;
@@ -17,8 +16,9 @@ public class GetPagedPathogensHandler(IDbContext context)
         {
             if (query.Filter.Name is not null)
             {
-                queryable = queryable
-                    .Where(x => EF.Functions.ILike(x.Name, $"%{query.Filter.Name}%"));
+                queryable = queryable.Where(x =>
+                    EF.Functions.ILike(x.Name, $"%{query.Filter.Name}%")
+                );
             }
         }
 

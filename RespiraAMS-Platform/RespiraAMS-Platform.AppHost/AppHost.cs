@@ -39,10 +39,22 @@ var authenticationApi = builder.AddProject<Projects.RespiraAMS_Platform_Authenti
 var appApi = builder.AddProject<Projects.RespiraAMS_Platform_App_API>("app-api")
     .WithReference(appDb);
 
+var gateway = builder.AddProject<Projects.RespiraAMS_Platform_Gateway>("gateway")
+    .WithReference(authenticationApi)
+    .WithReference(doctorApi)
+    .WithReference(mediaApi)
+    .WithReference(appApi)
+    .WaitFor(authenticationApi)
+    .WaitFor(doctorApi)
+    .WaitFor(mediaApi)
+    .WaitFor(appApi)
+    .WithExternalHttpEndpoints();
+
 var frontend = builder.AddNextJsApp("frontend", "../frontend/", "dev")
     .WithReference(authenticationApi)
     .WithReference(doctorApi)
     .WithReference(mediaApi)
+    .WithReference(gateway)
     .WithExternalHttpEndpoints();
 
 builder.Build().Run();

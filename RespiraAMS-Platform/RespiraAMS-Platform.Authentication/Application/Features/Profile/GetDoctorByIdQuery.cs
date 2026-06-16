@@ -1,4 +1,4 @@
-namespace Application.Features.Auth
+namespace Application.Features.Profile
 {
     public record GetDoctorByIdQuery(Guid Id);
 }

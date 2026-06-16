@@ -25,24 +25,24 @@ public class DeletePathogenHandler(IDbContext context, ILogger<DeletePathogenHan
         {
             // Delete pathogen
             pathogen.IsDeleted = true;
-            pathogen.UpdatedAt = DateTimeOffset.UtcNow;
+            pathogen.DeletedAt = DateTimeOffset.UtcNow;
 
             // Cascade delete: ResistanceRiskFactor, DiseasePathogen, TreatmentProtocol
             var protocolCount = await context.TreatmentProtocols
                 .Where(x => x.SpecialInfectionId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(p => p.IsDeleted, true)
-                    .SetProperty(p => p.UpdatedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(p => p.DeletedAt, DateTimeOffset.UtcNow));
             var riskCount = await context.ResistanceRiskFactors
                 .Where(x => x.PathogenId == pathogen.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(r => r.IsDeleted, true)
-                    .SetProperty(r => r.UpdatedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(r => r.DeletedAt, DateTimeOffset.UtcNow));
             var diseasePathogenCount = await context.DiseasePathogens
                 .Where(x => x.PathogenId == pathogen.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(dp => dp.IsDeleted, true)
-                    .SetProperty(dp => dp.UpdatedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(dp => dp.DeletedAt, DateTimeOffset.UtcNow));
             
             // Log result
             logger.LogInformation("Cascade delete pathogen: {result}", new

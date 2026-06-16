@@ -1,9 +1,9 @@
+using System.Text.Json;
 using Application.Abstracts.Caching;
 using Application.Abstracts.Data;
 using Domain.Entities;
 using Domain.Enums;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
 
 namespace Application.Sagas.DeleteDoctorSaga
 {
@@ -57,10 +57,16 @@ namespace Application.Sagas.DeleteDoctorSaga
             try
             {
                 var doctor = await _dbContext.Doctors.FindAsync(command.DoctorId);
-                if (doctor == null || doctor.IsDeleted)
+                if (doctor?.IsDeleted != false)
                 {
-                    _logger.LogWarning("DeleteDoctorCommand failed: Doctor with ID {DoctorId} not found or already deleted.", command.DoctorId);
-                    return new DeleteDoctorFailed(command.Id, "Doctor profile not found or already deleted.");
+                    _logger.LogWarning(
+                        "DeleteDoctorCommand failed: Doctor with ID {DoctorId} not found or already deleted.",
+                        command.DoctorId
+                    );
+                    return new DeleteDoctorFailed(
+                        command.Id,
+                        "Doctor profile not found or already deleted."
+                    );
                 }
 
                 // Backup Profile values before deleting
@@ -81,7 +87,10 @@ namespace Application.Sagas.DeleteDoctorSaga
                 // Remove from cache
                 await _cacheService.RemoveAsync($"doctor:id:{command.DoctorId}");
 
-                _logger.LogInformation("Doctor profile soft-deleted successfully for Doctor ID {DoctorId}", command.DoctorId);
+                _logger.LogInformation(
+                    "Doctor profile soft-deleted successfully for Doctor ID {DoctorId}",
+                    command.DoctorId
+                );
 
                 return new DeleteDoctorCompleted(
                     command.Id,
@@ -98,7 +107,11 @@ namespace Application.Sagas.DeleteDoctorSaga
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "DeleteDoctorCommand failed for Doctor ID {DoctorId}", command.DoctorId);
+                _logger.LogError(
+                    ex,
+                    "DeleteDoctorCommand failed for Doctor ID {DoctorId}",
+                    command.DoctorId
+                );
                 return new DeleteDoctorFailed(command.Id, ex.Message);
             }
         }
@@ -115,7 +128,10 @@ namespace Application.Sagas.DeleteDoctorSaga
                     await _dbContext.SaveChangesAsync();
 
                     await _cacheService.SetAsync($"doctor:id:{existing.Id}", existing);
-                    _logger.LogInformation("Restored (un-deleted) Doctor profile during rollback for Doctor ID {DoctorId}", command.DoctorId);
+                    _logger.LogInformation(
+                        "Restored (un-deleted) Doctor profile during rollback for Doctor ID {DoctorId}",
+                        command.DoctorId
+                    );
                 }
                 else
                 {
@@ -124,9 +140,14 @@ namespace Application.Sagas.DeleteDoctorSaga
                         Id = command.DoctorId,
                         Address = command.Address,
                         Degrees = ParseDegrees(command.Degrees),
-                        AcademicTitle = string.IsNullOrWhiteSpace(command.AcademicTitle) || command.AcademicTitle.Equals("None", StringComparison.OrdinalIgnoreCase)
-                            ? null
-                            : Enum.Parse<AcademicTitleEnum>(command.AcademicTitle.Trim(), true),
+                        AcademicTitle =
+                            string.IsNullOrWhiteSpace(command.AcademicTitle)
+                            || command.AcademicTitle.Equals(
+                                "None",
+                                StringComparison.OrdinalIgnoreCase
+                            )
+                                ? null
+                                : Enum.Parse<AcademicTitleEnum>(command.AcademicTitle.Trim(), true),
                         CitizenIdentificationCard = command.CitizenIdentificationCard,
                         DateOfBirth = command.DateOfBirth,
                         Gender = command.Gender,
@@ -135,19 +156,26 @@ namespace Application.Sagas.DeleteDoctorSaga
                         MediaUrl = command.MediaUrl,
                         CreatedAt = DateTimeOffset.UtcNow,
                         IsDeleted = false,
-                        DeletedAt = null
+                        DeletedAt = null,
                     };
 
                     _dbContext.Doctors.Add(doctor);
                     await _dbContext.SaveChangesAsync();
 
                     await _cacheService.SetAsync($"doctor:id:{doctor.Id}", doctor);
-                    _logger.LogInformation("Restored Doctor profile during rollback for Doctor ID {DoctorId}", command.DoctorId);
+                    _logger.LogInformation(
+                        "Restored Doctor profile during rollback for Doctor ID {DoctorId}",
+                        command.DoctorId
+                    );
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to restore Doctor profile for Doctor ID {DoctorId} in rollback", command.DoctorId);
+                _logger.LogError(
+                    ex,
+                    "Failed to restore Doctor profile for Doctor ID {DoctorId} in rollback",
+                    command.DoctorId
+                );
             }
         }
     }
