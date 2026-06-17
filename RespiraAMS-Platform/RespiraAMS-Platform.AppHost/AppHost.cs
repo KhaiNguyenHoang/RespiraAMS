@@ -49,10 +49,6 @@ var gateway = builder
     .WithReference(doctorApi)
     .WithReference(mediaApi)
     .WithReference(appApi)
-    .WaitFor(authenticationApi)
-    .WaitFor(doctorApi)
-    .WaitFor(mediaApi)
-    .WaitFor(appApi)
     .WithExternalHttpEndpoints();
 
 var frontend = builder
@@ -64,4 +60,7 @@ var frontend = builder
     .WithExternalHttpEndpoints();
 
 appApi.WithReference(gateway).WaitFor(gateway);
+authenticationApi.WithReference(gateway).WaitFor(gateway);
+doctorApi.WithReference(gateway).WaitFor(gateway);
+mediaApi.WithReference(gateway).WaitFor(gateway);
 builder.Build().Run();
