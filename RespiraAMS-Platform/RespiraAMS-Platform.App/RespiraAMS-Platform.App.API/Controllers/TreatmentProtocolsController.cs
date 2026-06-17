@@ -10,7 +10,7 @@ using Wolverine;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/treatment-protocols/{id:guid}")]
+[Route("api/{version:apiVersion}/treatment-protocols/{id:guid}")]
 [ApiVersion("1.0")]
 public class TreatmentProtocolsController(IMessageBus bus) : ControllerBase
 {

@@ -1,6 +1,7 @@
 using Application.Sagas.CreateDoctorSaga;
 using Application.Sagas.DeleteDoctorSaga;
 using Application.Sagas.UpdateDoctorSaga;
+using Asp.Versioning;
 using Infrastructure;
 using RespiraAMS_Platform.Shared.Extensions;
 using Scalar.AspNetCore;
@@ -61,6 +62,13 @@ builder.Host.UseWolverine(opts =>
         .ToRabbitQueue("media-service-command");
 
     opts.Durability.Mode = DurabilityMode.Solo;
+});
+
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
 });
 
 builder.Services.AddOpenTelemetry().WithTracing(tracing => tracing.AddSource("Wolverine"));

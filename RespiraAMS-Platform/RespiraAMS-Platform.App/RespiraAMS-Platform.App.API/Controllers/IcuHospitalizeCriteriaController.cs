@@ -6,7 +6,7 @@ using Wolverine;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/icu-hospitalize-criteria/{id:guid}")]
+[Route("api/{version:apiVersion}/icu-hospitalize-criteria/{id:guid}")]
 public class IcuHospitalizeCriteriaController(IMessageBus bus) : ControllerBase
 {
     [HttpPut]

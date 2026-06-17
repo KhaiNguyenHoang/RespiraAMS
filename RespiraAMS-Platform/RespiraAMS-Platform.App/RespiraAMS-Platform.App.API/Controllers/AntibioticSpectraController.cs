@@ -13,7 +13,7 @@ using AntibioticSpectrumItem = Application.Features.AntibioticSpectra.GetAntibio
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/antibiotic-spectra")]
+[Route("api/{version:apiVersion}/antibiotic-spectra")]
 [ApiVersion("1.0")]
 public class AntibioticSpectraController(IMessageBus bus) : ControllerBase
 {
