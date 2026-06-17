@@ -7,7 +7,7 @@ using Wolverine;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/resistance-risk-factors/{id:guid}")]
+[Route("api/{version:apiVersion}/resistance-risk-factors/{id:guid}")]
 [ApiVersion("1.0")]
 public class ResistanceRiskFactorsController(IMessageBus bus) : ControllerBase
 {

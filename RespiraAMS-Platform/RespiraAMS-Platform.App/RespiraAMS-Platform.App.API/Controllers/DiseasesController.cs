@@ -19,7 +19,7 @@ using DiseaseItem = Application.Features.Diseases.GetDiseases.DiseaseItem;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/diseases")]
+[Route("api/{version:apiVersion}/diseases")]
 [ApiVersion("1.0")]
 public class DiseasesController(IMessageBus bus) : ControllerBase
 {

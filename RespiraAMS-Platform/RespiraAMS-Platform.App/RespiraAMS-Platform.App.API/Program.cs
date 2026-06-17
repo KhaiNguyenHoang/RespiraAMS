@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Domain;
 using Application;
+using Asp.Versioning;
 using Infrastructure;
 using RespiraAMS_Platform.Shared.Extensions;
 using Scalar.AspNetCore;
@@ -31,6 +32,12 @@ builder.Services
             namingPolicy: JsonNamingPolicy.CamelCase,
             allowIntegerValues: false));
     });
+builder.Services.AddApiVersioning(options =>
+{
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.ReportApiVersions = true;
+});
 builder.Services.AddCustomErrorHandling();
 builder.AddServiceDefaults();
 builder.Services.AddServices();

@@ -7,7 +7,7 @@ using Wolverine;
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/causes/{id:guid}")]
+[Route("api/{version:apiVersion}/causes/{id:guid}")]
 [ApiVersion("1.0")]
 public class DiseasePathogensController(IMessageBus bus) : ControllerBase
 {

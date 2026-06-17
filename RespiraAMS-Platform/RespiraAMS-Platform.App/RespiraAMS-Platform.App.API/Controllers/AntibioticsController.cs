@@ -13,7 +13,7 @@ using AntibioticItem = Application.Features.Antibiotics.GetAntibiotics.Antibioti
 namespace API.Controllers;
 
 [ApiController]
-[Route("api/antibiotics")]
+[Route("api/{version:apiVersion}/antibiotics")]
 [ApiVersion("1.0")]
 public class AntibioticsController(IMessageBus bus) : ControllerBase
 {
