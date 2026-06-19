@@ -32,41 +32,75 @@ public static class DependencyInjection
 {
     public static void AddProfiles(this IServiceCollection services)
     {
-        services.AddScoped<ICreateMapper<Criterion, CreateCriterionCommand>, CreateCriterionMapper>();
-        services.AddScoped<IUpdateMapper<Criterion, UpdateCriterionCommand>, UpdateCriterionMapper>();
+        services.AddScoped<
+            ICreateMapper<Criterion, CreateCriterionCommand>,
+            CreateCriterionMapper
+        >();
+        services.AddScoped<
+            IUpdateMapper<Criterion, UpdateCriterionCommand>,
+            UpdateCriterionMapper
+        >();
         services.AddScoped<IResultMapper<Criterion, CriterionItem>, CriterionResultMapper>();
-        
-        services.AddScoped<ICreateMapper<AntibioticSpectrum, CreateAntibioticSpectrumCommand>,
-            CreateAntibioticSpectrumMapper>();
-        services.AddScoped<IUpdateMapper<AntibioticSpectrum, UpdateAntibioticSpectrumCommand>,
-            UpdateAntibioticSpectrumMapper>();
 
-        services.AddScoped<ICreateMapper<Antibiotic, CreateAntibioticCommand>, CreateAntibioticMapper>();
-        services.AddScoped<IUpdateMapper<Antibiotic, UpdateAntibioticCommand>, UpdateAntibioticMapper>();
+        services.AddScoped<
+            ICreateMapper<AntibioticSpectrum, CreateAntibioticSpectrumCommand>,
+            CreateAntibioticSpectrumMapper
+        >();
+        services.AddScoped<
+            IUpdateMapper<AntibioticSpectrum, UpdateAntibioticSpectrumCommand>,
+            UpdateAntibioticSpectrumMapper
+        >();
 
-        services.AddScoped<ICreateMapper<DiseasePathogen, CreateDiseasePathogenCommand>, CreateDiseasePathogenMapper>();
-        services.AddScoped<IUpdateMapper<DiseasePathogen, UpdateDiseasePathogenCommand>, UpdateDiseasePathogenMapper>();
+        services.AddScoped<
+            ICreateMapper<Antibiotic, CreateAntibioticCommand>,
+            CreateAntibioticMapper
+        >();
+        services.AddScoped<
+            IUpdateMapper<Antibiotic, UpdateAntibioticCommand>,
+            UpdateAntibioticMapper
+        >();
+
+        services.AddScoped<
+            ICreateMapper<DiseasePathogen, CreateDiseasePathogenCommand>,
+            CreateDiseasePathogenMapper
+        >();
+        services.AddScoped<
+            IUpdateMapper<DiseasePathogen, UpdateDiseasePathogenCommand>,
+            UpdateDiseasePathogenMapper
+        >();
 
         services.AddScoped<ICreateMapper<Disease, CreateDiseaseCommand>, CreateDiseaseMapper>();
         services.AddScoped<IUpdateMapper<Disease, UpdateDiseaseCommand>, UpdateDiseaseMapper>();
 
-        services.AddScoped<ICreateMapper<IcuHospitalizeCriterion, CreateIcuHospitalizeCriterionCommand>,
-            CreateIcuHospitalizeCriterionMapper>();
-        services.AddScoped<IUpdateMapper<IcuHospitalizeCriterion, UpdateIcuHospitalizeCriterionCommand>,
-            UpdateIcuHospitalizeCriterionMapper>();
+        services.AddScoped<
+            ICreateMapper<IcuHospitalizeCriterion, CreateIcuHospitalizeCriterionCommand>,
+            CreateIcuHospitalizeCriterionMapper
+        >();
+        services.AddScoped<
+            IUpdateMapper<IcuHospitalizeCriterion, UpdateIcuHospitalizeCriterionCommand>,
+            UpdateIcuHospitalizeCriterionMapper
+        >();
 
         services.AddScoped<ICreateMapper<Pathogen, CreatePathogenCommand>, CreatePathogenMapper>();
         services.AddScoped<IUpdateMapper<Pathogen, UpdatePathogenCommand>, UpdatePathogenMapper>();
 
-        services.AddScoped<ICreateMapper<ResistanceRiskFactor, CreateResistanceRiskFactorCommand>,
-            CreateResistanceRiskFactorMapper>();
-        services.AddScoped<IUpdateMapper<ResistanceRiskFactor, UpdateResistanceRiskFactorCommand>,
-            UpdateResistanceRiskFactorMapper>();
+        services.AddScoped<
+            ICreateMapper<ResistanceRiskFactor, CreateResistanceRiskFactorCommand>,
+            CreateResistanceRiskFactorMapper
+        >();
+        services.AddScoped<
+            IUpdateMapper<ResistanceRiskFactor, UpdateResistanceRiskFactorCommand>,
+            UpdateResistanceRiskFactorMapper
+        >();
 
-        services.AddScoped<ICreateMapper<TreatmentProtocol, CreateTreatmentProtocolCommand>,
-            CreateTreatmentProtocolMapper>();
-        services.AddScoped<IUpdateMapper<TreatmentProtocol, UpdateTreatmentProtocolCommand>,
-            UpdateTreatmentProtocolMapper>();
+        services.AddScoped<
+            ICreateMapper<TreatmentProtocol, CreateTreatmentProtocolCommand>,
+            CreateTreatmentProtocolMapper
+        >();
+        services.AddScoped<
+            IUpdateMapper<TreatmentProtocol, UpdateTreatmentProtocolCommand>,
+            UpdateTreatmentProtocolMapper
+        >();
     }
 
     public static void AddFluentValidators(this IServiceCollection services)
