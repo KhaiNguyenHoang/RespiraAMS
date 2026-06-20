@@ -16,7 +16,7 @@ public class UpdateTreatmentProtocolValidator : AbstractValidator<UpdateTreatmen
             .NotEmpty()
             .WithMessage("Treatment protocol issuer is required");
         RuleFor(x => x.IssueDate)
-            .Must(x => x.CompareTo(DateTime.Now) <= 0)
+            .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
             .WithMessage("Treatment protocol issue date must not be in future");
         RuleFor(x => x.Severity)
             .IsInEnum()
