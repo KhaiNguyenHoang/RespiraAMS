@@ -34,6 +34,10 @@
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Proxies" Version="$(EFCoreVersion)" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="$(EFCoreVersion)" />
   </ItemGroup>
+  <!-- Marten -->
+  <ItemGroup>
+    <PackageVersion Include="Marten" Version="9.9.1" />
+  </ItemGroup>
   <!-- Aspire packages -->
   <ItemGroup>
     <PackageVersion Include="Aspire.Hosting.RabbitMQ" Version="$(AspireVersion)" />

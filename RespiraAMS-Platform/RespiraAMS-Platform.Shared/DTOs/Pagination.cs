@@ -1,6 +1,4 @@
-﻿using X.PagedList;
-
-namespace RespiraAMS_Platform.Shared.DTOs;
+﻿namespace RespiraAMS_Platform.Shared.DTOs;
 
 public class PaginationParam
 {
@@ -29,7 +27,7 @@ public class Pagination<T>
         Items = items;
     }
 
-    public static Pagination<T> Create(IPagedList<T> pagedList)
+    public static Pagination<T> Create(X.PagedList.IPagedList<T> pagedList)
     {
         return new Pagination<T>(
             new PaginationMetadata
@@ -40,6 +38,22 @@ public class Pagination<T>
                 PageCount = pagedList.PageCount,
                 PageSize = pagedList.PageSize,
                 TotalItemCount = pagedList.TotalItemCount,
+            },
+            pagedList
+        );
+    }
+    
+    public static Pagination<T> Create(Marten.Pagination.IPagedList<T> pagedList)
+    {
+        return new Pagination<T>(
+            new PaginationMetadata
+            {
+                CurrentPage = (int)pagedList.PageNumber,
+                HasNextPage = pagedList.HasNextPage,
+                HasPreviousPage = pagedList.HasPreviousPage,
+                PageCount = (int)pagedList.PageCount,
+                PageSize = (int)pagedList.PageSize,
+                TotalItemCount = (int)pagedList.TotalItemCount,
             },
             pagedList
         );
