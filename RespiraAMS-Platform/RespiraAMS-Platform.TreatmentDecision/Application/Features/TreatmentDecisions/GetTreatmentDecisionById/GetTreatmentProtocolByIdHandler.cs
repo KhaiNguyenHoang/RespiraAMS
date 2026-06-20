@@ -12,40 +12,47 @@ public class GetTreatmentProtocolByIdHandler(IDbContext context)
     public async Task<TreatmentDecisionResult> HandleAsync(GetTreatmentDecisionByIdQuery query)
     {
         var decision = await context.AsQueryable<Snapshot>()
-            .Select(x => new TreatmentDecisionResult
-            {
-                DiseaseName = x.DiseaseName,
-                DoctorName = x.DoctorName,
-                Severity = x.Severity,
-                TreatmentSite = x.TreatmentSite,
-                InfectionProbabilities = x.InfectionProbabilitySnapshots.Select(p => new InfectionProbabilityItem()
-                {
-                    PathogenName = p.PathogenName,
-                    InfectionProbability = p.InfectionProbability,
-                }).ToList(),
-                CriterionItems = x.CriteriaSnapshots.Select(c => new CriterionItem()
-                {
-                    CriteriaName = c.CriteriaName,
-                    Value = c.Value,
-                }).ToList(),
-                Recommended = new TreatmentProtocolItem()
-                {
-                    TreatmentProtocolName = x.Recommended.TreatmentProtocolName,
-                    TreatmentProtocolIssuer = x.Recommended.TreatmentProtocolIssuer,
-                    TreatmentProtocolIssueDate = x.Recommended.TreatmentProtocolIssueDate,
-                    TreatmentProtocolVersion = x.Recommended.TreatmentProtocolVersion,
-                },
-                Chosen = new TreatmentProtocolItem()
-                {
-                    TreatmentProtocolName = x.Chosen.TreatmentProtocolName,
-                    TreatmentProtocolIssuer = x.Chosen.TreatmentProtocolIssuer,
-                    TreatmentProtocolIssueDate = x.Chosen.TreatmentProtocolIssueDate,
-                    TreatmentProtocolVersion = x.Chosen.TreatmentProtocolVersion,
-                },
-                Reason = x.Reason,
-            })
-            .FirstOrDefaultAsync(x => x.Id == query.Id);
+            .FirstOrDefaultAsync(decision => decision.Id == query.Id);
 
-        return decision ?? throw new NotFoundException(nameof(Snapshot), query.Id);
+        if (decision is null)
+        {
+            throw new NotFoundException(nameof(Snapshot), query.Id);
+        }
+
+        return new TreatmentDecisionResult
+        {
+            Id = decision.Id,
+            DiseaseName = decision.DiseaseName,
+            DoctorName = decision.DoctorName,
+            Severity = decision.Severity,
+            TreatmentSite = decision.TreatmentSite,
+            InfectionProbabilities = decision.InfectionProbabilitySnapshots.Select(p => new InfectionProbabilityItem()
+            {
+                PathogenName = p.PathogenName,
+                InfectionProbability = p.InfectionProbability,
+            }).ToList(),
+            CriterionItems = decision.CriteriaSnapshots.Select(c => new CriterionItem()
+            {
+                CriteriaName = c.CriteriaName,
+                Value = c.Value,
+            }).ToList(),
+            Recommended = new TreatmentProtocolItem()
+            {
+                TreatmentProtocolName = decision.Recommended.TreatmentProtocolName,
+                TreatmentProtocolIssuer = decision.Recommended.TreatmentProtocolIssuer,
+                TreatmentProtocolIssueDate = decision.Recommended.TreatmentProtocolIssueDate,
+                TreatmentProtocolVersion = decision.Recommended.TreatmentProtocolVersion,
+            },
+            Chosen = new TreatmentProtocolItem()
+            {
+                TreatmentProtocolName = decision.Chosen.TreatmentProtocolName,
+                TreatmentProtocolIssuer = decision.Chosen.TreatmentProtocolIssuer,
+                TreatmentProtocolIssueDate = decision.Chosen.TreatmentProtocolIssueDate,
+                TreatmentProtocolVersion = decision.Chosen.TreatmentProtocolVersion,
+            },
+            Reason = decision.Reason,
+        };
+
+        // return decision ?? throw new NotFoundException(nameof(Snapshot), query.Id);
     }
 }

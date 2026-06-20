@@ -57,6 +57,7 @@
     <PackageVersion Include="WolverineFx.EntityFrameworkCore" Version="$(WolverineVersion)" />
     <PackageVersion Include="WolverineFx.RuntimeCompilation" Version="$(WolverineVersion)" />
     <PackageVersion Include="WolverineFx.FluentValidation" Version="$(WolverineVersion)" />
+    <PackageVersion Include="WolverineFx.Marten" Version="$(WolverineVersion)" />
   </ItemGroup>
   <!-- Storage packages -->
   <ItemGroup>

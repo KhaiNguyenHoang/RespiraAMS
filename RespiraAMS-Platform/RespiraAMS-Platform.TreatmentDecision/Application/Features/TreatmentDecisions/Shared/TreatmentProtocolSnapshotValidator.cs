@@ -19,7 +19,7 @@ public class TreatmentProtocolSnapshotValidator : AbstractValidator<TreatmentPro
         RuleFor(x => x.TreatmentProtocolIssueDate)
             .NotEmpty()
             .WithMessage("Treatment protocol issue date is required")
-            .Must(x => x.CompareTo(DateTime.Now) <= 0)
+            .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
             .WithMessage("Treatment protocol issue date must not be in future");
         RuleFor(x => x.TreatmentProtocolVersion)
             .NotEmpty()
