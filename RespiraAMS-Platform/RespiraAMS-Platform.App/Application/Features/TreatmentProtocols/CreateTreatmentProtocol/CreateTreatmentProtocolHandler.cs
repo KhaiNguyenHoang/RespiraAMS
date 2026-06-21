@@ -17,14 +17,14 @@ public class CreateTreatmentProtocolHandler(
     public async Task<CreateTreatmentProtocolResult> HandleAsync(CreateTreatmentProtocolCommand command)
     {
         // Validate FKs
-        if (await context.Diseases.FindAsync(command.DiseaseId) is null)
+        if (await context.Diseases.FirstOrDefaultAsync(x => x.Id == command.DiseaseId) is null)
         {
             logger.LogWarning("Disease ID not found");
             throw new NotFoundException(nameof(Disease), command.DiseaseId);
         }
 
         if (command.SpecialInfectionId is not null &&
-            await context.Pathogens.FindAsync(command.SpecialInfectionId) is null)
+            await context.Pathogens.FirstOrDefaultAsync(x => x.Id == command.SpecialInfectionId) is null)
         {
             logger.LogWarning("Special Infection ID (Pathogen ID) not found");
             throw new NotFoundException(nameof(Pathogen), command.SpecialInfectionId.Value);

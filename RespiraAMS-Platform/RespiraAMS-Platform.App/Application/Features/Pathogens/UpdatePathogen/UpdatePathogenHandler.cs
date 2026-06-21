@@ -2,6 +2,7 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -16,7 +17,7 @@ public class UpdatePathogenHandler(
     public async Task HandleAsync(UpdatePathogenCommand command)
     {
         // Get pathogen by ID
-        var pathogen = await context.Pathogens.FindAsync(command.Id);
+        var pathogen = await context.Pathogens.FirstOrDefaultAsync(x => x.Id == command.Id);
         if (pathogen is null)
         {
             logger.LogWarning("Pathogen ID not found");

@@ -2,6 +2,7 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -16,7 +17,7 @@ public class UpdateDiseaseHandler(
     public async Task HandleAsync(UpdateDiseaseCommand command)
     {
         // Get disease by ID
-        var disease = await context.Diseases.FindAsync(command.Id);
+        var disease = await context.Diseases.FirstOrDefaultAsync(x => x.Id == command.Id);
         if (disease is null)
         {
             logger.LogWarning("Disease ID not found");

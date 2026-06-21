@@ -1,5 +1,7 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
+using Application.Abstracts.Mappers;
+using Application.Shared.Dtos;
 using Application.Shared.Mappers;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +12,7 @@ namespace Application.Features.TreatmentProtocols.AddNewCriteria;
 
 public class AddNewCriteriaHandler(
     IDbContext context,
-    CreateCriterionMapper mapper,
+    ICreateMapper<Criterion, CreateCriterionCommand> mapper,
     ILogger<AddNewCriteriaHandler> logger) 
     : ICommandHandler<AddNewCriteriaCommand>
 {

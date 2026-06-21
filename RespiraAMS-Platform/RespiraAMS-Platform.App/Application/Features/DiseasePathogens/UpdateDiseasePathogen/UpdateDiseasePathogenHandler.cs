@@ -2,6 +2,7 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -16,14 +17,14 @@ public class UpdateDiseasePathogenHandler(
     public async Task HandleAsync(UpdateDiseasePathogenCommand command)
     {
         // Validate FKs
-        if (await context.Pathogens.FindAsync(command.PathogenId) is null)
+        if (await context.Pathogens.FirstOrDefaultAsync(x => x.Id == command.PathogenId) is null)
         {
             logger.LogWarning("Pathogen ID not found");
             throw new NotFoundException(nameof(Pathogen), command.PathogenId);
         }
         
         // Get entity by ID
-        var diseasePathogen = await context.DiseasePathogens.FindAsync(command.Id);
+        var diseasePathogen = await context.DiseasePathogens.FirstOrDefaultAsync(x => x.Id == command.Id);
         if (diseasePathogen is null)
         {
             logger.LogWarning("Disease pathogen ID not found");

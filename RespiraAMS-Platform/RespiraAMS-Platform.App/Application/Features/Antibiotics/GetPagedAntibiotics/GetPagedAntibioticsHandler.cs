@@ -41,7 +41,7 @@ public class GetPagedAntibioticsHandler(IDbContext context)
         // Query antibiotics
         var antibiotics = await queryable
             .OrderByDescending(x => x.CreatedAt)
-            .Include(x => x.AntibioticSpectrum)
+            // .Include(x => x.AntibioticSpectrum)
             .Select(x => new AntibioticItem()
             {
                 Id = x.Id,

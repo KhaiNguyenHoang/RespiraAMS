@@ -17,7 +17,7 @@ public class UpdateResistanceRiskFactorHandler(
     public async Task HandleAsync(UpdateResistanceRiskFactorCommand command)
     {
         // Validate FKs
-        if (await context.Pathogens.FindAsync(command.PathogenId) is null)
+        if (await context.Pathogens.FirstOrDefaultAsync(x => x.Id == command.PathogenId) is null)
         {
             logger.LogWarning("Pathogen ID not found");
             throw new NotFoundException(nameof(Pathogen), command.PathogenId);

@@ -30,9 +30,9 @@ public class CriterionItem
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Max { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Unit { get; set; } = string.Empty;
+    public string? Unit { get; set; }
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public bool? IsExclusive { get; set; } = false;
+    public bool? IsExclusive { get; set; }
 }
 
 public class UpdateCriterionCommand

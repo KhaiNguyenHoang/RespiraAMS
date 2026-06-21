@@ -1,11 +1,13 @@
 ﻿using Application.Features.IcuHospitalizeCriteria.DeleteIcuHospitalizeCriterion;
 using Application.Features.IcuHospitalizeCriteria.UpdateIcuHospitalizeCriterion;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;
 
 namespace API.Controllers;
 
 [ApiController]
+[ApiVersion("1.0")]
 [Route("api/{version:apiVersion}/icu-hospitalize-criteria/{id:guid}")]
 public class IcuHospitalizeCriteriaController(IMessageBus bus) : ControllerBase
 {

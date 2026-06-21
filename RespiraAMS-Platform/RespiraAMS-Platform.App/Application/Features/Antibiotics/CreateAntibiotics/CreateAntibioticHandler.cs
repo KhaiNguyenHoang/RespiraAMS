@@ -2,6 +2,7 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Domain.Models;
+using Marten;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -16,7 +17,7 @@ public class CreateAntibioticHandler(
     public async Task<CreateAntibioticResult> HandleAsync(CreateAntibioticCommand command)
     {
         // Validation: check if antibiotic spectrum exists
-        if (await context.AntibioticSpectra.FindAsync(command.AntibioticSpectrumId) is null)
+        if (await context.AntibioticSpectra.FirstOrDefaultAsync(x => x.Id == command.AntibioticSpectrumId) is null)
         {
             logger.LogWarning("Antibiotic spectrum ID not found");
             throw new NotFoundException(nameof(AntibioticSpectrum), command.AntibioticSpectrumId);

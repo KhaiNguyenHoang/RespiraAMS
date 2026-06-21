@@ -46,7 +46,7 @@ public class AntibioticSpectraController(IMessageBus bus) : ControllerBase
     }
 
     [HttpPut]
-    [Route("/api/antibiotic-spectra/{id:guid}")]
+    [Route("{id:guid}")]
     public async Task<IActionResult> UpdateAntibioticSpectrum(
         Guid id, [FromBody] UpdateAntibioticSpectrumCommand request)
     {
@@ -57,7 +57,7 @@ public class AntibioticSpectraController(IMessageBus bus) : ControllerBase
     }
 
     [HttpDelete]
-    [Route("/api/antibiotic-spectra/{id:guid}")]
+    [Route("{id:guid}")]
     public async Task<IActionResult> DeleteAntibioticSpectrum(Guid id)
     {
         await bus.InvokeAsync(new DeleteAntibioticSpectrumCommand(id));

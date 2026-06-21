@@ -13,7 +13,7 @@ public class DeleteDiseaseHandler(IDbContext context, ILogger<DeleteDiseaseHandl
     public async Task HandleAsync(DeleteDiseaseCommand command)
     {
         // Get disease by ID
-        var disease = await context.Diseases.FindAsync(command.Id);
+        var disease = await context.Diseases.FirstOrDefaultAsync(x => x.Id == command.Id);
         if (disease is null)
         {
             logger.LogWarning("Disease ID not found");

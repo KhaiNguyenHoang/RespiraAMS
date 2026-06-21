@@ -1,6 +1,7 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -12,7 +13,7 @@ public class DeleteResistanceRiskFactorHandler(IDbContext context, ILogger<Delet
     public async Task HandleAsync(DeleteResistanceRiskFactorCommand command)
     {
         // Get entity by ID
-        var risk = await context.ResistanceRiskFactors.FindAsync(command.Id);
+        var risk = await context.ResistanceRiskFactors.FirstOrDefaultAsync(x => x.Id == command.Id);
         if (risk is null)
         {
             logger.LogWarning("Resistance risk factor not found");

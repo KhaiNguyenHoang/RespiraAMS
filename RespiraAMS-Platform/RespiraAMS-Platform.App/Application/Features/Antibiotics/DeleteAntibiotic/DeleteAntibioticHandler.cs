@@ -1,6 +1,7 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
 using Domain.Models;
+using Marten;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -11,7 +12,7 @@ public class DeleteAntibioticHandler(IDbContext context, ILogger<DeleteAntibioti
 {
     public async Task HandleAsync(DeleteAntibioticCommand command)
     {
-        var antibiotic = await context.Antibiotics.FindAsync(command.Id);
+        var antibiotic = await context.Antibiotics.FirstOrDefaultAsync(x => x.Id == command.Id);
         if (antibiotic is null)
         {
             logger.LogWarning("Antibiotic ID not found");

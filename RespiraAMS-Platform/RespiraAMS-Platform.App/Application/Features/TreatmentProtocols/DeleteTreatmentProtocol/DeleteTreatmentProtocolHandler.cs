@@ -1,6 +1,7 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -11,7 +12,7 @@ public class DeleteTreatmentProtocolHandler(IDbContext context, ILogger<DeleteTr
 {
     public async Task HandleAsync(DeleteTreatmentProtocolCommand command)
     {
-        var protocol = await context.TreatmentProtocols.FindAsync(command.Id);
+        var protocol = await context.TreatmentProtocols.FirstOrDefaultAsync(x => x.Id == command.Id);
         if (protocol is null)
         {
             logger.LogWarning("Treatment protocol ID not found");

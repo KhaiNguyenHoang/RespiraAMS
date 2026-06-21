@@ -18,7 +18,7 @@ public class UpdateTreatmentProtocolHandler(
     {
         // Validate FKs
         if (command.SpecialInfectionId is not null &&
-            await context.Pathogens.FindAsync(command.SpecialInfectionId) is null)
+            await context.Pathogens.FirstOrDefaultAsync(x => x.Id == command.SpecialInfectionId) is null)
         {
             logger.LogWarning("Special Infection ID (Pathogen ID) not found");
             throw new NotFoundException(nameof(Pathogen), command.SpecialInfectionId.Value);

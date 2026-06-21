@@ -1,6 +1,7 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
 using Domain.Models;
+using Marten;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -12,7 +13,7 @@ public class DeleteDiseasePathogenHandler(IDbContext context, ILogger<DeleteDise
     public async Task HandleAsync(DeleteDiseasePathogenCommand command)
     {
         // Get entity by ID
-        var diseasePathogen = await context.DiseasePathogens.FindAsync(command.Id);
+        var diseasePathogen = await context.DiseasePathogens.FirstOrDefaultAsync(x => x.Id == command.Id);
         if (diseasePathogen is null)
         {
             logger.LogWarning("Disease pathogen ID not found");

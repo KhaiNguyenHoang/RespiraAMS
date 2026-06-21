@@ -2,6 +2,7 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -16,7 +17,7 @@ public class CreateResistanceRiskFactorHandler(
     public async Task<CreateResistanceRiskFactorResult> HandleAsync(CreateResistanceRiskFactorCommand command)
     {
         // Validate FKs
-        if (await context.Diseases.FindAsync(command.DiseaseId) is null)
+        if (await context.Diseases.FirstOrDefaultAsync(x => x.Id == command.DiseaseId) is null)
         {
             logger.LogWarning("Disease ID not found");
             throw new NotFoundException(nameof(Disease), command.DiseaseId);
