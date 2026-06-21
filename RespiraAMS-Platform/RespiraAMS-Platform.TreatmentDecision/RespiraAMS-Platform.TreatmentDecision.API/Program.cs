@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Application;
 using Asp.Versioning;
+using Domain.Models;
 using Infrastructure;
 using Marten;
 using RespiraAMS_Platform.Shared.Extensions;
@@ -10,7 +11,6 @@ using Serilog;
 using Wolverine;
 using Wolverine.FluentValidation;
 using Wolverine.Marten;
-using Wolverine.Postgresql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +21,15 @@ if (conn is null)
     throw new InvalidOperationException("No connection string found");
 }
 builder.Services
-    .AddMarten(config => config.Connection(conn))
+    .AddMarten(config =>
+    {
+        // Db connection
+        config.Connection(conn);
+        
+        // Setup schemas
+        config.Schema.For<Analytic>();
+        config.Schema.For<Snapshot>();
+    })
     .UseLightweightSessions()
     .IntegrateWithWolverine();
 builder.AddCustomSerilog();
@@ -48,11 +56,7 @@ builder.Host.UseWolverine(opts =>
 {
     opts.RestoreV5Defaults();
     opts.Discovery.IncludeAssembly(typeof(ApplicationMarker).Assembly);
-
-    // opts.PersistMessagesWithPostgresql(conn, "decisiondb");
-
     opts.UseFluentValidation(RegistrationBehavior.ExplicitRegistration);
-
     opts.Durability.Mode = DurabilityMode.Solo;
 });
 builder.Services.AddOpenTelemetry().WithTracing(tracing => tracing.AddSource("Wolverine"));

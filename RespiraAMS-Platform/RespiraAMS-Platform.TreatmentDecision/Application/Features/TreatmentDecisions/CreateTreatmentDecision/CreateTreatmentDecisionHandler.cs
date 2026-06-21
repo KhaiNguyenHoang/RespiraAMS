@@ -9,7 +9,7 @@ public class CreateTreatmentDecisionHandler(IDbContext context)
 {
     public async Task<CreateTreatmentDecisionResult> HandleAsync(CreateTreatmentDecisionCommand command)
     {
-        // Map from command to model
+        // Create snapshot
         var snapshot = new Snapshot
         {
             DoctorId = command.DoctorId,
@@ -24,9 +24,27 @@ public class CreateTreatmentDecisionHandler(IDbContext context)
             Chosen = command.Chosen,
             Reason = command.Reason,
         };
-        
-        // Store to database
+
+        // Create analytic model
+        var analytic = new Analytic()
+        {
+            Id = snapshot.Id,
+            DoctorId = snapshot.DoctorId,
+            DoctorName = snapshot.DoctorName,
+            DiseaseId = snapshot.DiseaseId,
+            DiseaseName = snapshot.DiseaseName,
+            Severity = snapshot.Severity,
+            TreatmentSite = snapshot.TreatmentSite,
+            IsChosenMatchRecommendation = snapshot.Recommended.TreatmentProtocolId == snapshot.Chosen.TreatmentProtocolId,
+            MedicineCategories = snapshot.Chosen.Medicines.Select(x => x.Category).ToList(),
+            Month = snapshot.CreatedAt.Month,
+            Year = snapshot.CreatedAt.Year,
+        };
+
+        // Store to database. Because Marten is built around a postgres session (IDocumentSession),
+        // the session itself already represents a unit of work -> no need for transaction
         context.Add(snapshot);
+        context.Add(analytic);
         await context.SaveChangesAsync();
         return new CreateTreatmentDecisionResult(snapshot.Id);
     }

@@ -19,7 +19,7 @@ public class TreatmentDecisionsController(IMessageBus bus) : ControllerBase
     {
         var result = await bus.InvokeAsync<CreateTreatmentDecisionResult>(request);
         var resp = ApiResponse<CreateTreatmentDecisionResult>.Ok(result);
-        return CreatedAtAction(nameof(GetTreatmentDecisionById), resp);
+        return CreatedAtAction(nameof(GetTreatmentDecisionById), new { id = result.Id }, resp);
     }
 
     [HttpGet]
@@ -40,7 +40,7 @@ public class TreatmentDecisionsController(IMessageBus bus) : ControllerBase
             DoctorId = doctorId,
             Params = param
         };
-        
+
         var result = await bus.InvokeAsync<Pagination<TreatmentDecisionItem>>(query);
         var resp = ApiResponse<Pagination<TreatmentDecisionItem>>.Ok(result);
         return Ok(resp);
