@@ -23,6 +23,12 @@
 		<Project Path="RespiraAMS-Platform.Media/Infrastructure/Infrastructure.csproj" />
 		<Project Path="RespiraAMS-Platform.Media/API/RespiraAMS-Platform.Media.API.csproj" />
 	</Folder>
+	<Folder Name="/RespiraAMS-Platform.TreatmentDecision/">
+		<Project Path="RespiraAMS-Platform.TreatmentDecision/Application/Application.csproj" />
+		<Project Path="RespiraAMS-Platform.TreatmentDecision/Domain/Domain.csproj" />
+		<Project Path="RespiraAMS-Platform.TreatmentDecision/Infrastructure/Infrastructure.csproj" />
+		<Project Path="RespiraAMS-Platform.TreatmentDecision/RespiraAMS-Platform.TreatmentDecision.API/RespiraAMS-Platform.TreatmentDecision.API.csproj" />
+	</Folder>
 	<Project Path="RespiraAMS-Platform.AppHost/RespiraAMS-Platform.AppHost.csproj" />
 	<Project Path="RespiraAMS-Platform.ServiceDefaults/RespiraAMS-Platform.ServiceDefaults.csproj" />
 	<Project Path="RespiraAMS-Platform.Shared/RespiraAMS-Platform.Shared.csproj" />

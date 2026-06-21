@@ -8,6 +8,7 @@ var authDb = postgres.AddDatabase("authDb");
 var doctorDb = postgres.AddDatabase("doctorDb");
 var mediaDb = postgres.AddDatabase("mediaDb");
 var appDb = postgres.AddDatabase("appDb");
+var decisionDb = postgres.AddDatabase("decisionDb");
 var rabbitmq = builder.AddRabbitMQ("rabbitmq");
 
 var doctorApi = builder
@@ -43,6 +44,10 @@ var appApi = builder
     .AddProject<Projects.RespiraAMS_Platform_App_API>("app-api")
     .WithReference(appDb);
 
+var decisionApi = builder
+    .AddProject<Projects.RespiraAMS_Platform_TreatmentDecision_API>("decision-api")
+    .WithReference(decisionDb);
+
 var gateway = builder
     .AddProject<Projects.RespiraAMS_Platform_Gateway>("gateway")
     .WithReference(authenticationApi)
@@ -60,6 +65,7 @@ var frontend = builder
     .WithExternalHttpEndpoints();
 
 appApi.WithReference(gateway).WaitFor(gateway);
+decisionApi.WithReference(gateway).WaitFor(gateway);
 authenticationApi.WithReference(gateway).WaitFor(gateway);
 doctorApi.WithReference(gateway).WaitFor(gateway);
 mediaApi.WithReference(gateway).WaitFor(gateway);
