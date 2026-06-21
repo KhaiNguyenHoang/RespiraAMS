@@ -1,5 +1,5 @@
-﻿using Application.Shared.Validations;
-using FluentValidation;
+﻿using FluentValidation;
+using RespiraAMS_Platform.Shared.Extensions;
 
 namespace Application.Features.Diseases.GetPagedDiseases;
 
