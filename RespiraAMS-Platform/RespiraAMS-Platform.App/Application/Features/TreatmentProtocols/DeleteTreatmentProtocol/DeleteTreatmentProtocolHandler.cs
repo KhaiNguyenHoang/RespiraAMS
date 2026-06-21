@@ -10,9 +10,10 @@ namespace Application.Features.TreatmentProtocols.DeleteTreatmentProtocol;
 public class DeleteTreatmentProtocolHandler(IDbContext context, ILogger<DeleteTreatmentProtocolHandler> logger)
     : ICommandHandler<DeleteTreatmentProtocolCommand>
 {
-    public async Task HandleAsync(DeleteTreatmentProtocolCommand command)
+    public async Task HandleAsync(DeleteTreatmentProtocolCommand command, CancellationToken cancellationToken = default)
     {
-        var protocol = await context.TreatmentProtocols.FirstOrDefaultAsync(x => x.Id == command.Id);
+        var protocol = await context.TreatmentProtocols
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (protocol is null)
         {
             logger.LogWarning("Treatment protocol ID not found");
@@ -22,7 +23,7 @@ public class DeleteTreatmentProtocolHandler(IDbContext context, ILogger<DeleteTr
         protocol.IsDeleted = true;
         protocol.DeletedAt = DateTimeOffset.UtcNow;
 
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to delete treatment protocol");
             throw new InternalServerErrorException();

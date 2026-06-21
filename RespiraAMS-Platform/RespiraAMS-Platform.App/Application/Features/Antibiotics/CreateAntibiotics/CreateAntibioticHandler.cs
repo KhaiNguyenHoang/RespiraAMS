@@ -11,24 +11,27 @@ namespace Application.Features.Antibiotics.CreateAntibiotics;
 public class CreateAntibioticHandler(
     IDbContext context,
     ICreateMapper<Antibiotic, CreateAntibioticCommand> mapper,
-    ILogger<CreateAntibioticHandler> logger) 
+    ILogger<CreateAntibioticHandler> logger)
     : ICommandHandler<CreateAntibioticCommand, CreateAntibioticResult>
 {
-    public async Task<CreateAntibioticResult> HandleAsync(CreateAntibioticCommand command)
+    public async Task<CreateAntibioticResult> HandleAsync(CreateAntibioticCommand command,
+        CancellationToken cancellationToken = default)
     {
         // Validation: check if antibiotic spectrum exists
-        if (await context.AntibioticSpectra.FirstOrDefaultAsync(x => x.Id == command.AntibioticSpectrumId) is null)
+        var spectrum = await context.AntibioticSpectra
+            .FirstOrDefaultAsync(x => x.Id == command.AntibioticSpectrumId, cancellationToken);
+        if (spectrum is null)
         {
             logger.LogWarning("Antibiotic spectrum ID not found");
             throw new NotFoundException(nameof(AntibioticSpectrum), command.AntibioticSpectrumId);
         }
-        
+
         // Map from command to model
         var antibiotic = mapper.ToModel(command);
 
         // Save to database
-        await context.Antibiotics.AddAsync(antibiotic);
-        if (await context.SaveChangesAsync() <= 0)
+        await context.Antibiotics.AddAsync(antibiotic, cancellationToken);
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to create antibiotic");
             throw new InternalServerErrorException();

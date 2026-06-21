@@ -14,10 +14,11 @@ public class UpdateDiseaseHandler(
     ILogger<UpdateDiseaseHandler> logger)
     : ICommandHandler<UpdateDiseaseCommand>
 {
-    public async Task HandleAsync(UpdateDiseaseCommand command)
+    public async Task HandleAsync(UpdateDiseaseCommand command, CancellationToken cancellationToken = default)
     {
         // Get disease by ID
-        var disease = await context.Diseases.FirstOrDefaultAsync(x => x.Id == command.Id);
+        var disease = await context.Diseases
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (disease is null)
         {
             logger.LogWarning("Disease ID not found");
@@ -28,7 +29,7 @@ public class UpdateDiseaseHandler(
         mapper.MapModel(disease, command);
         
         // Save changes to database
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to update disease information");
             throw new InternalServerErrorException();

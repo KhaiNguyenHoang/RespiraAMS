@@ -10,7 +10,7 @@ namespace Application.Features.Diseases.GetDiseaseById;
 
 public class GetDiseaseByIdHandler(IDbContext context, IResultMapper<Criterion, CriterionItem> mapper) : IQueryHandler<GetDiseaseByIdQuery, DiseaseResult>
 {
-    public async Task<DiseaseResult> HandleAsync(GetDiseaseByIdQuery query)
+    public async Task<DiseaseResult> HandleAsync(GetDiseaseByIdQuery query, CancellationToken cancellationToken = default)
     {
         var disease = await context.Diseases
             .AsSplitQuery()
@@ -52,7 +52,7 @@ public class GetDiseaseByIdHandler(IDbContext context, IResultMapper<Criterion, 
                     UpdatedAt = y.UpdatedAt,
                 }).ToList(),
             })
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
 
         return disease ?? throw new NotFoundException(nameof(Disease), query.Id);
     }

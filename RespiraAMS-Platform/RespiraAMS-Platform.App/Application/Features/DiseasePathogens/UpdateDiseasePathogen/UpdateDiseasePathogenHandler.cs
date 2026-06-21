@@ -14,17 +14,20 @@ public class UpdateDiseasePathogenHandler(
     ILogger<UpdateDiseasePathogenHandler> logger)
     : ICommandHandler<UpdateDiseasePathogenCommand>
 {
-    public async Task HandleAsync(UpdateDiseasePathogenCommand command)
+    public async Task HandleAsync(UpdateDiseasePathogenCommand command, CancellationToken cancellationToken = default)
     {
         // Validate FKs
-        if (await context.Pathogens.FirstOrDefaultAsync(x => x.Id == command.PathogenId) is null)
+        var pathogen = await context.Pathogens
+            .FirstOrDefaultAsync(x => x.Id == command.PathogenId, cancellationToken);
+        if (pathogen is null)
         {
             logger.LogWarning("Pathogen ID not found");
             throw new NotFoundException(nameof(Pathogen), command.PathogenId);
         }
         
         // Get entity by ID
-        var diseasePathogen = await context.DiseasePathogens.FirstOrDefaultAsync(x => x.Id == command.Id);
+        var diseasePathogen = await context.DiseasePathogens
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (diseasePathogen is null)
         {
             logger.LogWarning("Disease pathogen ID not found");
@@ -35,7 +38,7 @@ public class UpdateDiseasePathogenHandler(
         mapper.MapModel(diseasePathogen, command);
 
         // Save changes to database
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to update disease pathogen");
             throw new InternalServerErrorException();

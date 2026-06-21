@@ -16,12 +16,12 @@ public class AddNewCriteriaHandler(
     ILogger<AddNewCriteriaHandler> logger) 
     : ICommandHandler<AddNewCriteriaCommand>
 {
-    public async Task HandleAsync(AddNewCriteriaCommand command)
+    public async Task HandleAsync(AddNewCriteriaCommand command, CancellationToken cancellationToken = default)
     {
         // Get treatment protocol by ID
         var protocol = await context.TreatmentProtocols
             .Include(x => x.OtherCriteria)
-            .FirstOrDefaultAsync(x => x.Id == command.Id);
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (protocol is null)
         {
             logger.LogWarning("Treatment protocol ID not found");
@@ -35,11 +35,11 @@ public class AddNewCriteriaHandler(
         await context.ExecuteInTransactionAsync(async () =>
         {
             // Add batch
-            await context.Criteria.AddRangeAsync(criteria);
+            await context.Criteria.AddRangeAsync(criteria, cancellationToken);
 
             // Add the created list of criteria into the treatment protocol list
             // Since criteria list is already tracked by EF Core, we don't need to use stub
             protocol.OtherCriteria.AddRange(criteria);
-        });
+        }, cancellationToken);
     }
 }

@@ -32,7 +32,7 @@ public class DiagnoseHandler(IDbContext context, IDiagnoseService service, ILogg
      * 4.4. Sort by version and issue date
      */
 
-    public async Task<DiagnoseResult> HandleAsync(DiagnoseQuery query)
+    public async Task<DiagnoseResult> HandleAsync(DiagnoseQuery query, CancellationToken cancellationToken = default)
     {
         // Get disease by ID
         var disease = await context.Diseases
@@ -50,7 +50,7 @@ public class DiagnoseHandler(IDbContext context, IDiagnoseService service, ILogg
             .Include(x => x.TreatmentProtocols)
             .ThenInclude(x => x.Medicines)
             .ThenInclude(x => x.AntibioticSpectrum)
-            .FirstOrDefaultAsync(x => x.Id == query.DiseaseId);
+            .FirstOrDefaultAsync(x => x.Id == query.DiseaseId, cancellationToken);
 
         if (disease is null)
         {
@@ -73,8 +73,7 @@ public class DiagnoseHandler(IDbContext context, IDiagnoseService service, ILogg
             throw new BadRequestException("Not all resistance risk factors ID exist");
         }
 
-        if (await context.Criteria.CountAsync(x => query.OtherCriteria.Contains(x.Id)) !=
-            query.OtherCriteria.Count)
+        if (await context.Criteria.CountAsync(x => query.OtherCriteria.Contains(x.Id), cancellationToken: cancellationToken) != query.OtherCriteria.Count)
         {
             logger.LogWarning("Not all other criteria IDs exists");
             throw new BadRequestException("Not all other criteria IDs exists");
@@ -102,12 +101,12 @@ public class DiagnoseHandler(IDbContext context, IDiagnoseService service, ILogg
             .ToList();
 
         // Sort protocols
-        var probs = probabilities
+        var flattenProbabilities = probabilities
             .ToDictionary(x => x.Key.Id, x => x.Value);
         var sorted = protocols
             .OrderByDescending(p => p.Severity == severity && p.TreatmentSite == treatmentSite ? 1 : 0)
             .ThenByDescending(p =>
-                p.SpecialInfectionId is not null ? probs.GetValueOrDefault(p.SpecialInfectionId.Value, 0d) : 0d)
+                p.SpecialInfectionId is not null ? flattenProbabilities.GetValueOrDefault(p.SpecialInfectionId.Value, 0d) : 0d)
             .ThenByDescending(p => p.OtherCriteria.Count(c => query.OtherCriteria.Contains(c.Id)))
             .ThenByDescending(p => p.Version)
             .ThenByDescending(p => p.IssueDate);

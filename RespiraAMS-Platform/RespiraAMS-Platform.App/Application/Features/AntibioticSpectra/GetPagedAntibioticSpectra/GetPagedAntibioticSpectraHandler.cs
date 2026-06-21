@@ -8,9 +8,7 @@ namespace Application.Features.AntibioticSpectra.GetPagedAntibioticSpectra;
 public class GetPagedAntibioticSpectraHandler(IDbContext context)
     : IQueryHandler<GetPagedAntibioticSpectraQuery, Pagination<AntibioticSpectrumItem>>
 {
-    public async Task<Pagination<AntibioticSpectrumItem>> HandleAsync(
-        GetPagedAntibioticSpectraQuery query
-    )
+    public async Task<Pagination<AntibioticSpectrumItem>> HandleAsync(GetPagedAntibioticSpectraQuery query, CancellationToken cancellationToken = default)
     {
         // Get paged list of spectra
         var spectra = await context

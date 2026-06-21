@@ -6,17 +6,17 @@ namespace Application.Abstracts.Data;
 
 public interface IDbContext
 {
-    DbSet<Pathogen> Pathogens { get; set; }
-    DbSet<AntibioticSpectrum> AntibioticSpectra { get; set; }
-    DbSet<Antibiotic> Antibiotics { get; set; }
-    DbSet<Criterion> Criteria { get; set; }
-    DbSet<IcuHospitalizeCriterion> IcuHospitalizeCriteria { get; set; }
-    DbSet<ResistanceRiskFactor> ResistanceRiskFactors { get; set; }
-    DbSet<Disease> Diseases { get; set; }
-    DbSet<DiseasePathogen> DiseasePathogens { get; set; }
-    DbSet<TreatmentProtocol> TreatmentProtocols { get; set; }
+    DbSet<Pathogen> Pathogens { get; }
+    DbSet<AntibioticSpectrum> AntibioticSpectra { get; }
+    DbSet<Antibiotic> Antibiotics { get; }
+    DbSet<Criterion> Criteria { get; }
+    DbSet<IcuHospitalizeCriterion> IcuHospitalizeCriteria { get; }
+    DbSet<ResistanceRiskFactor> ResistanceRiskFactors { get; }
+    DbSet<Disease> Diseases { get; }
+    DbSet<DiseasePathogen> DiseasePathogens { get; }
+    DbSet<TreatmentProtocol> TreatmentProtocols { get; }
 
-    Task<int> SaveChangesAsync();
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task ExecuteInTransactionAsync(Func<Task> action, CancellationToken cancellationToken = default);
     Task ExecuteInTransactionAsync(Action action, CancellationToken cancellationToken = default);
     T AttachStub<T>(Guid id) where T : BaseEntity;

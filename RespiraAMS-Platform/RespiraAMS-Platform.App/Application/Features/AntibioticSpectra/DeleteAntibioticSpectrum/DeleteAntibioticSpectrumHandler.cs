@@ -10,10 +10,11 @@ namespace Application.Features.AntibioticSpectra.DeleteAntibioticSpectrum;
 public class DeleteAntibioticSpectrumHandler(IDbContext context, ILogger<DeleteAntibioticSpectrumHandler> logger)
     : ICommandHandler<DeleteAntibioticSpectrumCommand>
 {
-    public async Task HandleAsync(DeleteAntibioticSpectrumCommand command)
+    public async Task HandleAsync(DeleteAntibioticSpectrumCommand command, CancellationToken cancellationToken = default)
     {
         // Get entity from database
-        var spectrum = await context.AntibioticSpectra.FirstOrDefaultAsync(x => x.Id == command.Id);
+        var spectrum = await context.AntibioticSpectra
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken: cancellationToken);
         if (spectrum is null)
         {
             logger.LogWarning("Antibiotic spectrum ID not found");
@@ -32,8 +33,8 @@ public class DeleteAntibioticSpectrumHandler(IDbContext context, ILogger<DeleteA
                 .Where(x => x.AntibioticSpectrumId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(a => a.IsDeleted, true)
-                    .SetProperty(a => a.DeletedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(a => a.DeletedAt, DateTimeOffset.UtcNow), cancellationToken: cancellationToken);
             logger.LogInformation("Cascade delete antibiotic spectrum: deleted {count} antibiotic", count);
-        });
+        }, cancellationToken);
     }
 }

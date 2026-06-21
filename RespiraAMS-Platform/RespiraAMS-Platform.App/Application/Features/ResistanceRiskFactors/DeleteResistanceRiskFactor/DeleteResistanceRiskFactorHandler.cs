@@ -10,10 +10,11 @@ namespace Application.Features.ResistanceRiskFactors.DeleteResistanceRiskFactor;
 public class DeleteResistanceRiskFactorHandler(IDbContext context, ILogger<DeleteResistanceRiskFactorHandler> logger)
     : ICommandHandler<DeleteResistanceRiskFactorCommand>
 {
-    public async Task HandleAsync(DeleteResistanceRiskFactorCommand command)
+    public async Task HandleAsync(DeleteResistanceRiskFactorCommand command, CancellationToken cancellationToken = default)
     {
         // Get entity by ID
-        var risk = await context.ResistanceRiskFactors.FirstOrDefaultAsync(x => x.Id == command.Id);
+        var risk = await context.ResistanceRiskFactors
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (risk is null)
         {
             logger.LogWarning("Resistance risk factor not found");
@@ -23,7 +24,7 @@ public class DeleteResistanceRiskFactorHandler(IDbContext context, ILogger<Delet
         // Delete entity
         risk.IsDeleted = true;
         risk.DeletedAt = DateTimeOffset.UtcNow;
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to delete resistance risk factor");
             throw new InternalServerErrorException();

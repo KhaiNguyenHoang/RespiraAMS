@@ -13,14 +13,14 @@ public class CreateDiseaseHandler(
     ILogger<CreateDiseaseHandler> logger)
     : ICommandHandler<CreateDiseaseCommand, CreateDiseaseResult>
 {
-    public async Task<CreateDiseaseResult> HandleAsync(CreateDiseaseCommand command)
+    public async Task<CreateDiseaseResult> HandleAsync(CreateDiseaseCommand command, CancellationToken cancellationToken = default)
     {
         // Map from command to model
         var disease = mapper.ToModel(command);
         
         // Save changes to database
-        await context.Diseases.AddAsync(disease);
-        if (await context.SaveChangesAsync() <= 0)
+        await context.Diseases.AddAsync(disease, cancellationToken);
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to create disease");
             throw new InternalServerErrorException();

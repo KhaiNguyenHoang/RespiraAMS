@@ -8,7 +8,7 @@ namespace Application.Features.Diseases.GetPagedDiseases;
 public class GetPagedDiseasesHandler(IDbContext context)
     : IQueryHandler<GetPagedDiseasesQuery, Pagination<DiseaseItem>>
 {
-    public async Task<Pagination<DiseaseItem>> HandleAsync(GetPagedDiseasesQuery query)
+    public async Task<Pagination<DiseaseItem>> HandleAsync(GetPagedDiseasesQuery query, CancellationToken cancellationToken = default)
     {
         var diseases = await context
             .Diseases.OrderByDescending(x => x.CreatedAt)

@@ -6,7 +6,7 @@ namespace Application.Features.Diseases.GetDiseases;
 
 public class GetDiseasesHandler(IDbContext context) : IQueryHandler<GetDiseasesQuery, IEnumerable<DiseaseItem>>
 {
-    public async Task<IEnumerable<DiseaseItem>> HandleAsync(GetDiseasesQuery query)
+    public async Task<IEnumerable<DiseaseItem>> HandleAsync(GetDiseasesQuery query, CancellationToken cancellationToken = default)
     {
         var diseases = await context.Diseases
             .OrderByDescending(x => x.CreatedAt)
@@ -15,7 +15,7 @@ public class GetDiseasesHandler(IDbContext context) : IQueryHandler<GetDiseasesQ
                 Id = x.Id,
                 Name = x.Name,
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         return diseases;
     }
 }
