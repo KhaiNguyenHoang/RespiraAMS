@@ -1,4 +1,5 @@
-﻿using Application.Abstracts.CQRS;
+﻿using System.ComponentModel;
+using Application.Abstracts.CQRS;
 
 namespace Application.Features.Statistics;
 
@@ -6,8 +7,8 @@ namespace Application.Features.Statistics;
 public class GetStatisticsQuery : IQuery
 {
     public Guid? DoctorId { get; set; }
-    public int Month { get; set; } = DateTime.Now.Month;
-    public int Year { get; set; } = DateTime.Now.Year;
+    public int Month { get; set; } = DateTimeOffset.UtcNow.Month;
+    public int Year { get; set; } = DateTimeOffset.UtcNow.Year;
 }
 
 /*=== Result DTOs ===*/
@@ -21,6 +22,7 @@ public class ClinicalDecision
 public class RecommendationAccuracy
 {
     public int Month { get; set; }
+    [Description("Recommendation accuracy. Its value is in range [0, 1], or -1 if there is no recommendation made in this month")]
     public double Accuracy { get; set; }
 }
 

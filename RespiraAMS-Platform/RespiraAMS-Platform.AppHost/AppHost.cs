@@ -42,10 +42,12 @@ var authenticationApi = builder
 
 var appApi = builder
     .AddProject<Projects.RespiraAMS_Platform_App_API>("app-api")
+    .WaitFor(appDb)
     .WithReference(appDb);
 
 var decisionApi = builder
     .AddProject<Projects.RespiraAMS_Platform_TreatmentDecision_API>("decision-api")
+    .WaitFor(decisionDb)
     .WithReference(decisionDb);
 
 var gateway = builder

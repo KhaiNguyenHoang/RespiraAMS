@@ -19,7 +19,14 @@ public class TreatmentDecisionsController(IMessageBus bus) : ControllerBase
     {
         var result = await bus.InvokeAsync<CreateTreatmentDecisionResult>(request);
         var resp = ApiResponse<CreateTreatmentDecisionResult>.Ok(result);
-        return CreatedAtAction(nameof(GetTreatmentDecisionById), new { id = result.Id }, resp);
+        return CreatedAtAction(
+            nameof(GetTreatmentDecisionById), 
+            new
+            {
+                id = result.Id,
+                apiVersion = "1.0",
+            }, 
+            resp);
     }
 
     [HttpGet]

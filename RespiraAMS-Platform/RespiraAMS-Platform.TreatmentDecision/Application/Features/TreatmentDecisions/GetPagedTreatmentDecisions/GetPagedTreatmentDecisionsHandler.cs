@@ -9,7 +9,7 @@ namespace Application.Features.TreatmentDecisions.GetPagedTreatmentDecisions;
 public class GetPagedTreatmentDecisionsHandler(IDbContext context)
     : IQueryHandler<GetPagedTreatmentDecisionsQuery, Pagination<TreatmentDecisionItem>>
 {
-    public async Task<Pagination<TreatmentDecisionItem>> HandleAsync(GetPagedTreatmentDecisionsQuery query)
+    public async Task<Pagination<TreatmentDecisionItem>> HandleAsync(GetPagedTreatmentDecisionsQuery query, CancellationToken cancellationToken = default)
     {
         var decisions = await context.AsQueryable<Snapshot>()
             .Where(x => x.DoctorId == query.DoctorId)
@@ -19,7 +19,7 @@ public class GetPagedTreatmentDecisionsHandler(IDbContext context)
                 CreatedAt = x.CreatedAt,
                 DiseaseName = x.DiseaseName
             })
-            .ToPagedListAsync(query.Params.Page, query.Params.Size);
+            .ToPagedListAsync(query.Params.Page, query.Params.Size, cancellationToken);
         return Pagination<TreatmentDecisionItem>.Create(decisions);
     }
 }

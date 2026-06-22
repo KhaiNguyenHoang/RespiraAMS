@@ -6,13 +6,13 @@ using RespiraAMS_Platform.Shared.Exceptions;
 
 namespace Application.Features.TreatmentDecisions.GetTreatmentDecisionById;
 
-public class GetTreatmentProtocolByIdHandler(IDbContext context)
+public class GetTreatmentDecisionByIdHandler(IDbContext context)
     : IQueryHandler<GetTreatmentDecisionByIdQuery, TreatmentDecisionResult>
 {
-    public async Task<TreatmentDecisionResult> HandleAsync(GetTreatmentDecisionByIdQuery query)
+    public async Task<TreatmentDecisionResult> HandleAsync(GetTreatmentDecisionByIdQuery query, CancellationToken cancellationToken = default)
     {
         var decision = await context.AsQueryable<Snapshot>()
-            .FirstOrDefaultAsync(decision => decision.Id == query.Id);
+            .FirstOrDefaultAsync(decision => decision.Id == query.Id, cancellationToken);
 
         if (decision is null)
         {

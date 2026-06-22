@@ -7,11 +7,12 @@ namespace Application.Features.TreatmentDecisions.CreateTreatmentDecision;
 public class CreateTreatmentDecisionHandler(IDbContext context)
     : ICommandHandler<CreateTreatmentDecisionCommand, CreateTreatmentDecisionResult>
 {
-    public async Task<CreateTreatmentDecisionResult> HandleAsync(CreateTreatmentDecisionCommand command)
+    public async Task<CreateTreatmentDecisionResult> HandleAsync(CreateTreatmentDecisionCommand command, CancellationToken cancellationToken = default)
     {
         // Create snapshot
         var snapshot = new Snapshot
         {
+            Id = Guid.CreateVersion7(),
             DoctorId = command.DoctorId,
             DoctorName = command.DoctorName,
             DiseaseId = command.DiseaseId,
@@ -45,7 +46,7 @@ public class CreateTreatmentDecisionHandler(IDbContext context)
         // the session itself already represents a unit of work -> no need for transaction
         context.Add(snapshot);
         context.Add(analytic);
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync(cancellationToken);
         return new CreateTreatmentDecisionResult(snapshot.Id);
     }
 }
