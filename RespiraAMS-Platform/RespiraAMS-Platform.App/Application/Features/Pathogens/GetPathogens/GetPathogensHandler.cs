@@ -6,7 +6,7 @@ namespace Application.Features.Pathogens.GetPathogens;
 
 public class GetPathogensHandler(IDbContext context) : IQueryHandler<GetPathogensQuery, IEnumerable<PathogenItem>>
 {
-    public async Task<IEnumerable<PathogenItem>> HandleAsync(GetPathogensQuery query)
+    public async Task<IEnumerable<PathogenItem>> HandleAsync(GetPathogensQuery query, CancellationToken cancellationToken = default)
     {
         var pathogens = await context.Pathogens
             .OrderByDescending(x => x.CreatedAt)
@@ -15,7 +15,7 @@ public class GetPathogensHandler(IDbContext context) : IQueryHandler<GetPathogen
                 Id = x.Id,
                 Name = x.Name,
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         return pathogens;
     }
 }

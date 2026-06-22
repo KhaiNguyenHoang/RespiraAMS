@@ -7,7 +7,7 @@ namespace Application.Features.AntibioticSpectra.GetAntibioticSpectra;
 public class GetAntibioticSpectraHandler(IDbContext context)
     : IQueryHandler<GetAntibioticSpectraQuery, IEnumerable<AntibioticSpectrumItem>>
 {
-    public async Task<IEnumerable<AntibioticSpectrumItem>> HandleAsync(GetAntibioticSpectraQuery query)
+    public async Task<IEnumerable<AntibioticSpectrumItem>> HandleAsync(GetAntibioticSpectraQuery query, CancellationToken cancellationToken = default)
     {
         // Get full, minimized list of antibiotic spectra
         var spectra = await context.AntibioticSpectra
@@ -17,7 +17,7 @@ public class GetAntibioticSpectraHandler(IDbContext context)
                 Id = x.Id,
                 Name = x.Name,
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         return spectra;
     }
 }

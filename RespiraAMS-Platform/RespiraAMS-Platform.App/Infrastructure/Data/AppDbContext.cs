@@ -21,9 +21,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<DiseasePathogen> DiseasePathogens { get; set; }
     public DbSet<TreatmentProtocol> TreatmentProtocols { get; set; }
 
-    public async Task<int> SaveChangesAsync()
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await base.SaveChangesAsync();
+        return await base.SaveChangesAsync(cancellationToken);
     }
 
     public async Task ExecuteInTransactionAsync(Func<Task> action, CancellationToken cancellationToken = default)
@@ -96,19 +96,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         {
             return tracked;
         }
-        
+
         // Create a stub object (fake object that just has the ID) -> save memory
         if (typeof(T) == typeof(Criterion))
         {
             // Criterion is abstract, so we instantiate a concrete subclass (e.g., NumericCriterion)
             var criterionStub = new NumericCriterion { Id = id };
-        
+
             // Attach to database set as Unchanged
             Set<Criterion>().Attach(criterionStub);
-        
+
             return (T)(object)criterionStub;
         }
-        
+
         var stub = Activator.CreateInstance<T>();
         stub.Id = id;
         Set<T>().Attach(stub);
@@ -222,6 +222,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasOne(x => x.Disease)
             .WithMany(x => x.DiseasePathogens)
             .HasForeignKey(x => x.DiseaseId);
+        modelBuilder.Entity<DiseasePathogen>()
+            .HasIndex(x => new { x.DiseaseId, x.PathogenId })
+            .IsUnique();
 
         modelBuilder.Entity<Disease>()
             .ToTable("diseases");

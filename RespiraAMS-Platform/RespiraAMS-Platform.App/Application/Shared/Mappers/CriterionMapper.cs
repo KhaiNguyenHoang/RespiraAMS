@@ -64,10 +64,10 @@ public class UpdateCriterionMapper : IUpdateMapper<Criterion, UpdateCriterionCom
             case CriterionType.Boolean:
                 break;
             case CriterionType.Numeric:
-                ((NumericCriterion)model).Max = command.Max ?? 0;
-                ((NumericCriterion)model).Min = command.Min ?? 0;
-                ((NumericCriterion)model).Unit = command.Unit ?? "";
-                ((NumericCriterion)model).IsExclusive = command.IsExclusive ?? false;
+                if (command.Max is not null) ((NumericCriterion)model).Max = command.Max.Value;
+                if (command.Min is not null) ((NumericCriterion)model).Min = command.Min.Value;
+                if (command.Unit is not null) ((NumericCriterion)model).Unit = command.Unit;
+                if (command.IsExclusive is not null) ((NumericCriterion)model).IsExclusive = command.IsExclusive.Value;
                 break;
             default:
                 throw new UnexpectedException("Unexpected type for criterion");

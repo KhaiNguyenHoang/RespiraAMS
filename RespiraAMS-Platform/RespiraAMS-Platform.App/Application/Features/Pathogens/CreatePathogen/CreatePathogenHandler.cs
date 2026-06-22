@@ -13,14 +13,14 @@ public class CreatePathogenHandler(
     ILogger<CreatePathogenHandler> logger)
     : ICommandHandler<CreatePathogenCommand, CreatePathogenResult>
 {
-    public async Task<CreatePathogenResult> HandleAsync(CreatePathogenCommand command)
+    public async Task<CreatePathogenResult> HandleAsync(CreatePathogenCommand command, CancellationToken cancellationToken = default)
     {
         // Map command to model
         var pathogen = mapper.ToModel(command);
 
         // Save changes to database
-        await context.Pathogens.AddAsync(pathogen);
-        if (await context.SaveChangesAsync() <= 0)
+        await context.Pathogens.AddAsync(pathogen, cancellationToken);
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to create pathogen");
             throw new InternalServerErrorException();

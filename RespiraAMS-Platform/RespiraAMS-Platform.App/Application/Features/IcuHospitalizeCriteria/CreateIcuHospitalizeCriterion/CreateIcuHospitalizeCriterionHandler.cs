@@ -2,6 +2,7 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -13,10 +14,12 @@ public class CreateIcuHospitalizeCriterionHandler(
     ILogger<CreateIcuHospitalizeCriterionHandler> logger)
     : ICommandHandler<CreateIcuHospitalizeCriterionCommand, CreateIcuHospitalizeCriterionResult>
 {
-    public async Task<CreateIcuHospitalizeCriterionResult> HandleAsync(CreateIcuHospitalizeCriterionCommand command)
+    public async Task<CreateIcuHospitalizeCriterionResult> HandleAsync(CreateIcuHospitalizeCriterionCommand command, CancellationToken cancellationToken = default)
     {
         // Validate FK
-        if (await context.Diseases.FindAsync(command.DiseaseId) is null)
+        var disease = await context.Diseases
+            .FirstOrDefaultAsync(x => x.Id == command.DiseaseId, cancellationToken);
+        if (disease is null)
         {
             logger.LogWarning("Disease ID not found");
             throw new NotFoundException(nameof(Disease), command.DiseaseId);
@@ -26,8 +29,8 @@ public class CreateIcuHospitalizeCriterionHandler(
         var icu = mapper.ToModel(command);
         
         // Save changes to database
-        await context.IcuHospitalizeCriteria.AddAsync(icu);
-        if (await context.SaveChangesAsync() <= 0)
+        await context.IcuHospitalizeCriteria.AddAsync(icu, cancellationToken);
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to create ICU hospitalize criterion");
             throw new InternalServerErrorException();

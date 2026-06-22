@@ -16,7 +16,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IDbContext, AppDbContext>();
     }
 
-    public static void ApplyMigrations(this IHost host)
+    public static void ApplyMigrations(this IHost host, bool isDevEnv)
     {
         using var scope = host.Services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -26,7 +26,10 @@ public static class DependencyInjection
         }
         catch (Exception)
         {
-            context.Database.EnsureDeleted();
+            if (isDevEnv)
+            {
+                context.Database.EnsureDeleted();
+            }
             context.Database.Migrate();
         }
     }

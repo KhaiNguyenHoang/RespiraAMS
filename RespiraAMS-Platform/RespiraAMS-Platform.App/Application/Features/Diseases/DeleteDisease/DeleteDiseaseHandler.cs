@@ -10,10 +10,11 @@ namespace Application.Features.Diseases.DeleteDisease;
 public class DeleteDiseaseHandler(IDbContext context, ILogger<DeleteDiseaseHandler> logger)
     : ICommandHandler<DeleteDiseaseCommand>
 {
-    public async Task HandleAsync(DeleteDiseaseCommand command)
+    public async Task HandleAsync(DeleteDiseaseCommand command, CancellationToken cancellationToken = default)
     {
         // Get disease by ID
-        var disease = await context.Diseases.FindAsync(command.Id);
+        var disease = await context.Diseases
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (disease is null)
         {
             logger.LogWarning("Disease ID not found");
@@ -32,22 +33,22 @@ public class DeleteDiseaseHandler(IDbContext context, ILogger<DeleteDiseaseHandl
                 .Where(x => x.DiseaseId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(r => r.IsDeleted, true)
-                    .SetProperty(r => r.DeletedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(r => r.DeletedAt, DateTimeOffset.UtcNow), cancellationToken);
             var diseasePathogenCount = await context.DiseasePathogens
                 .Where(x => x.DiseaseId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(dp => dp.IsDeleted, true)
-                    .SetProperty(dp => dp.DeletedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(dp => dp.DeletedAt, DateTimeOffset.UtcNow), cancellationToken);
             var icuCount = await context.IcuHospitalizeCriteria
                 .Where(x => x.DiseaseId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(icu => icu.IsDeleted, true)
-                    .SetProperty(icu => icu.DeletedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(icu => icu.DeletedAt, DateTimeOffset.UtcNow), cancellationToken);
             var protocolCount = await context.TreatmentProtocols
                 .Where(x => x.DiseaseId == command.Id)
                 .ExecuteUpdateAsync(x => x
                     .SetProperty(p => p.IsDeleted, true)
-                    .SetProperty(p => p.DeletedAt, DateTimeOffset.UtcNow));
+                    .SetProperty(p => p.DeletedAt, DateTimeOffset.UtcNow), cancellationToken);
             
             // Log result
             logger.LogInformation("Cascade delete disease: deleted {result}", new
@@ -57,6 +58,6 @@ public class DeleteDiseaseHandler(IDbContext context, ILogger<DeleteDiseaseHandl
                 IcuHospitalizeCriterionCount = icuCount,
                 TreatmentProtocolsCount = protocolCount
             });
-        });
+        }, cancellationToken);
     }
 }

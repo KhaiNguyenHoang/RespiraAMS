@@ -14,10 +14,12 @@ public class UpdateResistanceRiskFactorHandler(
     ILogger<UpdateResistanceRiskFactorHandler> logger)
     : ICommandHandler<UpdateResistanceRiskFactorCommand>
 {
-    public async Task HandleAsync(UpdateResistanceRiskFactorCommand command)
+    public async Task HandleAsync(UpdateResistanceRiskFactorCommand command, CancellationToken cancellationToken = default)
     {
         // Validate FKs
-        if (await context.Pathogens.FindAsync(command.PathogenId) is null)
+        var pathogen = await context.Pathogens
+            .FirstOrDefaultAsync(x => x.Id == command.PathogenId, cancellationToken);
+        if (pathogen is null)
         {
             logger.LogWarning("Pathogen ID not found");
             throw new NotFoundException(nameof(Pathogen), command.PathogenId);
@@ -26,7 +28,7 @@ public class UpdateResistanceRiskFactorHandler(
         // Get entity by ID
         var risk = await context.ResistanceRiskFactors
             .Include(x => x.Criterion)
-            .FirstOrDefaultAsync(x => x.Id == command.Id);
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (risk is null)
         {
             logger.LogWarning("Resistance risk factor not found");
@@ -37,7 +39,7 @@ public class UpdateResistanceRiskFactorHandler(
         mapper.MapModel(risk, command);
 
         // Save changes to database
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to update resistance risk factor");
             throw new InternalServerErrorException();

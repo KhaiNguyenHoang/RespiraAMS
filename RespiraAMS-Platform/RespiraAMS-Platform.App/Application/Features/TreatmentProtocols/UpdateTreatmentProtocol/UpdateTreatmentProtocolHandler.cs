@@ -14,24 +14,22 @@ public class UpdateTreatmentProtocolHandler(
     ILogger<UpdateTreatmentProtocolHandler> logger) 
     : ICommandHandler<UpdateTreatmentProtocolCommand>
 {
-    public async Task HandleAsync(UpdateTreatmentProtocolCommand command)
+    public async Task HandleAsync(UpdateTreatmentProtocolCommand command, CancellationToken cancellationToken = default)
     {
         // Validate FKs
-        if (command.SpecialInfectionId is not null &&
-            await context.Pathogens.FindAsync(command.SpecialInfectionId) is null)
+        if (command.SpecialInfectionId is not null && await context.Pathogens.FirstOrDefaultAsync(x => x.Id == command.SpecialInfectionId, cancellationToken) is null)
         {
             logger.LogWarning("Special Infection ID (Pathogen ID) not found");
             throw new NotFoundException(nameof(Pathogen), command.SpecialInfectionId.Value);
         }
 
-        if (await context.Criteria.CountAsync(x => command.OtherCriteriaIds.Contains(x.Id)) !=
-            command.OtherCriteriaIds.Count)
+        if (await context.Criteria.CountAsync(x => command.OtherCriteriaIds.Contains(x.Id), cancellationToken) != command.OtherCriteriaIds.Count)
         {
             logger.LogWarning("Not all criterion ids exists");
             throw new BadRequestException("Not all criterion ids exists");
         }
 
-        if (await context.Antibiotics.CountAsync(x => command.MedicineIds.Contains(x.Id)) != command.MedicineIds.Count)
+        if (await context.Antibiotics.CountAsync(x => command.MedicineIds.Contains(x.Id), cancellationToken) != command.MedicineIds.Count)
         {
             logger.LogWarning("Not all antibiotic ids exists");
             throw new BadRequestException("Not all medicine ids exists");
@@ -46,7 +44,7 @@ public class UpdateTreatmentProtocolHandler(
         var protocol = await context.TreatmentProtocols
             .Include(x => x.Medicines)
             .Include(x => x.OtherCriteria)
-            .FirstOrDefaultAsync(x => x.Id == command.Id);
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (protocol is null)
         {
             logger.LogWarning("Treatment protocol ID not found");
@@ -61,7 +59,7 @@ public class UpdateTreatmentProtocolHandler(
         context.UpdateRelations(protocol.OtherCriteria, command.OtherCriteriaIds);
         
         // Save changes to database
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to update treatment protocol");
             throw new InternalServerErrorException();

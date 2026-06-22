@@ -13,7 +13,7 @@ public class GetTreatmentProtocolByIdHandler(
     IResultMapper<Criterion, CriterionItem> criterionMapper)
     : IQueryHandler<GetTreatmentProtocolByIdQuery, TreatmentProtocolResult>
 {
-    public async Task<TreatmentProtocolResult> HandleAsync(GetTreatmentProtocolByIdQuery query)
+    public async Task<TreatmentProtocolResult> HandleAsync(GetTreatmentProtocolByIdQuery query, CancellationToken cancellationToken = default)
     {
         var protocol = await context.TreatmentProtocols
             .AsSplitQuery()
@@ -52,7 +52,7 @@ public class GetTreatmentProtocolByIdHandler(
                     Dosages = y.Dosages,
                 }).ToList(),
             })
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(cancellationToken);
 
         if (protocol is null)
         {

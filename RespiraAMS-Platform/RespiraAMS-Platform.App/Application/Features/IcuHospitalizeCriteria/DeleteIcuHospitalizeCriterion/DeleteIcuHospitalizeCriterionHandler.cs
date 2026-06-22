@@ -1,5 +1,6 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -10,10 +11,11 @@ public class DeleteIcuHospitalizeCriterionHandler(
     ILogger<DeleteIcuHospitalizeCriterionHandler> logger)
     : ICommandHandler<DeleteIcuHospitalizeCriterionCommand>
 {
-    public async Task HandleAsync(DeleteIcuHospitalizeCriterionCommand command)
+    public async Task HandleAsync(DeleteIcuHospitalizeCriterionCommand command, CancellationToken cancellationToken = default)
     {
         // Get entity by ID
-        var icu = await context.IcuHospitalizeCriteria.FindAsync(command.Id);
+        var icu = await context.IcuHospitalizeCriteria
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (icu is null)
         {
             logger.LogWarning("ICU hospitalize criterion ID not found");
@@ -25,7 +27,7 @@ public class DeleteIcuHospitalizeCriterionHandler(
         icu.DeletedAt = DateTimeOffset.UtcNow;
         
         // Save changes to database
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to delete ICU hospitalize criterion");
             throw new InternalServerErrorException();

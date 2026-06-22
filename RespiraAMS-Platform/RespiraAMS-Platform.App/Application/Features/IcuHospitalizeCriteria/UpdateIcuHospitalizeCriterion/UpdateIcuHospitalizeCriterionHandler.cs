@@ -14,12 +14,12 @@ public class UpdateIcuHospitalizeCriterionHandler(
     ILogger<UpdateIcuHospitalizeCriterionHandler> logger)
     : ICommandHandler<UpdateIcuHospitalizeCriterionCommand>
 {
-    public async Task HandleAsync(UpdateIcuHospitalizeCriterionCommand command)
+    public async Task HandleAsync(UpdateIcuHospitalizeCriterionCommand command, CancellationToken cancellationToken = default)
     {
         // Get entity by ID
         var icu = await context.IcuHospitalizeCriteria
             .Include(x => x.Criterion)
-            .FirstOrDefaultAsync(x => x.Id == command.Id);
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (icu is null)
         {
             logger.LogWarning("ICU hospitalize criterion not found");
@@ -30,7 +30,7 @@ public class UpdateIcuHospitalizeCriterionHandler(
         mapper.MapModel(icu, command);
         
         // Save changes to database
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to update ICU hospitalize criterion");
             throw new InternalServerErrorException();

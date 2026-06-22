@@ -15,7 +15,7 @@ public class GetDiagnosisTemplateHandler(
     ILogger<GetDiagnosisTemplateHandler> logger)
     : IQueryHandler<GetDiagnosisTemplateQuery, DiagnosisTemplate>
 {
-    public async Task<DiagnosisTemplate> HandleAsync(GetDiagnosisTemplateQuery query)
+    public async Task<DiagnosisTemplate> HandleAsync(GetDiagnosisTemplateQuery query, CancellationToken cancellationToken = default)
     {
         // Get disease by ID with all criteria included
         var disease = await context.Diseases
@@ -26,7 +26,7 @@ public class GetDiagnosisTemplateHandler(
             .ThenInclude(x => x.Criterion)
             .Include(x => x.TreatmentProtocols)
             .ThenInclude(x => x.OtherCriteria)
-            .FirstOrDefaultAsync(x => x.Id == query.Id);
+            .FirstOrDefaultAsync(x => x.Id == query.Id, cancellationToken);
 
         if (disease is null)
         {

@@ -2,6 +2,7 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Domain.Models;
+using Marten;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -13,10 +14,11 @@ public class UpdateAntibioticSpectrumHandler(
     ILogger<UpdateAntibioticSpectrumHandler> logger) 
     : ICommandHandler<UpdateAntibioticSpectrumCommand>
 {
-    public async Task HandleAsync(UpdateAntibioticSpectrumCommand command)
+    public async Task HandleAsync(UpdateAntibioticSpectrumCommand command, CancellationToken cancellationToken = default)
     {
         // Get entity from database
-        var spectrum = await context.AntibioticSpectra.FindAsync(command.Id);
+        var spectrum = await context.AntibioticSpectra
+            .FirstOrDefaultAsync(x => x.Id ==command.Id, cancellationToken);
         if (spectrum is null)
         {
             logger.LogWarning("Antibiotic spectrum ID not found");
@@ -27,7 +29,7 @@ public class UpdateAntibioticSpectrumHandler(
         mapper.MapModel(spectrum, command);
 
         // Save changes
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to update antibiotic spectrum");
             throw new InternalServerErrorException();

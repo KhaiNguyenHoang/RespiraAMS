@@ -13,6 +13,7 @@ public class UpdateTreatmentProtocolMapper : IUpdateMapper<TreatmentProtocol, Up
         model.Version = command.Version;
         model.Severity = command.Severity;
         model.TreatmentSite = command.TreatmentSite;
+        model.SpecialInfectionId = command.SpecialInfectionId;
         model.UpdatedAt = DateTimeOffset.UtcNow;
     }
 }

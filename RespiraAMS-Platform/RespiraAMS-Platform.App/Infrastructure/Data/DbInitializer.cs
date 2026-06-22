@@ -12,14 +12,14 @@ public class DbInitializer
     private static async Task<bool> HasAnyData(AppDbContext context)
     {
         return await context.Antibiotics.AnyAsync() ||
-               await context.Pathogens.AnyAsync() || 
                await context.AntibioticSpectra.AnyAsync() ||
-               await context.Criteria.AnyAsync() ||
+               await context.Pathogens.AnyAsync() ||
+               await context.Diseases.AnyAsync() ||
                await context.DiseasePathogens.AnyAsync() ||
+               await context.IcuHospitalizeCriteria.AnyAsync() ||
                await context.ResistanceRiskFactors.AnyAsync() ||
                await context.TreatmentProtocols.AnyAsync() ||
-               await context.Diseases.AnyAsync() ||
-               await context.Pathogens.AnyAsync();
+               await context.Criteria.AnyAsync();
     }
 
     public static async Task InitializeAsync(AppDbContext context, ILogger<DbInitializer> logger)

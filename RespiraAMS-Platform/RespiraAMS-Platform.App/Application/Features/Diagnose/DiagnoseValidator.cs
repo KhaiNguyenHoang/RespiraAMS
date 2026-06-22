@@ -8,7 +8,7 @@ public class DiagnoseValidator : AbstractValidator<DiagnoseQuery>
     {
         RuleFor(x => x.DiseaseId)
             .NotEmpty()
-            .WithMessage("DiagnoseId is required");
+            .WithMessage("Disease ID is required");
         RuleFor(x => x.Urea)
             .GreaterThan(0)
             .When(x => x.Urea != null)

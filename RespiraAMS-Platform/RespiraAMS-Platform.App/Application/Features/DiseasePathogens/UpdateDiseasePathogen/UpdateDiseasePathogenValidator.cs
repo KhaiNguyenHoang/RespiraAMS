@@ -9,9 +9,6 @@ public class UpdateDiseasePathogenValidator : AbstractValidator<UpdateDiseasePat
         RuleFor(x => x.Id)
             .NotEmpty()
             .WithMessage("Disease pathogen ID is required");
-        RuleFor(x => x.PathogenId)
-            .NotEmpty()
-            .WithMessage("Pathogen ID is required");
         RuleFor(x => x.Severity)
             .IsInEnum()
             .WithMessage("Invalid value for severity");

@@ -9,7 +9,8 @@ namespace Application.Features.Antibiotics.GetPagedAntibiotics;
 public class GetPagedAntibioticsHandler(IDbContext context)
     : IQueryHandler<GetPagedAntibioticsQuery, Pagination<AntibioticItem>>
 {
-    public async Task<Pagination<AntibioticItem>> HandleAsync(GetPagedAntibioticsQuery query)
+    public async Task<Pagination<AntibioticItem>> HandleAsync(GetPagedAntibioticsQuery query,
+        CancellationToken cancellationToken = default)
     {
         // Construct filter
         var queryable = context.Antibiotics.AsQueryable();
@@ -18,17 +19,13 @@ public class GetPagedAntibioticsHandler(IDbContext context)
             // Search by name (contains, case-insensitive)
             if (query.Filter.Name is not null)
             {
-                queryable = queryable.Where(x =>
-                    EF.Functions.ILike(x.Name, $"%{query.Filter.Name}%")
-                );
+                queryable = queryable.Where(x => EF.Functions.ILike(x.Name, $"%{query.Filter.Name}%"));
             }
 
             // Filter by spectrum
             if (query.Filter.AntibioticSpectrumId is not null)
             {
-                queryable = queryable.Where(x =>
-                    x.AntibioticSpectrumId == query.Filter.AntibioticSpectrumId
-                );
+                queryable = queryable.Where(x => x.AntibioticSpectrumId == query.Filter.AntibioticSpectrumId);
             }
 
             // Filter by category
@@ -41,7 +38,7 @@ public class GetPagedAntibioticsHandler(IDbContext context)
         // Query antibiotics
         var antibiotics = await queryable
             .OrderByDescending(x => x.CreatedAt)
-            .Include(x => x.AntibioticSpectrum)
+            // .Include(x => x.AntibioticSpectrum)
             .Select(x => new AntibioticItem()
             {
                 Id = x.Id,

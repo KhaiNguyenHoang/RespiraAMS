@@ -2,6 +2,7 @@
 using Application.Abstracts.Data;
 using Application.Abstracts.Mappers;
 using Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using RespiraAMS_Platform.Shared.Exceptions;
 
@@ -13,10 +14,11 @@ public class UpdatePathogenHandler(
     ILogger<UpdatePathogenHandler> logger)
     : ICommandHandler<UpdatePathogenCommand>
 {
-    public async Task HandleAsync(UpdatePathogenCommand command)
+    public async Task HandleAsync(UpdatePathogenCommand command, CancellationToken cancellationToken = default)
     {
         // Get pathogen by ID
-        var pathogen = await context.Pathogens.FindAsync(command.Id);
+        var pathogen = await context.Pathogens
+            .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);
         if (pathogen is null)
         {
             logger.LogWarning("Pathogen ID not found");
@@ -27,7 +29,7 @@ public class UpdatePathogenHandler(
         mapper.MapModel(pathogen, command);
         
         // Save changes to database
-        if (await context.SaveChangesAsync() <= 0)
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to update pathogen");
             throw new InternalServerErrorException();

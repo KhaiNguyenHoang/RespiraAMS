@@ -9,7 +9,7 @@ namespace Application.Features.Pathogens.GetPagedPathogens;
 public class GetPagedPathogensHandler(IDbContext context)
     : IQueryHandler<GetPagedPathogensQuery, Pagination<PathogenItem>>
 {
-    public async Task<Pagination<PathogenItem>> HandleAsync(GetPagedPathogensQuery query)
+    public async Task<Pagination<PathogenItem>> HandleAsync(GetPagedPathogensQuery query, CancellationToken cancellationToken = default)
     {
         var queryable = context.Pathogens.AsQueryable();
         if (query.Filter is not null)

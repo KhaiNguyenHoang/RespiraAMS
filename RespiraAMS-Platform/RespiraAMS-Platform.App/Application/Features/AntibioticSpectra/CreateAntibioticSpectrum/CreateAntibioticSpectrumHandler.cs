@@ -13,14 +13,14 @@ public class CreateAntibioticSpectrumHandler(
     ILogger<CreateAntibioticSpectrumHandler> logger)
     : ICommandHandler<CreateAntibioticSpectrumCommand, CreateAntibioticSpectrumResult>
 {
-    public async Task<CreateAntibioticSpectrumResult> HandleAsync(CreateAntibioticSpectrumCommand command)
+    public async Task<CreateAntibioticSpectrumResult> HandleAsync(CreateAntibioticSpectrumCommand command, CancellationToken cancellationToken = default)
     {
         // Create antibiotic spectrum
         var spectrum = mapper.ToModel(command);
 
         // Save to database
-        await context.AntibioticSpectra.AddAsync(spectrum);
-        if (await context.SaveChangesAsync() <= 0)
+        await context.AntibioticSpectra.AddAsync(spectrum, cancellationToken);
+        if (await context.SaveChangesAsync(cancellationToken) <= 0)
         {
             logger.LogError("Failed to create antibiotic spectrum");
             throw new InternalServerErrorException();
