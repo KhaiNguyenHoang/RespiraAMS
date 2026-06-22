@@ -32,5 +32,5 @@
 	<Project Path="RespiraAMS-Platform.AppHost/RespiraAMS-Platform.AppHost.csproj" />
 	<Project Path="RespiraAMS-Platform.ServiceDefaults/RespiraAMS-Platform.ServiceDefaults.csproj" />
 	<Project Path="RespiraAMS-Platform.Shared/RespiraAMS-Platform.Shared.csproj" />
-	<Poject Path="RespiraAMS-Platform.Gateway/RespiraAMS-Platform.Gateway.csproj" />
+	<Project Path="RespiraAMS-Platform.Gateway/RespiraAMS-Platform.Gateway.csproj" />
 </Solution>

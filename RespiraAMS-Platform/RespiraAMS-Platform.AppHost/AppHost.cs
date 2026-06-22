@@ -56,6 +56,7 @@ var gateway = builder
     .WithReference(doctorApi)
     .WithReference(mediaApi)
     .WithReference(appApi)
+    .WithReference(decisionApi)
     .WithExternalHttpEndpoints();
 
 var frontend = builder

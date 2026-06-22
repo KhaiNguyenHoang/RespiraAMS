@@ -8,7 +8,7 @@ namespace RespiraAMS_Platform.TreatmentDecision.API.Controllers;
 
 [ApiController]
 [ApiVersion("1.0")]
-[Route("api/{apiVersion:apiVersion}/[controller]")]
+[Route("api/{apiVersion:apiVersion}/statistics")]
 public class StatisticsController(IMessageBus bus) : ControllerBase
 {
     [HttpGet]
