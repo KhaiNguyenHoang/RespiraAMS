@@ -16,8 +16,8 @@ public class AppDbContext(IDocumentSession session) : IDbContext
         session.Store(entity);
     }
 
-    public async Task SaveChangesAsync()
+    public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        await session.SaveChangesAsync();
+        await session.SaveChangesAsync(cancellationToken);
     }
 }

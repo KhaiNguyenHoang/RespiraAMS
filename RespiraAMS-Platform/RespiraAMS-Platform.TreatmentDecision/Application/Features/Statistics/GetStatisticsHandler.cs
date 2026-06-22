@@ -9,7 +9,7 @@ namespace Application.Features.Statistics;
 public class GetStatisticsHandler(IDbContext context, ILogger<GetStatisticsHandler> logger)
     : IQueryHandler<GetStatisticsQuery, StatisticsResult>
 {
-    public async Task<StatisticsResult> HandleAsync(GetStatisticsQuery query)
+    public async Task<StatisticsResult> HandleAsync(GetStatisticsQuery query, CancellationToken cancellationToken = default)
     {
         /*
          * Calculate:
@@ -31,7 +31,7 @@ public class GetStatisticsHandler(IDbContext context, ILogger<GetStatisticsHandl
             yearlyData = yearlyData.Where(x => x.DoctorId == query.DoctorId);
         }
 
-        if (!await yearlyData.AnyAsync())
+        if (!await yearlyData.AnyAsync(cancellationToken))
         {
             logger.LogInformation("No analytics found for {year}", query.Year);
             return new StatisticsResult();
@@ -46,7 +46,7 @@ public class GetStatisticsHandler(IDbContext context, ILogger<GetStatisticsHandl
                 Severity = x.Key,
                 Count = x.Count(),
             })
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
 
         // Get recommendation accuracy rate
         // Because Marten has limited support for LINQ, we need to prefetch minimal data first
@@ -55,12 +55,12 @@ public class GetStatisticsHandler(IDbContext context, ILogger<GetStatisticsHandl
             {
                 x.Month,
                 x.IsChosenMatchRecommendation
-            }).ToListAsync())
+            }).ToListAsync(cancellationToken))
             .GroupBy(x => x.Month)
             .Select(g => new RecommendationAccuracy()
             {
                 Month = g.Key,
-                Accuracy = (double)g.Count(x => x.IsChosenMatchRecommendation) / g.Count()
+                Accuracy = !g.Any() ? -1 : (double)g.Count(x => x.IsChosenMatchRecommendation) / g.Count()
             })
             .ToList();
 
@@ -68,14 +68,14 @@ public class GetStatisticsHandler(IDbContext context, ILogger<GetStatisticsHandl
         var medicines = await yearlyData
             .Where(x => x.Month == query.Month)
             .SelectMany(x => x.MedicineCategories)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
         var consumptionRate = medicines
             .GroupBy(x => x)
             .Select(g => new AntibioticConsumptionRate()
             {
                 Category = g.Key,
                 Count = g.Count(),
-                Rate = (double)g.Count() / medicines.Count
+                Rate = !medicines.Any() ? -1 : (double)g.Count() / medicines.Count
             })
             .ToList();
 
