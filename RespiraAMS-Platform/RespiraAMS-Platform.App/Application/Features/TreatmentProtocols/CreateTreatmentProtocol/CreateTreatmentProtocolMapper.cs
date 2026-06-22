@@ -13,9 +13,10 @@ public class CreateTreatmentProtocolMapper : ICreateMapper<TreatmentProtocol, Cr
             Issuer = command.Issuer,
             IssueDate = command.IssueDate,
             Version = command.Version,
+            DiseaseId = command.DiseaseId,
             Severity = command.Severity,
             TreatmentSite = command.TreatmentSite,
-            DiseaseId = command.DiseaseId,
+            SpecialInfectionId = command.SpecialInfectionId,
             // The 2 IDs list are ignore by EF Core, it should be added via navigation
         };
     }

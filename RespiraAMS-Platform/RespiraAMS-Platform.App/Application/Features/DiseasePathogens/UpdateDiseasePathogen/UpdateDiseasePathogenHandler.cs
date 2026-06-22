@@ -16,15 +16,6 @@ public class UpdateDiseasePathogenHandler(
 {
     public async Task HandleAsync(UpdateDiseasePathogenCommand command, CancellationToken cancellationToken = default)
     {
-        // Validate FKs
-        var pathogen = await context.Pathogens
-            .FirstOrDefaultAsync(x => x.Id == command.PathogenId, cancellationToken);
-        if (pathogen is null)
-        {
-            logger.LogWarning("Pathogen ID not found");
-            throw new NotFoundException(nameof(Pathogen), command.PathogenId);
-        }
-        
         // Get entity by ID
         var diseasePathogen = await context.DiseasePathogens
             .FirstOrDefaultAsync(x => x.Id == command.Id, cancellationToken);

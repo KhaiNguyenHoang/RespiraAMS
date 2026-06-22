@@ -7,8 +7,6 @@ public class UpdateDiseasePathogenMapper : IUpdateMapper<DiseasePathogen, Update
 {
     public void MapModel(DiseasePathogen model, UpdateDiseasePathogenCommand command)
     {
-        // Disease ID shouldn't change
-        model.PathogenId = command.PathogenId;
         model.Severity = command.Severity;
         model.TreatmentSite = command.TreatmentSite;
     }
