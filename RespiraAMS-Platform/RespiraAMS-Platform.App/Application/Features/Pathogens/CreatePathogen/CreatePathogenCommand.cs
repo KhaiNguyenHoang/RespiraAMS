@@ -10,5 +10,8 @@ public class CreatePathogenCommand : ICommand
 
 public class CreatePathogenResult(Guid id)
 {
+    /// <summary>
+    /// Created pathogen ID
+    /// </summary>
     public Guid Id { get; set; } = id;
 }

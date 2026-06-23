@@ -1,4 +1,6 @@
-﻿namespace Domain.Enums;
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Enums;
 
 /*
  * AWaRe metrics is categorized into 3 main class:
@@ -14,6 +16,7 @@
 /// <summary>
 /// Antibiotic categorized metric by WHO
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum AwareCategory
 {
     Access,

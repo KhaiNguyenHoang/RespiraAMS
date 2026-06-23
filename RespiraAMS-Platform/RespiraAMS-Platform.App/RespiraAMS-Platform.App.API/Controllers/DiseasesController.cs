@@ -1,4 +1,9 @@
-﻿using Application.Features.DiseasePathogens.CreateDiseasePathogen;
+﻿using API.Dtos.DiseasePathogens;
+using API.Dtos.Diseases;
+using API.Dtos.IcuHospitalizeCriteria;
+using API.Dtos.ResistanceRiskFactors;
+using API.Dtos.TreatmentProtocols;
+using Application.Features.DiseasePathogens.CreateDiseasePathogen;
 using Application.Features.Diseases.CreateDisease;
 using Application.Features.Diseases.DeleteDisease;
 using Application.Features.Diseases.GetDiagnosisTemplate;
@@ -11,6 +16,7 @@ using Application.Features.ResistanceRiskFactors.CreateResistanceRiskFactor;
 using Application.Features.TreatmentProtocols.CreateTreatmentProtocol;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using OpenTelemetry.Trace;
 using RespiraAMS_Platform.Shared.DTOs;
 using Wolverine;
 using PagedDiseaseItem = Application.Features.Diseases.GetPagedDiseases.DiseaseItem;
@@ -24,23 +30,38 @@ namespace API.Controllers;
 public class DiseasesController(IMessageBus bus) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateDisease([FromBody] CreateDiseaseCommand request)
+    [ProducesResponseType<ApiResponse<CreateDiseaseResult>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateDisease([FromBody] CreateDiseaseDto dto)
     {
-        var result = await bus.InvokeAsync<CreateDiseaseResult>(request);
-        var resp = ApiResponse<CreateDiseaseResult>.Ok(result, statusCode: StatusCodes.Status201Created);
+        var result = await bus.InvokeAsync<CreateDiseaseResult>(dto.ToCommand());
+        var resp = ApiResponse<CreateDiseaseResult>
+            .Ok(result, statusCode: StatusCodes.Status201Created);
         return Created((string?)null, resp);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetDiseases([FromQuery] GetPagedDiseasesQuery request)
+    [ProducesResponseType<ApiResponse<Pagination<PagedDiseaseItem>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetDiseases([FromQuery] GetPagedDiseasesDto dto)
     {
-        var result = await bus.InvokeAsync<Pagination<PagedDiseaseItem>>(request);
+        var result = await bus.InvokeAsync<Pagination<PagedDiseaseItem>>(dto.ToQuery());
         var resp = ApiResponse<Pagination<PagedDiseaseItem>>.Ok(result);
         return Ok(resp);
     }
 
     [HttpGet]
     [Route("list")]
+    [ProducesResponseType<ApiResponse<IEnumerable<DiseaseItem>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDiseases()
     {
         var result = await bus.InvokeAsync<IEnumerable<DiseaseItem>>(new GetDiseasesQuery());
@@ -50,6 +71,11 @@ public class DiseasesController(IMessageBus bus) : ControllerBase
 
     [HttpGet]
     [Route("{id:guid}")]
+    [ProducesResponseType<ApiResponse<DiseaseResult>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDisease(Guid id)
     {
         var result = await bus.InvokeAsync<DiseaseResult>(new GetDiseaseByIdQuery(id));
@@ -59,6 +85,11 @@ public class DiseasesController(IMessageBus bus) : ControllerBase
 
     [HttpGet]
     [Route("{id:guid}/template")]
+    [ProducesResponseType<ApiResponse<DiagnosisTemplate>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetDiagnosisTemplate(Guid id)
     {
         var result = await bus.InvokeAsync<DiagnosisTemplate>(new GetDiagnosisTemplateQuery(id));
@@ -68,61 +99,92 @@ public class DiseasesController(IMessageBus bus) : ControllerBase
 
     [HttpPut]
     [Route("{id:guid}")]
-    public async Task<IActionResult> UpdateDisease(Guid id,
-        [FromBody] UpdateDiseaseCommand request)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateDisease(Guid id, [FromBody] UpdateDiseaseDto dto)
     {
-        request.Id = id;
-        await bus.InvokeAsync(request);
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
+        await bus.InvokeAsync(dto.ToCommand(id));
         return NoContent();
     }
 
     [HttpDelete]
     [Route("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteDisease(Guid id)
     {
         await bus.InvokeAsync(new DeleteDiseaseCommand(id));
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
         return NoContent();
     }
 
     [HttpPost]
     [Route("{id:guid}/causes")]
-    public async Task<IActionResult> AddDiseasePathogen(Guid id, [FromBody] CreateDiseasePathogenCommand request)
+    [ProducesResponseType<ApiResponse<CreateDiseasePathogenResult>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AddDiseasePathogen(Guid id, [FromBody] CreateDiseasePathogenDto dto)
     {
-        request.DiseaseId = id;
-        var result = await bus.InvokeAsync<CreateDiseasePathogenResult>(request);
-        var resp = ApiResponse<CreateDiseasePathogenResult>.Ok(result, statusCode: StatusCodes.Status201Created);
+        var result = await bus.InvokeAsync<CreateDiseasePathogenResult>(dto.ToCommand(id));
+        var resp = ApiResponse<CreateDiseasePathogenResult>
+            .Ok(result, statusCode: StatusCodes.Status201Created);
         return Created((string?)null, resp);
     }
 
     [HttpPost]
     [Route("{id:guid}/icu-hospitalize-criteria")]
-    public async Task<IActionResult> AddIcuHospitalizeCriterion(Guid id, [FromBody] CreateIcuHospitalizeCriterionCommand request)
+    [ProducesResponseType<ApiResponse<CreateIcuHospitalizeCriterionResult>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AddIcuHospitalizeCriterion(Guid id, [FromBody] CreateIcuHospitalizeCriterionDto dto)
     {
-        request.DiseaseId = id;
-        var result = await bus.InvokeAsync<CreateIcuHospitalizeCriterionResult>(request);
-        var resp = ApiResponse<CreateIcuHospitalizeCriterionResult>.Ok(result, statusCode: StatusCodes.Status201Created);
+        var result = await bus.InvokeAsync<CreateIcuHospitalizeCriterionResult>(dto.ToCommand(id));
+        var resp = ApiResponse<CreateIcuHospitalizeCriterionResult>
+            .Ok(result, statusCode: StatusCodes.Status201Created);
         return Created((string?)null, resp);
     }
 
     [HttpPost]
     [Route("{id:guid}/resistance-risk-factors")]
-    public async Task<IActionResult> AddResistanceRiskFactor(Guid id, [FromBody] CreateResistanceRiskFactorCommand request)
+    [ProducesResponseType<ApiResponse<CreateResistanceRiskFactorResult>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AddResistanceRiskFactor(Guid id, [FromBody] CreateResistanceRiskFactorDto dto)
     {
-        request.DiseaseId = id;
-        var result = await bus.InvokeAsync<CreateResistanceRiskFactorResult>(request);
-        var resp = ApiResponse<CreateResistanceRiskFactorResult>.Ok(result, statusCode: StatusCodes.Status201Created);
+        var result = await bus.InvokeAsync<CreateResistanceRiskFactorResult>(dto.ToCommand(id));
+        var resp = ApiResponse<CreateResistanceRiskFactorResult>
+            .Ok(result, statusCode: StatusCodes.Status201Created);
         return Created((string?)null, resp);
     }
 
     [HttpPost]
     [Route("{id:guid}/treatment-protocols")]
-    public async Task<IActionResult> AddTreatmentProtocol(Guid id, [FromBody] CreateTreatmentProtocolCommand request)
+    [ProducesResponseType<ApiResponse<CreateTreatmentProtocolResult>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AddTreatmentProtocol(Guid id, [FromBody] CreateTreatmentProtocolDto dto)
     {
-        request.DiseaseId = id;
-        var result = await bus.InvokeAsync<CreateTreatmentProtocolResult>(request);
-        var resp = ApiResponse<CreateTreatmentProtocolResult>.Ok(result, statusCode: StatusCodes.Status201Created);
+        var result = await bus.InvokeAsync<CreateTreatmentProtocolResult>(dto.ToCommand(id));
+        var resp = ApiResponse<CreateTreatmentProtocolResult>
+            .Ok(result, statusCode: StatusCodes.Status201Created);
         return Created((string?)null, resp);
     }
 }

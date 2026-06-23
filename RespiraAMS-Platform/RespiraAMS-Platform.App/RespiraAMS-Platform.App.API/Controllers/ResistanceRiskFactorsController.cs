@@ -1,7 +1,9 @@
-﻿using Application.Features.ResistanceRiskFactors.DeleteResistanceRiskFactor;
+﻿using API.Dtos.ResistanceRiskFactors;
+using Application.Features.ResistanceRiskFactors.DeleteResistanceRiskFactor;
 using Application.Features.ResistanceRiskFactors.UpdateResistanceRiskFactor;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using RespiraAMS_Platform.Shared.DTOs;
 using Wolverine;
 
 namespace API.Controllers;
@@ -12,20 +14,27 @@ namespace API.Controllers;
 public class ResistanceRiskFactorsController(IMessageBus bus) : ControllerBase
 {
     [HttpPut]
-    public async Task<IActionResult> UpdateResistanceRiskFactor(Guid id,
-        [FromBody] UpdateResistanceRiskFactorCommand request)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateResistanceRiskFactor(Guid id, [FromBody] UpdateResistanceRiskFactorDto dto)
     {
-        request.Id = id;
-        await bus.InvokeAsync(request);
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
+        await bus.InvokeAsync(dto.ToCommand(id));
         return NoContent();
     }
 
     [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RemoveResistanceRiskFactor(Guid id)
     {
         await bus.InvokeAsync(new DeleteResistanceRiskFactorCommand(id));
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
         return NoContent();
     }
 }

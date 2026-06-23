@@ -1,4 +1,5 @@
-﻿using Application.Features.TreatmentProtocols.AddNewCriteria;
+﻿using API.Dtos.TreatmentProtocols;
+using Application.Features.TreatmentProtocols.AddNewCriteria;
 using Application.Features.TreatmentProtocols.DeleteTreatmentProtocol;
 using Application.Features.TreatmentProtocols.GetTreatmentProtocolById;
 using Application.Features.TreatmentProtocols.UpdateTreatmentProtocol;
@@ -15,6 +16,11 @@ namespace API.Controllers;
 public class TreatmentProtocolsController(IMessageBus bus) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType<ApiResponse<TreatmentProtocolResult>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetProtocol(Guid id)
     {
         var result = await bus.InvokeAsync<TreatmentProtocolResult>(new GetTreatmentProtocolByIdQuery(id));
@@ -23,29 +29,41 @@ public class TreatmentProtocolsController(IMessageBus bus) : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> UpdateProtocol(Guid id, [FromBody] UpdateTreatmentProtocolCommand request)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateProtocol(Guid id, [FromBody] UpdateTreatmentProtocolDto dto)
     {
-        request.Id = id;
-        await bus.InvokeAsync(request);
-        // var resp = ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
+        await bus.InvokeAsync(dto.ToCommand(id));
         return NoContent();
     }
 
     [HttpPut]
     [Route("criteria")]
-    public async Task<IActionResult> AddNewCriteria(Guid id, [FromBody] AddNewCriteriaCommand request)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> AddNewCriteria(Guid id, [FromBody] AddNewCriteriaDto dto)
     {
-        request.Id = id;
-        await bus.InvokeAsync(request);
+        await bus.InvokeAsync(dto.ToCommand(id));
         return NoContent();
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
     }
 
     [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteTreatmentProtocol(Guid id)
     {
         await bus.InvokeAsync(new DeleteTreatmentProtocolCommand(id));
         return NoContent();
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
     }
 }
