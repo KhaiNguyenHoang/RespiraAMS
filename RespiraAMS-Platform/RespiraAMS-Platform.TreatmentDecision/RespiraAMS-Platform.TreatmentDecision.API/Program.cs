@@ -6,6 +6,7 @@ using Domain.Models;
 using Infrastructure;
 using Marten;
 using RespiraAMS_Platform.Shared.Extensions;
+using RespiraAMS_Platform.TreatmentDecision.API.Middlewares;
 using Scalar.AspNetCore;
 using Serilog;
 using Wolverine;
@@ -69,7 +70,8 @@ app.UseCustomErrorHandling();
 app.UseSerilogRequestLogging();
 
 app.UseClaimsPropagation();
-app.UseAuthorization();
+app.UseAuthMiddleware();
+app.UseDoctorMiddleware();
 
 if (app.Environment.IsDevelopment())
 {

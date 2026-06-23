@@ -4,9 +4,9 @@ namespace Application.Features.TreatmentDecisions.GetTreatmentDecisionById;
 
 /*=== Query DTOs ===*/
 
-public class GetTreatmentDecisionByIdQuery : IQuery
+public class GetTreatmentDecisionByIdQuery(Guid id) : IQuery
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } = id;
 }
 
 /*=== Result DTOs ===*/

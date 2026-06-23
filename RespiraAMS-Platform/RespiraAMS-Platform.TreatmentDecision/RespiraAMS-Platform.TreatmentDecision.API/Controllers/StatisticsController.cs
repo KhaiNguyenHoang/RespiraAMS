@@ -2,6 +2,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using RespiraAMS_Platform.Shared.DTOs;
+using RespiraAMS_Platform.TreatmentDecision.API.Middlewares;
 using Wolverine;
 
 namespace RespiraAMS_Platform.TreatmentDecision.API.Controllers;
@@ -9,6 +10,7 @@ namespace RespiraAMS_Platform.TreatmentDecision.API.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/{apiVersion:apiVersion}/statistics")]
+[RequireAuthMiddleware]
 public class StatisticsController(IMessageBus bus) : ControllerBase
 {
     [HttpGet]
