@@ -6,6 +6,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsAspireSharedProject>true</IsAspireSharedProject>
+
+    <!-- Enable XML documentation export -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Optional: Suppress compiler warnings for missing comments -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

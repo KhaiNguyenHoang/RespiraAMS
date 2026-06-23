@@ -15,6 +15,9 @@ public class CreateTreatmentProtocolValidator : AbstractValidator<CreateTreatmen
         RuleFor(x => x.IssueDate)
             .LessThanOrEqualTo(DateOnly.FromDateTime(DateTime.Today))
             .WithMessage("Treatment protocol issue date must not be in future");
+        RuleFor(x => x.Version)
+            .GreaterThan(0)
+            .WithMessage("Treatment protocol version must be greater than 0");
         RuleFor(x => x.Severity)
             .IsInEnum()
             .WithMessage("Invalid value for treatment protocol severity");

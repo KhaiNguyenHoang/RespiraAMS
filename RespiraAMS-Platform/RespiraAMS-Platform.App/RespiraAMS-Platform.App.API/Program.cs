@@ -1,10 +1,13 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using API.Middlewares;
 using Domain;
 using Application;
 using Asp.Versioning;
+using Domain.Enums;
 using Infrastructure;
+using Microsoft.OpenApi;
 using RespiraAMS_Platform.Shared.Extensions;
 using Scalar.AspNetCore;
 using Serilog;
@@ -24,7 +27,45 @@ if (conn is null)
 
 
 builder.AddCustomSerilog();
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddSchemaTransformer((schema, context, _) =>
+    {
+        if (context.JsonTypeInfo.Type == typeof(Dictionary<RouteOfAdministration, List<string>>))
+        {
+            // Clear the generic "additionalProperties" fallback dictionary definition
+            schema.AdditionalProperties = null;
+            
+            // Initialize the Properties dictionary if it is null
+            schema.Properties = new Dictionary<string, IOpenApiSchema>();
+
+            // 2. Loop through every available value in your Enum type
+            foreach (var enumValue in Enum.GetNames<RouteOfAdministration>())
+            {
+                // 3. Explicitly construct the inner property schema (List of strings)
+                schema.Properties[enumValue] = new OpenApiSchema
+                {
+                    Type = JsonSchemaType.Array,
+                    Items = new OpenApiSchema
+                    {
+                        Type = JsonSchemaType.String
+                    },
+                    Description = $"Dosage values for {enumValue} administration"
+                };
+            }
+        }
+        
+        // Targets your Enum types
+        if (context.JsonTypeInfo.Type.IsEnum)
+        {
+            schema.Type = JsonSchemaType.String;
+            schema.Enum = Enum.GetNames(context.JsonTypeInfo.Type)
+                .Select(JsonNode (name) => JsonValue.Create(name))
+                .ToList();
+        }
+        return Task.CompletedTask;
+    });
+});
 builder.Services
     .AddControllers()
     .AddJsonOptions(options =>

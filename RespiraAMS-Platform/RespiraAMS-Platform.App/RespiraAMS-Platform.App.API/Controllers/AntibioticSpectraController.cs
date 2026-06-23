@@ -1,4 +1,5 @@
-﻿using Application.Features.AntibioticSpectra.CreateAntibioticSpectrum;
+﻿using API.Dtos.AntibioticSpectra;
+using Application.Features.AntibioticSpectra.CreateAntibioticSpectrum;
 using Application.Features.AntibioticSpectra.DeleteAntibioticSpectrum;
 using Application.Features.AntibioticSpectra.GetAntibioticSpectra;
 using Application.Features.AntibioticSpectra.GetPagedAntibioticSpectra;
@@ -18,19 +19,28 @@ namespace API.Controllers;
 public class AntibioticSpectraController(IMessageBus bus) : ControllerBase
 {
     [HttpPost]
-    public async Task<IActionResult> CreateAntibioticSpectrum(
-        [FromBody] CreateAntibioticSpectrumCommand request)
+    [ProducesResponseType<ApiResponse<CreateAntibioticSpectrumResult>>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> CreateAntibioticSpectrum([FromBody] CreateAntibioticSpectrumDto dto)
     {
-        var result = await bus.InvokeAsync<CreateAntibioticSpectrumResult>(request);
-        var resp = ApiResponse<CreateAntibioticSpectrumResult>.Ok(
-            result, statusCode: StatusCodes.Status201Created);
+        var result = await bus.InvokeAsync<CreateAntibioticSpectrumResult>(dto.ToCommand());
+        var resp = ApiResponse<CreateAntibioticSpectrumResult>
+            .Ok(result, statusCode: StatusCodes.Status201Created);
         return Created((string?)null, resp);
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetAntibioticSpectra(
-        [FromQuery] GetPagedAntibioticSpectraQuery query)
+    [ProducesResponseType<ApiResponse<Pagination<PagedAntibioticSpectrumItem>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAntibioticSpectra([FromQuery] GetPagedAntibioticSpectraDto dto)
     {
+        var query = dto.ToQuery();
         var result = await bus.InvokeAsync<Pagination<PagedAntibioticSpectrumItem>>(query);
         var resp = ApiResponse<Pagination<PagedAntibioticSpectrumItem>>.Ok(result);
         return Ok(resp);
@@ -38,6 +48,10 @@ public class AntibioticSpectraController(IMessageBus bus) : ControllerBase
 
     [HttpGet]
     [Route("list")]
+    [ProducesResponseType<ApiResponse<IEnumerable<AntibioticSpectrumItem>>>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetAntibioticSpectra()
     {
         var result = await bus.InvokeAsync<IEnumerable<AntibioticSpectrumItem>>(new GetAntibioticSpectraQuery());
@@ -47,21 +61,28 @@ public class AntibioticSpectraController(IMessageBus bus) : ControllerBase
 
     [HttpPut]
     [Route("{id:guid}")]
-    public async Task<IActionResult> UpdateAntibioticSpectrum(
-        Guid id, [FromBody] UpdateAntibioticSpectrumCommand request)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateAntibioticSpectrum(Guid id, [FromBody] UpdateAntibioticSpectrumDto dto)
     {
-        request.Id = id;
-        await bus.InvokeAsync(request);
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
+        await bus.InvokeAsync(dto.ToCommand(id));
         return NoContent();
     }
 
     [HttpDelete]
     [Route("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status404NotFound)]
+    [ProducesResponseType<ApiResponse>(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteAntibioticSpectrum(Guid id)
     {
         await bus.InvokeAsync(new DeleteAntibioticSpectrumCommand(id));
         return NoContent();
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
     }
 }

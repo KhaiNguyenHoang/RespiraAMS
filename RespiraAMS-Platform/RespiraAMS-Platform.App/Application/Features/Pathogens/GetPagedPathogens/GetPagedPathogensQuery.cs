@@ -20,7 +20,16 @@ public class GetPagedPathogensQuery : IQuery
 
 public class PathogenItem
 {
+    /// <summary>
+    /// Pathogen ID
+    /// </summary>
     public Guid Id { get; set; }
+    /// <summary>
+    /// Pathogen name
+    /// </summary>
     public string Name { get; set; } = string.Empty;
+    /// <summary>
+    /// Pathogen description
+    /// </summary>
     public string Description { get; set; } = string.Empty;
 }

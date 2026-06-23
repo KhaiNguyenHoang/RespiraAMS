@@ -1,4 +1,5 @@
-﻿using Application.Features.DiseasePathogens.DeleteDiseasePathogen;
+﻿using API.Dtos.DiseasePathogens;
+using Application.Features.DiseasePathogens.DeleteDiseasePathogen;
 using Application.Features.DiseasePathogens.UpdateDiseasePathogen;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
@@ -12,19 +13,27 @@ namespace API.Controllers;
 public class DiseasePathogensController(IMessageBus bus) : ControllerBase
 {
     [HttpPut]
-    public async Task<IActionResult> UpdateDiseasePathogen(Guid id, [FromBody] UpdateDiseasePathogenCommand request)
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateDiseasePathogen(Guid id, [FromBody] UpdateDiseasePathogenDto dto)
     {
-        request.Id = id;
-        await bus.InvokeAsync(request);
+        await bus.InvokeAsync(dto.ToCommand(id));
         return NoContent();
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
     }
 
     [HttpDelete]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> RemoveDiseasePathogen(Guid id)
     {
         await bus.InvokeAsync(new DeleteDiseasePathogenCommand(id));
-        // return ApiResponse.Ok(statusCode: StatusCodes.Status204NoContent);
         return NoContent();
     }
 }
