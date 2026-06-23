@@ -23,17 +23,44 @@ public class GetPagedAntibioticsQuery : IQuery
 
 public class AntibioticSpectrumItem
 {
+    /// <summary>
+    /// Antibiotic spectrum ID
+    /// </summary>
     public Guid Id { get; set; }
+    /// <summary>
+    /// Antibiotic spectrum name
+    /// </summary>
     public string Name { get; set; } = string.Empty;
+    /// <summary>
+    /// Antibiotic spectrum description
+    /// </summary>
     public string Description { get; set; } = string.Empty;
 }
 
 public class AntibioticItem
 {
+    /// <summary>
+    /// Antibiotic ID
+    /// </summary>
     public Guid Id { get; set; }
+    /// <summary>
+    /// Antibiotic name
+    /// </summary>
     public string Name { get; set; } = string.Empty;
+    /// <summary>
+    /// Antibiotic spectrum
+    /// </summary>
     public AntibioticSpectrumItem AntibioticSpectrum { get; set; } = null!;
+    /// <summary>
+    /// Antibiotic AWaRe category
+    /// </summary>
     public AwareCategory Category { get; set; }
+    /// <summary>
+    /// Antibiotic routes of administration
+    /// </summary>
     public List<RouteOfAdministration> RouteOfAdministrations { get; set; } = [];
+    /// <summary>
+    /// Antibiotic dosages by route of administration
+    /// </summary>
     public Dictionary<RouteOfAdministration, List<string>> Dosages { get; set; } = [];
 }

@@ -27,10 +27,10 @@ public class CreateTreatmentDecisionValidator : AbstractValidator<CreateTreatmen
             .WithMessage("Treatment site is required");
         RuleForEach(x => x.InfectionProbabilitySnapshots)
             .SetValidator(new InfectionProbabilitySnapshotValidator())
-            .When(x => x.InfectionProbabilitySnapshots.Count > 0);
+            .When(x => x.InfectionProbabilitySnapshots.Any());
         RuleForEach(x => x.CriteriaSnapshots)
             .SetValidator(new CriterionSnapshotValidator())
-            .When(x => x.CriteriaSnapshots.Count > 0);
+            .When(x => x.CriteriaSnapshots.Any());
         RuleFor(x => x.Recommended)
             .SetValidator(new TreatmentProtocolSnapshotValidator());
         RuleFor(x => x.Chosen)

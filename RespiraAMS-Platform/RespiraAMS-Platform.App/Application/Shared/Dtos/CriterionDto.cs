@@ -1,5 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Domain.Enums;
+﻿using Domain.Enums;
 
 namespace Application.Shared.Dtos;
 
@@ -25,13 +24,9 @@ public class CriterionItem
     public string Name { get; set; } = string.Empty;
     public CriterionType Type { get; set; }
     public Guid Id { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Min { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public double? Max { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Unit { get; set; }
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public bool? IsExclusive { get; set; }
 }
 

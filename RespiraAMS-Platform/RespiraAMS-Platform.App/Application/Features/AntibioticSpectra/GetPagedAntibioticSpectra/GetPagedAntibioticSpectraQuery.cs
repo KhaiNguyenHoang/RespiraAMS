@@ -10,7 +10,16 @@ public class GetPagedAntibioticSpectraQuery : IQuery
 
 public class AntibioticSpectrumItem
 {
+    /// <summary>
+    /// Antibiotic spectrum ID
+    /// </summary>
     public Guid Id { get; set; }
+    /// <summary>
+    /// Antibiotic spectrum name
+    /// </summary>
     public string Name { get; set; } = string.Empty;
+    /// <summary>
+    /// Antibiotic spectrum description
+    /// </summary>
     public string Description { get; set; } = string.Empty;
 }

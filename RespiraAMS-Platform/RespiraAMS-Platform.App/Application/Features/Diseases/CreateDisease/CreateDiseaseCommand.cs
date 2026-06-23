@@ -12,5 +12,8 @@ public class CreateDiseaseCommand : ICommand
 
 public class CreateDiseaseResult(Guid id)
 {
+    /// <summary>
+    /// Created disease ID
+    /// </summary>
     public Guid Id { get; set; } = id;
 }

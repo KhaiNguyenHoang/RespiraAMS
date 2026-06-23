@@ -1,8 +1,11 @@
-﻿namespace Domain.Enums;
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Enums;
 
 /// <summary>
 /// Where to receive treatment. It can also be used to deduce the severity of the patient
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum TreatmentSite
 {
     Outpatient,

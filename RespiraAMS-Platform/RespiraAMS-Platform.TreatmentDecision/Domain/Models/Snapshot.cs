@@ -9,8 +9,8 @@ public class InfectionProbabilitySnapshot
 
 public class CriterionSnapshot
 {
-    public Guid CriteriaId { get; set; }
-    public string CriteriaName { get; set; } = string.Empty;
+    public Guid CriterionId { get; set; }
+    public string CriterionName { get; set; } = string.Empty;
     public string? Value { get; set; } // Storing value as string for simpler yet flexible data
 }
 
@@ -29,7 +29,7 @@ public class TreatmentProtocolSnapshot
     public string TreatmentProtocolIssuer {get; set; } = string.Empty;
     public DateOnly TreatmentProtocolIssueDate { get; set; }
     public int TreatmentProtocolVersion { get; set; }
-    public List<MedicineSnapshot> Medicines { get; set; } = [];
+    public IEnumerable<MedicineSnapshot> Medicines { get; set; } = [];
 }
 
 public class Snapshot

@@ -8,10 +8,10 @@ public class CriterionSnapshotValidator : AbstractValidator<CriterionSnapshot>
 {
     public CriterionSnapshotValidator()
     {
-        RuleFor(x => x.CriteriaId)
+        RuleFor(x => x.CriterionId)
             .NotEmpty()
             .WithMessage("Criteria ID is required");
-        RuleFor(x => x.CriteriaName)
+        RuleFor(x => x.CriterionName)
             .NotEmpty()
             .WithMessage("Criteria Name is required");
         RuleFor(x => x.Value)
