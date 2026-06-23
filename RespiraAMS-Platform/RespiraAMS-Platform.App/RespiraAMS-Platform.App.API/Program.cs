@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using API.Middlewares;
 using Domain;
 using Application;
 using Asp.Versioning;
@@ -57,8 +58,6 @@ builder.Host.UseWolverine(opts =>
     opts.Durability.Mode = DurabilityMode.Solo;
 });
 builder.Services.AddOpenTelemetry().WithTracing(tracing => tracing.AddSource("Wolverine"));
-builder.Services.AddAuthorization();
-
 
 var app = builder.Build();
 
@@ -66,7 +65,7 @@ app.UseCustomErrorHandling();
 app.UseSerilogRequestLogging();
 
 app.UseClaimsPropagation();
-app.UseAuthorization();
+// app.UseAuthorizationMiddleware(); // Remove comment to allow authorization
 
 if (app.Environment.IsDevelopment())
 {
