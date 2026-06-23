@@ -2,6 +2,7 @@
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using RespiraAMS_Platform.Shared.DTOs;
+using RespiraAMS_Platform.TreatmentDecision.API.Dtos.Statistics;
 using RespiraAMS_Platform.TreatmentDecision.API.Middlewares;
 using Wolverine;
 
@@ -14,9 +15,15 @@ namespace RespiraAMS_Platform.TreatmentDecision.API.Controllers;
 public class StatisticsController(IMessageBus bus) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetTotalStatistics([FromQuery] GetStatisticsQuery param)
+    [ProducesResponseType<ApiResponse<StatisticsResult>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetTotalStatistics([FromQuery] StatisticsDto dto)
     {
-        var result = await bus.InvokeAsync<StatisticsResult>(param);
+        var result = await bus.InvokeAsync<StatisticsResult>(dto);
         var resp = ApiResponse<StatisticsResult>.Ok(result);
         return Ok(resp);
     }

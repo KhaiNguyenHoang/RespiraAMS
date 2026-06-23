@@ -16,8 +16,8 @@ public class CreateTreatmentDecisionCommand : ICommand
     // Patient clinical information
     public string Severity { get; set; } = string.Empty;
     public string TreatmentSite { get; set; } = string.Empty;
-    public List<InfectionProbabilitySnapshot> InfectionProbabilitySnapshots { get; set; } = [];
-    public List<CriterionSnapshot> CriteriaSnapshots { get; set; } = [];
+    public IEnumerable<InfectionProbabilitySnapshot> InfectionProbabilitySnapshots { get; set; } = [];
+    public IEnumerable<CriterionSnapshot> CriteriaSnapshots { get; set; } = [];
     
     // Choices
     public required TreatmentProtocolSnapshot Recommended { get; set; }
@@ -27,5 +27,8 @@ public class CreateTreatmentDecisionCommand : ICommand
 
 public class CreateTreatmentDecisionResult(Guid id)
 {
+    /// <summary>
+    /// ID of the newly created record
+    /// </summary>
     public Guid Id { get; set; } = id;
 }
