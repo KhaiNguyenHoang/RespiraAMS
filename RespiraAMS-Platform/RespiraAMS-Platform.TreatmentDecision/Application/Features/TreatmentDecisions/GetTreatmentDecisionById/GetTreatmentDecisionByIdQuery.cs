@@ -19,7 +19,7 @@ public class InfectionProbabilityItem
 
 public class CriterionItem
 {
-    public string CriteriaName { get; set; } = string.Empty;
+    public string CriterionName { get; set; } = string.Empty;
     public string? Value { get; set; }
 }
 
