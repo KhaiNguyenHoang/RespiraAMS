@@ -9,6 +9,15 @@ public class DoctorMiddleware(RequestDelegate next, ILogger<DoctorMiddleware> lo
 {
     public async Task InvokeAsync(HttpContext context)
     {
+        var endpoint = context.GetEndpoint();
+        var hasAttribute = endpoint?.Metadata.GetMetadata<RequireDoctorMiddlewareAttribute>() is not null;
+
+        if (!hasAttribute)
+        {
+            await next(context);
+            return;
+        }
+
         var path = context.Request.Path.Value;
         if (path is null)
         {
@@ -23,7 +32,7 @@ public class DoctorMiddleware(RequestDelegate next, ILogger<DoctorMiddleware> lo
             await next(context);
             return;
         }
-
+        
         // Get role
         var role = context.Request.Headers["X-Role"].FirstOrDefault();
         if (role is null)

@@ -23,7 +23,7 @@ public class StatisticsController(IMessageBus bus) : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetTotalStatistics([FromQuery] StatisticsDto dto)
     {
-        var result = await bus.InvokeAsync<StatisticsResult>(dto);
+        var result = await bus.InvokeAsync<StatisticsResult>(dto.ToQuery());
         var resp = ApiResponse<StatisticsResult>.Ok(result);
         return Ok(resp);
     }
