@@ -33,7 +33,7 @@ public class GetTreatmentDecisionByIdHandler(IDbContext context)
             }).ToList(),
             CriterionItems = decision.CriteriaSnapshots.Select(c => new CriterionItem()
             {
-                CriteriaName = c.CriterionName,
+                CriterionName = c.CriterionName,
                 Value = c.Value,
             }).ToList(),
             Recommended = new TreatmentProtocolItem()
