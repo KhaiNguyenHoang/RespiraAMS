@@ -105,6 +105,7 @@ var app = builder.Build();
 app.UseCustomErrorHandling();
 app.UseSerilogRequestLogging();
 
+app.MapControllers();
 app.UseClaimsPropagation();
 // app.UseAuthorizationMiddleware(); // Remove comment to allow authorization
 
@@ -121,7 +122,7 @@ if (!app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
-app.MapControllers();
+
 app.ApplyMigrations(app.Environment.IsDevelopment()); 
 await app.SeedData();
 

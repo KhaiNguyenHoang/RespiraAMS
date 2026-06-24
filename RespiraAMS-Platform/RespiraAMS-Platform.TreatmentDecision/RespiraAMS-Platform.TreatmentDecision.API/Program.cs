@@ -69,6 +69,7 @@ var app = builder.Build();
 app.UseCustomErrorHandling();
 app.UseSerilogRequestLogging();
 
+app.UseRouting();
 app.UseClaimsPropagation();
 app.UseAuthMiddleware();
 app.UseDoctorMiddleware();
