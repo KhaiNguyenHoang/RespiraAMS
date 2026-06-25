@@ -1,11 +1,7 @@
-using System;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.ServiceDiscovery;
 using Microsoft.IdentityModel.Tokens;
 using Yarp.ReverseProxy.Transforms;
 
@@ -38,17 +34,6 @@ builder
         };
     });
 
-// Add CORS policy
-var frontendUrl =
-    builder.Configuration["frontend"]
-    ?? throw new InvalidOperationException("Frontend URL is not configured.");
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(
-        "AllowFrontend",
-        policy => policy.WithOrigins(frontendUrl).AllowAnyHeader().AllowAnyMethod()
-    );
-});
 builder.Services.AddAuthorization();
 builder.Services.AddServiceDiscovery();
 
@@ -96,7 +81,22 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.UseCors("AllowFrontend");
+if (app.Environment.IsDevelopment())
+{
+    app.UseCors(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
+}
+else
+{
+    var resolver = app.Services.GetRequiredService<ServiceEndpointResolver>();
+    var source = await resolver.GetEndpointsAsync("https://frontend", CancellationToken.None);
+    var frontendUrl = source.Endpoints[0].EndPoint.ToString()?.TrimEnd('/');
+    if (frontendUrl is null)
+    {
+        throw new Exception("Failed to get frontend URL for CORS configuration");
+    }
+    app.UseCors(policy => policy.WithOrigins(frontendUrl).AllowAnyMethod().AllowAnyHeader());
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 
