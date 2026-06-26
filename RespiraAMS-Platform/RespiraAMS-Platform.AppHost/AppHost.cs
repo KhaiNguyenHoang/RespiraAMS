@@ -59,13 +59,20 @@ var gateway = builder
     .WithReference(decisionApi)
     .WithExternalHttpEndpoints();
 
-var frontend = builder
-    .AddNextJsApp("frontend", "../frontend/", "dev")
+builder
+    .AddNextJsApp("frontend", "../frontend/")
     .WithReference(authenticationApi)
     .WithReference(doctorApi)
     .WithReference(mediaApi)
+    .WithReference(appApi)
+    .WithReference(decisionApi)
     .WithReference(gateway)
-    .WithExternalHttpEndpoints();
+    .WithEnvironment("GATEWAY_URL", gateway.GetEndpoint("https"))
+    .WithEndpoint("http", e =>
+    {
+        e.IsProxied = false;
+        e.TargetPort = 3000;
+    });
 
 appApi.WithReference(gateway).WaitFor(gateway);
 decisionApi.WithReference(gateway).WaitFor(gateway);

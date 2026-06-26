@@ -1,0 +1,24 @@
+﻿import { API_BASE, apiFetch } from "@/lib/api";
+import { AntibioticSpectrumItem, CreateAntibioticSpectrumRequest, CreateAntibioticSpectrumResult } from "./models";
+import { Pagination, PaginationParam } from "@/lib/models";
+
+export async function createAntibioticSpectrum(request: CreateAntibioticSpectrumRequest): Promise<CreateAntibioticSpectrumResult> {
+    return await apiFetch<CreateAntibioticSpectrumResult>(`${API_BASE}/antibiotic-spectra`, {
+        "method": "POST",
+        body: JSON.stringify(request),
+    }) as CreateAntibioticSpectrumResult;
+}
+
+export async function getAntibioticSpectra(params: PaginationParam): Promise<Pagination<AntibioticSpectrumItem>> {
+    const searchParams = new URLSearchParams();
+
+    if (params?.page !== undefined) {
+        searchParams.set("Page", String(params.page));
+    }
+    if (params?.size !== undefined) {
+        searchParams.set("Size", String(params.size));
+    }
+
+    const query = searchParams.toString();
+    return await apiFetch<Pagination<AntibioticSpectrumItem>>(`${API_BASE}/antibiotic-spectra?${query}`) as Pagination<AntibioticSpectrumItem>;
+}
