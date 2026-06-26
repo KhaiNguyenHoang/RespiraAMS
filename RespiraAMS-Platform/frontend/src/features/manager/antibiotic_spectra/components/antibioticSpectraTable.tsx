@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useAntibioticSpectra } from "../queries";
+import { AntibioticSpectrumItem } from "../models";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/custom/error";
 import { NotFoundMessage } from "@/components/custom/notFound";
@@ -12,7 +13,12 @@ import { Edit, Trash } from "lucide-react";
 
 const PAGE_SIZE = 2;
 
-export function AntibioticSpectraTable() {
+interface AntibioticSpectraTableProps {
+    onEdit: (spectrum: AntibioticSpectrumItem) => void;
+    onDelete: (spectrum: AntibioticSpectrumItem) => void;
+}
+
+export function AntibioticSpectraTable({ onEdit, onDelete }: AntibioticSpectraTableProps) {
     const [page, setPage] = useState(1);
     const params = useMemo(() => ({ page, size: PAGE_SIZE }), [page]);
     const { data, isLoading, isError } = useAntibioticSpectra(params);
@@ -45,8 +51,12 @@ export function AntibioticSpectraTable() {
                                 </span>
                             </TableCell>
                             <TableCell className="flex gap-2">
-                                <Button variant="default"><Edit /></Button>
-                                <Button variant="destructive"><Trash /></Button>
+                                <Button variant="default" onClick={() => onEdit(spectrum)}>
+                                    <Edit />
+                                </Button>
+                                <Button variant="destructive" onClick={() => onDelete(spectrum)}>
+                                    <Trash />
+                                </Button>
                             </TableCell>
                         </TableRow>
                     ))}
@@ -70,7 +80,6 @@ export function AntibioticSpectraTable() {
                             <PaginationNext onClick={() => setPage((p) => p + 1)} />
                         </PaginationItem>
                     )}
-
                 </PaginationContent>
             </Pagination>
         </>

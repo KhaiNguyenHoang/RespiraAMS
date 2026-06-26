@@ -1,10 +1,10 @@
 ﻿import { API_BASE, apiFetch } from "@/lib/api";
-import { AntibioticSpectrumItem, CreateAntibioticSpectrumRequest, CreateAntibioticSpectrumResult } from "./models";
+import { AntibioticSpectrumItem, CreateAntibioticSpectrumRequest, CreateAntibioticSpectrumResult, UpdateAntibioticSpectrumRequest } from "./models";
 import { Pagination, PaginationParam } from "@/lib/models";
 
 export async function createAntibioticSpectrum(request: CreateAntibioticSpectrumRequest): Promise<CreateAntibioticSpectrumResult> {
     return await apiFetch<CreateAntibioticSpectrumResult>(`${API_BASE}/antibiotic-spectra`, {
-        "method": "POST",
+        method: "POST",
         body: JSON.stringify(request),
     }) as CreateAntibioticSpectrumResult;
 }
@@ -21,4 +21,22 @@ export async function getAntibioticSpectra(params: PaginationParam): Promise<Pag
 
     const query = searchParams.toString();
     return await apiFetch<Pagination<AntibioticSpectrumItem>>(`${API_BASE}/antibiotic-spectra?${query}`) as Pagination<AntibioticSpectrumItem>;
+}
+
+export async function updateAntibioticSpectrum(request: UpdateAntibioticSpectrumRequest) {
+    const body = {
+        name: request.name,
+        description: request.description,
+    }
+
+    await apiFetch(`${API_BASE}/antibiotic-spectra/${request.id}`, {
+        method: "PUT",
+        body: JSON.stringify(body),
+    })
+}
+
+export async function deleteAntibioticSpectrum(id: string) {
+    await apiFetch(`${API_BASE}/antibiotic-spectra/${id}`, {
+        method: "DELETE"
+    });
 }
