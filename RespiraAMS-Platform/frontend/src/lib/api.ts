@@ -11,6 +11,10 @@ export async function apiFetch<T>(url: string, opts?: RequestInit): Promise<T | 
         ...opts,
     })
 
+    if (resp.status === 204) {
+        return null as T;
+    }
+
     const result = await resp.json() as ApiResult<T>;
 
     if (!result.success) {

@@ -1,9 +1,9 @@
-import { AntibioticSpectraTable } from "@/features/manager/antibiotic_spectra/components/antibioticSpectraTable";
+import { AntibioticSpectraPage } from "@/features/manager/antibiotic_spectra/components/antibioticSpectraPage";
 
-export default function AntibioticSpectraPage() {
+export default function Page() {
     return (
         <div className="container mx-auto px-4 py-8">
-            <AntibioticSpectraTable />
+            <AntibioticSpectraPage />
         </div>
     );
 }

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Providers } from "./provider";
+import { Toaster } from "sonner";
 
 const spaceGroteskHeading = Space_Grotesk({ subsets: ['latin'], variable: '--font-heading' });
 
@@ -35,7 +36,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
-
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );
