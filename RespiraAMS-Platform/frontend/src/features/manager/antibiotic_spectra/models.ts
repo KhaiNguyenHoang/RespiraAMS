@@ -21,3 +21,12 @@ export interface AntibioticSpectrumItem {
     name: string;
     description: string;
 }
+
+/**
+ * Update antibiotic spectrum request DTO
+ */
+export interface UpdateAntibioticSpectrumRequest {
+    id: string;
+    name: string;
+    description: string;
+}
