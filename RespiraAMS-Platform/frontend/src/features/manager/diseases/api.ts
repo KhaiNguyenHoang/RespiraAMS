@@ -1,6 +1,6 @@
 import { API_BASE, apiFetch } from "@/lib/api";
 import { Pagination } from "@/lib/models";
-import { DiseaseItem, CreateDiseaseRequest, UpdateDiseaseRequest, GetDiseasesParams, CreateDiseaseResult } from "./models";
+import { DiseaseItem, CreateDiseaseRequest, UpdateDiseaseRequest, GetDiseasesParams, CreateDiseaseResult, DiseaseDetail } from "./models";
 
 export async function createDisease(request: CreateDiseaseRequest): Promise<{ id: string }> {
     return await apiFetch<CreateDiseaseResult>(`${API_BASE}/diseases`, {
@@ -38,4 +38,8 @@ export async function deleteDisease(id: string) {
     await apiFetch(`${API_BASE}/diseases/${id}`, {
         method: "DELETE"
     });
+}
+
+export async function getDiseaseById(id: string): Promise<DiseaseDetail | null> {
+    return await apiFetch<DiseaseDetail | null>(`${API_BASE}/diseases/${id}`);
 }

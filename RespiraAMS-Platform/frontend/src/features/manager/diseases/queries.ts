@@ -3,10 +3,12 @@ import { toast } from "sonner";
 import logger from "@/lib/logger";
 import { createDisease, deleteDisease, getDiseases, updateDisease } from "./api";
 import { CreateDiseaseRequest, GetDiseasesParams, UpdateDiseaseRequest } from "./models";
+import { getDiseaseById } from "./api";
 
 export const diseaseKeys = {
     all: ["diseases"] as const,
     list: (params: GetDiseasesParams) => ["diseases", "list", params] as const,
+    detail: (id: string) => ["diseases", "detail", id] as const,
 };
 
 export function useDiseases(params: GetDiseasesParams) {
@@ -73,5 +75,13 @@ export function useDeleteDisease() {
             toast.error(`Error: ${error.message}`);
             toast.dismiss(variables?.toastID);
         }
+    });
+}
+
+export function useDiseaseDetail(id: string) {
+    return useQuery({
+        queryKey: diseaseKeys.detail(id),
+        queryFn: () => getDiseaseById(id),
+        enabled: !!id,
     });
 }
