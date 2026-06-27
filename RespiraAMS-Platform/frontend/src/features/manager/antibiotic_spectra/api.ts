@@ -40,3 +40,8 @@ export async function deleteAntibioticSpectrum(id: string) {
         method: "DELETE"
     });
 }
+
+export async function getAntibioticSpectraList(): Promise<AntibioticSpectrumItem[]> {
+    const result = await apiFetch<AntibioticSpectrumItem[]>(`${API_BASE}/antibiotic-spectra/list`);
+    return result ?? [];
+}
