@@ -48,47 +48,47 @@ export function AntibioticsPage() {
 
             <Sheet open={isSheetOpen} onOpenChange={(open) => { if (!open) closeSheet(); }}>
                 <SheetContent side="right" className="overflow-y-auto w-[400px] sm:w-[540px]">
-    <SheetHeader>
-        <SheetTitle>
-            {sheetView === "create" && "Thêm Kháng Sinh Mới"}
-            {sheetView === "update" && "Cập Nhật Kháng Sinh"}
-            {sheetView === "delete" && "Xóa Kháng Sinh"}
-        </SheetTitle>
-        <SheetDescription>
-            {sheetView === "create" && "Điền thông tin bên dưới để tạo."}
-            {sheetView === "update" && "Sửa thông tin kháng sinh."}
-            {sheetView === "delete" && "Xác nhận xóa kháng sinh này."}
-        </SheetDescription>
-    </SheetHeader>
+                    <SheetHeader>
+                        <SheetTitle>
+                            {sheetView === "create" && "Create New Antibiotic"}
+                            {sheetView === "update" && "Update Antibiotic"}
+                            {sheetView === "delete" && "Delete Antibiotic"}
+                        </SheetTitle>
+                        <SheetDescription>
+                            {sheetView === "create" && "Fill in the information below to create a new entry."}
+                            {sheetView === "update" && "Modify the antibiotic details."}
+                            {sheetView === "delete" && "Are you sure you want to delete this antibiotic?"}
+                        </SheetDescription>
+                    </SheetHeader>
 
-    <div className="p-4 mt-4">
-        {(sheetView === "create" || (sheetView === "update" && selectedAntibiotic)) && (
-            <AntibioticForm
-                initialData={sheetView === "update" ? selectedAntibiotic : null}
-                onSubmit={(data) => {
-                    if (sheetView === "create") {
-                        createMutation.mutate(data, { onSuccess: closeSheet });
-                    } else if (sheetView === "update" && selectedAntibiotic) {
-                        updateMutation.mutate({ id: selectedAntibiotic.id, ...data }, { onSuccess: closeSheet });
-                    }
-                }}
-                onCancel={closeSheet}
-                isPending={createMutation.isPending || updateMutation.isPending}
-                error={createMutation.error || updateMutation.error}
-            />
-        )}
+                    <div className="p-4 mt-4">
+                        {(sheetView === "create" || (sheetView === "update" && selectedAntibiotic)) && (
+                            <AntibioticForm
+                                initialData={sheetView === "update" ? selectedAntibiotic : null}
+                                onSubmit={(data) => {
+                                    if (sheetView === "create") {
+                                        createMutation.mutate(data, { onSuccess: closeSheet });
+                                    } else if (sheetView === "update" && selectedAntibiotic) {
+                                        updateMutation.mutate({ id: selectedAntibiotic.id, ...data }, { onSuccess: closeSheet });
+                                    }
+                                }}
+                                onCancel={closeSheet}
+                                isPending={createMutation.isPending || updateMutation.isPending}
+                                error={createMutation.error || updateMutation.error}
+                            />
+                        )}
 
-        {sheetView === "delete" && selectedAntibiotic && (
-            <DeleteAntibioticPanel
-                antibiotic={selectedAntibiotic}
-                onConfirm={() => deleteMutation.mutate(selectedAntibiotic.id, { onSuccess: closeSheet })}
-                onCancel={closeSheet}
-                isPending={deleteMutation.isPending}
-                error={deleteMutation.error}
-            />
-        )}
-    </div>
-</SheetContent>
+                        {sheetView === "delete" && selectedAntibiotic && (
+                            <DeleteAntibioticPanel
+                                antibiotic={selectedAntibiotic}
+                                onConfirm={() => deleteMutation.mutate(selectedAntibiotic.id, { onSuccess: closeSheet })}
+                                onCancel={closeSheet}
+                                isPending={deleteMutation.isPending}
+                                error={deleteMutation.error}
+                            />
+                        )}
+                    </div>
+                </SheetContent>
             </Sheet>
         </>
     );

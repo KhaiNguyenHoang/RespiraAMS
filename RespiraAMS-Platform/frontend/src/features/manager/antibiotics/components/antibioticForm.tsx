@@ -8,15 +8,15 @@ import { Plus, Trash2 } from "lucide-react";
 import { z } from "zod";
 
 const ROUTE_OPTIONS = [
-    { label: "Đường tĩnh mạch (Intravenous)", value: "intravenous" },
-    { label: "Đường uống (Oral)", value: "oral" }
+    { label: "Intravenous", value: "intravenous" },
+    { label: "Oral", value: "oral" }
 ];
 
 const antibioticSchema = z.object({
-    name: z.string().trim().min(1, "Vui lòng nhập tên kháng sinh!"),
-    antibioticSpectrumId: z.string().min(1, "Vui lòng chọn phổ kháng sinh!"),
-    category: z.string().min(1, "Vui lòng chọn phân loại AWaRe!"),
-    routes: z.array(z.string()).min(1, "Bắt buộc chọn ít nhất một đường dùng!"),
+    name: z.string().trim().min(1, "Please enter the antibiotic name!"),
+    antibioticSpectrumId: z.string().min(1, "Please select the antibiotic spectrum!"),
+    category: z.string().min(1, "Please select the AWaRe category!"),
+    routes: z.array(z.string()).min(1, "At least one route of administration is required!"),
     dosages: z.record(z.string(), z.array(z.string()))
 }).superRefine((data, ctx) => {
     data.routes.forEach(route => {
@@ -25,7 +25,7 @@ const antibioticSchema = z.object({
         if (validDoses.length === 0) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
-                message: "Vui lòng nhập ít nhất một liều cho đường dùng đã chọn!",
+                message: "Please enter at least one dosage for the selected route!",
                 path: ["dosages", route]
             });
         }
@@ -134,7 +134,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate> 
             <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Tên Kháng Sinh <span className="text-red-500">*</span></label>
+                <label className="text-sm font-medium">Antibiotic Name <span className="text-red-500">*</span></label>
                 <Input 
                     value={name} 
                     onChange={(e) => {
@@ -142,14 +142,14 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
                         if (formErrors.name) setFormErrors(p => ({ ...p, name: "" }));
                     }} 
                     disabled={isPending} 
-                    placeholder="Nhập tên kháng sinh..."
+                    placeholder="Enter antibiotic name..."
                     className={formErrors.name ? "border-red-500 focus-visible:ring-red-500" : ""}
                 />
                 {formErrors.name && <p className="text-sm text-red-500 font-medium">{formErrors.name}</p>}
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Phổ Kháng Sinh <span className="text-red-500">*</span></label>
+                <label className="text-sm font-medium">Antibiotic Spectrum <span className="text-red-500">*</span></label>
                 <select 
                     value={spectrumId} 
                     onChange={(e) => {
@@ -159,7 +159,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
                     disabled={isPending || isSpectraLoading}
                     className={`flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${formErrors.antibioticSpectrumId ? "border-red-500 focus-visible:ring-red-500" : "border-input focus-visible:ring-ring"}`}
                 >
-                    <option value="" disabled>-- Chọn phổ kháng sinh --</option>
+                    <option value="" disabled>-- Select antibiotic spectrum --</option>
                     {spectraList?.map(spec => (
                         <option key={spec.id} value={spec.id}>{spec.name}</option>
                     ))}
@@ -168,7 +168,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium">Phân Loại AWaRe <span className="text-red-500">*</span></label>
+                <label className="text-sm font-medium">AWaRe Category <span className="text-red-500">*</span></label>
                 <select 
                     value={category} 
                     onChange={(e) => {
@@ -178,7 +178,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
                     disabled={isPending}
                     className={`flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${formErrors.category ? "border-red-500 focus-visible:ring-red-500" : "border-input focus-visible:ring-ring"}`}
                 >
-                    <option value="" disabled>-- Chọn phân loại --</option>
+                    <option value="" disabled>-- Select category --</option>
                     {Object.values(AwareCategory).map(cat => (
                         <option key={cat} value={cat.toLocaleLowerCase()}>{cat}</option>
                     ))}
@@ -188,7 +188,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
 
             <div className="flex flex-col gap-4">
                 <div>
-                    <label className="text-sm font-medium">Đường Dùng & Liều Dùng <span className="text-red-500">*</span></label>
+                    <label className="text-sm font-medium">Routes & Dosages <span className="text-red-500">*</span></label>
                     {formErrors.routes && <p className="text-sm text-red-500 font-medium mt-1">{formErrors.routes}</p>}
                 </div>
                 
@@ -215,7 +215,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
                                         <div key={index} className="flex items-center gap-2">
                                             <Input
                                                 value={dosage}
-                                                placeholder="VD: 400 mg mỗi 24h"
+                                                placeholder="e.g., 400 mg every 24h"
                                                 onChange={(e) => handleDosageChange(route.value, index, e.target.value)}
                                                 disabled={isPending}
                                                 className={`bg-white ${routeError ? "border-red-500 focus-visible:ring-red-500" : ""}`}
@@ -253,7 +253,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
                                             if (routeError) setFormErrors(p => ({ ...p, [`dosages.${route.value}`]: "" }));
                                         }}
                                     >
-                                        <Plus className="h-4 w-4" /> Thêm Liều Dùng
+                                        <Plus className="h-4 w-4" /> Add Dosage
                                     </Button>
                                 </div>
                             )}
@@ -265,9 +265,9 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
             {apiError && <p className="text-sm text-destructive font-medium">{apiError.message}</p>}
 
             <div className="flex gap-2 justify-end mt-4 pt-4 border-t">
-                <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>Hủy</Button>
+                <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>Cancel</Button>
                 <Button type="submit" disabled={isPending}>
-                    {isPending ? "Đang lưu..." : (isEdit ? "Cập Nhật" : "Tạo Mới")}
+                    {isPending ? "Saving..." : (isEdit ? "Update" : "Create")}
                 </Button>
             </div>
         </form>
