@@ -33,7 +33,7 @@ export function PathogensPage() {
     const isSheetOpen = sheetView !== null;
 
     return (
-        <div>
+        <div className="container mx-auto">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">Pathogen Management</h1>
                 <Button onClick={() => openSheet("create")}>
