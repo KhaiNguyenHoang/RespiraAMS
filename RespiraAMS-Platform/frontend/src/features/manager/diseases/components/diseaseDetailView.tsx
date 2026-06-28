@@ -70,7 +70,7 @@ export default function DiseaseDetailView({ id, onBack, onEditDisease, onDeleteD
             </div>
 
             <IcuHospitalizeCriteriaTable diseaseId={disease.id} criteria={disease.icuHospitalizeCriteria} />
-            <ResistanceRisksTable risks={disease.resistanceRisks} />
+            <ResistanceRisksTable diseaseId={id} risks={disease.resistanceRisks} />
             <DiseasePathogensTable pathogens={disease.diseasePathogens} />
             <TreatmentProtocolsTable protocols={disease.treatmentProtocols} />
 

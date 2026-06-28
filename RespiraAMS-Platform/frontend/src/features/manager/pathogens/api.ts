@@ -37,3 +37,7 @@ export async function deletePathogen(id: string) {
         method: "DELETE"
     });
 }
+
+export async function getPathogensList(): Promise<PathogenItem[]> {
+    return await apiFetch<PathogenItem[]>(`${API_BASE}/pathogens/list`) as PathogenItem[];
+}

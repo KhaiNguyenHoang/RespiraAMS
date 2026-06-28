@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import logger from "@/lib/logger";
-import { createPathogen, deletePathogen, getPathogens, updatePathogen } from "./api";
+import { createPathogen, deletePathogen, getPathogens, updatePathogen, getPathogensList } from "./api";
 import { CreatePathogenRequest, GetPathogensParams, UpdatePathogenRequest } from "./models";
 
 export const pathogenKeys = {
@@ -73,5 +73,12 @@ export function useDeletePathogen() {
             toast.error(`Error: ${error.message}`);
             toast.dismiss(variables?.toastID);
         }
+    });
+}
+
+export function usePathogensList() {
+    return useQuery({
+        queryKey: ["pathogens", "list-all"],
+        queryFn: getPathogensList,
     });
 }
