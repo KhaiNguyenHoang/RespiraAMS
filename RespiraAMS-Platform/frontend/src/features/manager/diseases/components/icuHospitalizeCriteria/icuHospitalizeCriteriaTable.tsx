@@ -1,22 +1,51 @@
-import { IcuHospitalizeCriterion } from "../../models"; // Nhớ trỏ đúng đường dẫn models
+"use client"
+
+import { useState } from "react";
+import { IcuHospitalizeCriterion } from "../../icuHospitalizeCriteria/models";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash, Plus } from "lucide-react";
 import { CriterionDisplay } from "../criterionDisplay";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import IcuHospitalizeCriteriaForm from "./icuHospitalizeCriteriaForm";
+import DeleteIcuCriterionPanel from "./deleteIcuCriterionPanel";
+
+import { useCreateIcuCriterion, useUpdateIcuCriterion, useDeleteIcuCriterion } from "../../icuHospitalizeCriteria/queries";
 
 interface Props {
+    diseaseId: string;
     criteria: IcuHospitalizeCriterion[];
 }
 
-export function IcuHospitalizeCriteriaTable({ criteria }: Props) {
+type DialogView = "create" | "update" | "delete" | null;
+
+export function IcuHospitalizeCriteriaTable({ diseaseId, criteria }: Props) {
+    const [dialogView, setDialogView] = useState<DialogView>(null);
+    const [selectedItem, setSelectedItem] = useState<IcuHospitalizeCriterion | null>(null);
+
+    const createMutation = useCreateIcuCriterion(diseaseId);
+    const updateMutation = useUpdateIcuCriterion(diseaseId);
+    const deleteMutation = useDeleteIcuCriterion(diseaseId);
+
+    const openDialog = (view: DialogView, item?: IcuHospitalizeCriterion) => {
+        setSelectedItem(item ?? null);
+        setDialogView(view);
+    };
+
+    const closeDialog = () => {
+        setDialogView(null);
+        setSelectedItem(null);
+    };
+
     return (
         <div className="bg-white p-6 rounded-xl border shadow-sm flex flex-col gap-4">
             <div className="flex items-center justify-between">
                 <h2 className="text-lg font-bold">ICU Hospitalization Criteria</h2>
-                <Button size="sm" className="gap-2" onClick={() => console.log("Stub: Add ICU")}>
+                <Button size="sm" className="gap-2 bg-primary hover:bg-primary/90" onClick={() => openDialog("create")}>
                     <Plus className="w-4 h-4" /> Add ICU Criterion
                 </Button>
             </div>
+            
             <div className="border rounded-lg overflow-hidden">
                 <Table>
                     <TableHeader className="bg-zinc-50">
@@ -41,8 +70,8 @@ export function IcuHospitalizeCriteriaTable({ criteria }: Props) {
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <div className="flex gap-2 justify-end">
-                                        <Button variant="outline" size="icon" onClick={() => console.log("Stub: Edit", item.id)}><Edit className="w-4 h-4" /></Button>
-                                        <Button variant="destructive" size="icon" onClick={() => console.log("Stub: Delete", item.id)}><Trash className="w-4 h-4" /></Button>
+                                        <Button variant="outline" size="icon" onClick={() => openDialog("update", item)}><Edit className="w-4 h-4" /></Button>
+                                        <Button variant="destructive" size="icon" onClick={() => openDialog("delete", item)}><Trash className="w-4 h-4" /></Button>
                                     </div>
                                 </TableCell>
                             </TableRow>
@@ -52,6 +81,39 @@ export function IcuHospitalizeCriteriaTable({ criteria }: Props) {
                     </TableBody>
                 </Table>
             </div>
+
+            <Dialog open={dialogView !== null} onOpenChange={(val) => !val && closeDialog()}>
+                <DialogContent className="p-0 border-none bg-transparent shadow-none max-w-lg [&>button]:hidden">
+                    <DialogTitle className="sr-only">
+                        ICU Hospitalize Criteria
+                    </DialogTitle>
+                    {(dialogView === "create" || (dialogView === "update" && selectedItem)) && (
+                        <IcuHospitalizeCriteriaForm
+                            initialData={dialogView === "update" ? selectedItem : null}
+                            onSubmit={(data) => {
+                                if (dialogView === "create") {
+                                    createMutation.mutate(data, { onSuccess: closeDialog });
+                                } else if (dialogView === "update" && selectedItem) {
+                                    updateMutation.mutate({ id: selectedItem.id, ...data }, { onSuccess: closeDialog });
+                                }
+                            }}
+                            onCancel={closeDialog}
+                            isPending={createMutation.isPending || updateMutation.isPending}
+                            error={createMutation.error || updateMutation.error}
+                        />
+                    )}
+
+                    {dialogView === "delete" && selectedItem && (
+                        <DeleteIcuCriterionPanel
+                            item={selectedItem}
+                            onConfirm={() => deleteMutation.mutate(selectedItem.id, { onSuccess: closeDialog })}
+                            onCancel={closeDialog}
+                            isPending={deleteMutation.isPending}
+                            error={deleteMutation.error}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
