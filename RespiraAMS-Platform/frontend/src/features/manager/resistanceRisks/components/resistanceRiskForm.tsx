@@ -1,8 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import { CreateResistanceRiskRequest, ResistanceRisk } from "../../resistanceRisks/models";
-import { usePathogensList } from "../../../pathogens/queries";
+import { usePathogensList } from "../../pathogens/queries";
 import { z } from "zod";
-import { CriterionFormFields, CriterionFormState } from "../criterionFormFields";
+import { CriterionFormFields, CriterionFormState } from "../../diseases/components/criterionFormFields";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronDown, Check } from "lucide-react";
 

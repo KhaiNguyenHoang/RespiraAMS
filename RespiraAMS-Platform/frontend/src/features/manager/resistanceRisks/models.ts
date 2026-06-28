@@ -1,4 +1,4 @@
-import { Criterion, CreateCriterionDto} from "../criterionModels"
+import { Criterion, CreateCriterionDto} from "../diseases/criterionModels"
 
 export interface ResistanceRisk {
     id: string;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { CreateIcuCriteriaRequest, IcuHospitalizeCriterion } from "../../icuHospitalizeCriteria/models";
+import { CreateIcuCriteriaRequest, IcuHospitalizeCriterion } from "../models";
 import { z } from "zod";
-import { CriterionFormFields, CriterionFormState } from "../criterionFormFields";
+import { CriterionFormFields, CriterionFormState } from "../../diseases/components/criterionFormFields";
 import { Switch } from "@/components/ui/switch";
 
 const icuSchema = z.object({

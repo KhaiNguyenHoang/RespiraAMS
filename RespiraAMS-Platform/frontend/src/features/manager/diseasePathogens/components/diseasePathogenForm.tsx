@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { CreateDiseasePathogenRequest, DiseasePathogen, Severity, TreatmentSite } from "../../diseasePathogens/models";
-import { usePathogensList } from "../../../pathogens/queries";
+import { usePathogensList } from "../../pathogens/queries";
 import { z } from "zod";
 import { Search, ChevronDown, Check } from "lucide-react";
 

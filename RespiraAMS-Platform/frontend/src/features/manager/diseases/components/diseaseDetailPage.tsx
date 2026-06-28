@@ -7,12 +7,12 @@ import { ErrorMessage } from "@/components/custom/error";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash, ArrowLeft } from "lucide-react";
 
-import { IcuHospitalizeCriteriaTable } from "./icuHospitalizeCriteria/icuHospitalizeCriteriaTable";
-import { ResistanceRisksTable } from "./resistanceRisks/resistanceRisksTable";
-import { DiseasePathogensTable } from "./diseasePathogens/diseasePathogensTable";
-import { TreatmentProtocolsTable } from "./treatmentProtocols/treatmentProtocolsTable";
+import { IcuHospitalizeCriteriaTable } from "../../icuHospitalizeCriteria/components/icuHospitalizeCriteriaTable";
+import { ResistanceRisksTable } from "../../resistanceRisks/components/resistanceRisksTable";
+import { DiseasePathogensTable } from "../../diseasePathogens/components/diseasePathogensTable";
+import { TreatmentProtocolsTable } from "../../treatmentProtocols/components/treatmentProtocolsTable";
 import { useState } from "react";
-import TreatmentProtocolDetailView from "./treatmentProtocols/treatmentProtocolDetailView";
+import TreatmentProtocolDetailView from "../../treatmentProtocols/components/treatmentProtocolDetailView";
 
 interface DiseaseDetailViewProps {
     id: string;

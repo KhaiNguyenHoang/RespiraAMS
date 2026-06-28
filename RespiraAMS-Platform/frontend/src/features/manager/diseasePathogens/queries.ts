@@ -1,18 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import logger from "@/lib/logger";
-import { createResistanceRisk, updateResistanceRisk, deleteResistanceRisk } from "./api";
-import { CreateResistanceRiskRequest, UpdateResistanceRiskRequest } from "./models";
-import { diseaseKeys } from "../queries"
+import { createDiseasePathogen, updateDiseasePathogen, deleteDiseasePathogen } from "./api";
+import { CreateDiseasePathogenRequest, UpdateDiseasePathogenRequest } from "./models";
+import { diseaseKeys } from "../diseases/queries"
 
-export function useCreateResistanceRisk(diseaseId: string) {
+export function useCreateDiseasePathogen(diseaseId: string) {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: (req: CreateResistanceRiskRequest) => createResistanceRisk(diseaseId, req),
-        onMutate: () => ({ toastID: toast.loading("Adding resistance risk...") }),
+        mutationFn: (req: CreateDiseasePathogenRequest) => createDiseasePathogen(diseaseId, req),
+        onMutate: () => ({ toastID: toast.loading("Adding cause to disease...") }),
         onSuccess: async (_, __, variables) => {
             await qc.invalidateQueries({ queryKey: diseaseKeys.detail(diseaseId) });
-            toast.success("Resistance risk added successfully!");
+            toast.success("Cause added successfully!");
             toast.dismiss(variables.toastID);
         },
         onError: (error, _, variables) => {
@@ -22,14 +22,14 @@ export function useCreateResistanceRisk(diseaseId: string) {
     });
 }
 
-export function useUpdateResistanceRisk(diseaseId: string) {
+export function useUpdateDiseasePathogen(diseaseId: string) {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: (req: UpdateResistanceRiskRequest) => updateResistanceRisk(req),
-        onMutate: () => ({ toastID: toast.loading("Updating resistance risk...") }),
+        mutationFn: (req: UpdateDiseasePathogenRequest) => updateDiseasePathogen(req),
+        onMutate: () => ({ toastID: toast.loading("Updating cause...") }),
         onSuccess: async (_, __, variables) => {
             await qc.invalidateQueries({ queryKey: diseaseKeys.detail(diseaseId) });
-            toast.success("Resistance risk updated successfully!");
+            toast.success("Cause updated successfully!");
             toast.dismiss(variables.toastID);
         },
         onError: (error, _, variables) => {
@@ -39,14 +39,14 @@ export function useUpdateResistanceRisk(diseaseId: string) {
     });
 }
 
-export function useDeleteResistanceRisk(diseaseId: string) {
+export function useDeleteDiseasePathogen(diseaseId: string) {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: (id: string) => deleteResistanceRisk(id),
-        onMutate: () => ({ toastID: toast.loading("Deleting resistance risk...") }),
+        mutationFn: (id: string) => deleteDiseasePathogen(id),
+        onMutate: () => ({ toastID: toast.loading("Removing cause...") }),
         onSuccess: async (_, __, variables) => {
             await qc.invalidateQueries({ queryKey: diseaseKeys.detail(diseaseId) });
-            toast.success("Resistance risk deleted successfully!");
+            toast.success("Cause removed successfully!");
             toast.dismiss(variables.toastID);
         },
         onError: (error, _, variables) => {

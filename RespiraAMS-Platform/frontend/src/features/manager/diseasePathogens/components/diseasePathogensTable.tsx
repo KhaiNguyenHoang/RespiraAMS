@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react";
-import { DiseasePathogen } from "../../diseasePathogens/models";
+import { DiseasePathogen } from "../models";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash, Plus } from "lucide-react";
@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 import DiseasePathogenForm from "./diseasePathogenForm";
 import DeleteDiseasePathogenPanel from "./deleteDiseasePathogenPanel";
-import { useCreateDiseasePathogen, useUpdateDiseasePathogen, useDeleteDiseasePathogen } from "../../diseasePathogens/queries";
+import { useCreateDiseasePathogen, useUpdateDiseasePathogen, useDeleteDiseasePathogen } from "../queries";
 
 interface Props {
     diseaseId: string;

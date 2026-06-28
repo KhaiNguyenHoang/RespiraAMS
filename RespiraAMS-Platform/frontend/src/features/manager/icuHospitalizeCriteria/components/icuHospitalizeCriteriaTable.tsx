@@ -1,16 +1,16 @@
 "use client"
 
 import { useState } from "react";
-import { IcuHospitalizeCriterion } from "../../icuHospitalizeCriteria/models";
+import { IcuHospitalizeCriterion } from "../models";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash, Plus } from "lucide-react";
-import { CriterionDisplay } from "../criterionDisplay";
+import { CriterionDisplay } from "../../diseases/components/criterionDisplay";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import IcuHospitalizeCriteriaForm from "./icuHospitalizeCriteriaForm";
 import DeleteIcuCriterionPanel from "./deleteIcuCriterionPanel";
 
-import { useCreateIcuCriterion, useUpdateIcuCriterion, useDeleteIcuCriterion } from "../../icuHospitalizeCriteria/queries";
+import { useCreateIcuCriterion, useUpdateIcuCriterion, useDeleteIcuCriterion } from "../queries";
 
 interface Props {
     diseaseId: string;

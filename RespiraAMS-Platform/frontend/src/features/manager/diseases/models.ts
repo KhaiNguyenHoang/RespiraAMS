@@ -1,8 +1,8 @@
 import { PaginationParam } from "@/lib/models";
-import { IcuHospitalizeCriterion} from "./icuHospitalizeCriteria/models"
-import { ResistanceRisk } from "./resistanceRisks/models"
-import { DiseasePathogen } from "./diseasePathogens/models"
-import { TreatmentProtocol } from "./treatmentProtocols/models"
+import { IcuHospitalizeCriterion} from "../icuHospitalizeCriteria/models"
+import { ResistanceRisk } from "../resistanceRisks/models"
+import { DiseasePathogen } from "../diseasePathogens/models"
+import { TreatmentProtocol } from "../treatmentProtocols/models"
 
 export interface CreateDiseaseRequest {
     name: string;

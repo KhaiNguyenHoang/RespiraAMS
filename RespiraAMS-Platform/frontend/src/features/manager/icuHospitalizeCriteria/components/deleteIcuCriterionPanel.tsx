@@ -1,4 +1,4 @@
-import { IcuHospitalizeCriterion } from "../../icuHospitalizeCriteria/models";
+import { IcuHospitalizeCriterion } from "../models";
 
 interface DeleteIcuCriterionPanelProps {
     item: IcuHospitalizeCriterion;

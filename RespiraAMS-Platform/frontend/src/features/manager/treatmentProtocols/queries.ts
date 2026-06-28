@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import logger from "@/lib/logger";
 import { createTreatmentProtocol, deleteTreatmentProtocol } from "./api";
 import { CreateTreatmentProtocolRequest } from "./models";
-import { diseaseKeys } from "../queries"
+import { diseaseKeys } from "../diseases/queries"
 import {getTreatmentProtocolById} from "./api"
 
 export function useCreateTreatmentProtocol(diseaseId: string) {

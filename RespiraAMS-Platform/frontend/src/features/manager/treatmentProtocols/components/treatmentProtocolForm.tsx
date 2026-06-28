@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { CreateTreatmentProtocolRequest} from "../../treatmentProtocols/models";
 import {Severity, TreatmentSite} from "../../diseasePathogens/models"
-import { usePathogensList } from "../../../pathogens/queries";
+import { usePathogensList } from "../../pathogens/queries";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronDown, Check, X } from "lucide-react";

@@ -5,7 +5,7 @@ import { ResistanceRisk } from "../../resistanceRisks/models";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash, Plus } from "lucide-react";
-import { CriterionDisplay } from "../criterionDisplay";
+import { CriterionDisplay } from "../../diseases/components/criterionDisplay";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 // Import form và panel

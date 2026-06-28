@@ -1,7 +1,7 @@
 import {Severity, TreatmentSite} from "../diseasePathogens/models"
-import {Criterion} from "../criterionModels"
-import {AntibioticItem} from "../../antibiotics/models"
-import {PathogenItem} from "../../pathogens/models"
+import {Criterion} from "../diseases/criterionModels"
+import {AntibioticItem} from "../antibiotics/models"
+import {PathogenItem} from "../pathogens/models"
 
 export interface TreatmentProtocol {
     id: string;

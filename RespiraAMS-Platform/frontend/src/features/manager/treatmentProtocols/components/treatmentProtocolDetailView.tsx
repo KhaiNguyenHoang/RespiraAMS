@@ -6,7 +6,7 @@ import { ErrorMessage } from "@/components/custom/error";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, Edit, Trash } from "lucide-react";
-import { CriterionDisplay } from "../criterionDisplay";
+import { CriterionDisplay } from "../../diseases/components/criterionDisplay";
 
 interface ProtocolDetailViewProps {
     id: string;

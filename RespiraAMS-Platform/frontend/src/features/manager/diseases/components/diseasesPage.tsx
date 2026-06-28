@@ -10,7 +10,7 @@ import { DiseasesTable } from "./diseasesTable";
 import DiseaseForm from "./diseaseForm";
 import DeleteDiseasePanel from "./deleteDiseasePanel";
 
-import DiseaseDetailView from "./diseaseDetailView";
+import DiseaseDetailView from "./diseaseDetailPage";
 
 type SheetView = "create" | "update" | "delete" | null;
 

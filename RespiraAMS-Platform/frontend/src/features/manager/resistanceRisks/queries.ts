@@ -1,18 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import logger from "@/lib/logger";
-import { createIcuCriterion, updateIcuCriterion, deleteIcuCriterion } from "./api";
-import { CreateIcuCriteriaRequest, UpdateIcuCriteriaRequest } from "./models";
-import { diseaseKeys } from "../queries"
+import { createResistanceRisk, updateResistanceRisk, deleteResistanceRisk } from "./api";
+import { CreateResistanceRiskRequest, UpdateResistanceRiskRequest } from "./models";
+import { diseaseKeys } from "../diseases/queries"
 
-export function useCreateIcuCriterion(diseaseId: string) {
+export function useCreateResistanceRisk(diseaseId: string) {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: (req: CreateIcuCriteriaRequest) => createIcuCriterion(diseaseId, req),
-        onMutate: () => ({ toastID: toast.loading("Adding ICU Criterion...") }),
+        mutationFn: (req: CreateResistanceRiskRequest) => createResistanceRisk(diseaseId, req),
+        onMutate: () => ({ toastID: toast.loading("Adding resistance risk...") }),
         onSuccess: async (_, __, variables) => {
             await qc.invalidateQueries({ queryKey: diseaseKeys.detail(diseaseId) });
-            toast.success("ICU Criterion added successfully!");
+            toast.success("Resistance risk added successfully!");
             toast.dismiss(variables.toastID);
         },
         onError: (error, _, variables) => {
@@ -22,14 +22,14 @@ export function useCreateIcuCriterion(diseaseId: string) {
     });
 }
 
-export function useUpdateIcuCriterion(diseaseId: string) {
+export function useUpdateResistanceRisk(diseaseId: string) {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: (req: UpdateIcuCriteriaRequest) => updateIcuCriterion(req),
-        onMutate: () => ({ toastID: toast.loading("Updating ICU Criterion...") }),
+        mutationFn: (req: UpdateResistanceRiskRequest) => updateResistanceRisk(req),
+        onMutate: () => ({ toastID: toast.loading("Updating resistance risk...") }),
         onSuccess: async (_, __, variables) => {
             await qc.invalidateQueries({ queryKey: diseaseKeys.detail(diseaseId) });
-            toast.success("ICU Criterion updated successfully!");
+            toast.success("Resistance risk updated successfully!");
             toast.dismiss(variables.toastID);
         },
         onError: (error, _, variables) => {
@@ -39,14 +39,14 @@ export function useUpdateIcuCriterion(diseaseId: string) {
     });
 }
 
-export function useDeleteIcuCriterion(diseaseId: string) {
+export function useDeleteResistanceRisk(diseaseId: string) {
     const qc = useQueryClient();
     return useMutation({
-        mutationFn: (id: string) => deleteIcuCriterion(id),
-        onMutate: () => ({ toastID: toast.loading("Deleting ICU Criterion...") }),
+        mutationFn: (id: string) => deleteResistanceRisk(id),
+        onMutate: () => ({ toastID: toast.loading("Deleting resistance risk...") }),
         onSuccess: async (_, __, variables) => {
             await qc.invalidateQueries({ queryKey: diseaseKeys.detail(diseaseId) });
-            toast.success("ICU Criterion deleted successfully!");
+            toast.success("Resistance risk deleted successfully!");
             toast.dismiss(variables.toastID);
         },
         onError: (error, _, variables) => {
