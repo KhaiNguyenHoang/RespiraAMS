@@ -61,7 +61,7 @@ export function ResistanceRisksTable({ diseaseId, risks }: Props) {
                     <TableBody>
                         {risks?.length > 0 ? risks.map((item) => (
                             <TableRow key={item.id}>
-                                <TableCell className="font-medium text-red-600 align-top">{item.pathogen}</TableCell>
+                                <TableCell className="font-medium text-primary align-top">{item.pathogen}</TableCell>
                                 <TableCell className="text-sm align-top">
                                     <div className="whitespace-normal break-words max-w-[200px] leading-relaxed">
                                         {item.name}
