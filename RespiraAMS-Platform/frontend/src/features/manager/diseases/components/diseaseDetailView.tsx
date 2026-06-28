@@ -11,6 +11,8 @@ import { IcuHospitalizeCriteriaTable } from "./icuHospitalizeCriteria/icuHospita
 import { ResistanceRisksTable } from "./resistanceRisks/resistanceRisksTable";
 import { DiseasePathogensTable } from "./diseasePathogens/diseasePathogensTable";
 import { TreatmentProtocolsTable } from "./treatmentProtocols/treatmentProtocolsTable";
+import { useState } from "react";
+import TreatmentProtocolDetailView from "./treatmentProtocols/treatmentProtocolDetailView";
 
 interface DiseaseDetailViewProps {
     id: string;
@@ -21,10 +23,20 @@ interface DiseaseDetailViewProps {
 
 export default function DiseaseDetailView({ id, onBack, onEditDisease, onDeleteDisease }: DiseaseDetailViewProps) {
     const { data: disease, isLoading, isError } = useDiseaseDetail(id);
+    const [viewingProtocolId, setViewingProtocolId] = useState<string | null>(null);
 
     if (isLoading) return <Skeleton className="w-full h-[80vh] rounded-xl" />;
     if (isError || !disease) return <ErrorMessage error="Failed to load disease details" />;
 
+    if (viewingProtocolId) {
+    return (
+        <TreatmentProtocolDetailView 
+            id={viewingProtocolId} 
+            onBack={() => setViewingProtocolId(null)} 
+        />
+        );
+    }
+    
     return (
         <div className="flex flex-col gap-6 animate-in fade-in duration-300 pb-10">
             
@@ -40,7 +52,6 @@ export default function DiseaseDetailView({ id, onBack, onEditDisease, onDeleteD
                         <h1 className="text-2xl font-bold text-primary">{disease.name}</h1>
                     </div>
                     <div className="flex gap-2">
-                        {/* QUAN TRỌNG: Quăng biến 'disease' vào đây để ngoài kia nó hứng */}
                         <Button variant="outline" onClick={() => onEditDisease(disease)} className="gap-2">
                             <Edit className="w-4 h-4" /> Edit
                         </Button>
@@ -72,7 +83,7 @@ export default function DiseaseDetailView({ id, onBack, onEditDisease, onDeleteD
             <IcuHospitalizeCriteriaTable diseaseId={disease.id} criteria={disease.icuHospitalizeCriteria} />
             <ResistanceRisksTable diseaseId={id} risks={disease.resistanceRisks} />
             <DiseasePathogensTable diseaseId={id} pathogens={disease.diseasePathogens} />
-            <TreatmentProtocolsTable protocols={disease.treatmentProtocols} />
+            <TreatmentProtocolsTable diseaseId={id} protocols={disease.treatmentProtocols} onView={(protocolId) => setViewingProtocolId(protocolId)}/>
 
         </div>
     );

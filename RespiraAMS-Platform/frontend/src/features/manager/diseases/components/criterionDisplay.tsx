@@ -1,4 +1,4 @@
-import { Criterion } from "../models";
+import { Criterion } from "../criterionModels";
 
 export function CriterionDisplay({ criterion }: { criterion: Criterion }) {
     if (criterion.type === "boolean") {
