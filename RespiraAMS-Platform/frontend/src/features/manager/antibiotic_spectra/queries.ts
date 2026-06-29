@@ -95,3 +95,12 @@ export function useDeleteAntibioticSpectrum() {
         }
     });
 }
+
+import { getAntibioticSpectraList } from "./api";
+
+export function useAntibioticSpectraList() {
+    return useQuery({
+        queryKey: ["antibiotic-spectra", "list-all"],
+        queryFn: getAntibioticSpectraList,
+    });
+}
