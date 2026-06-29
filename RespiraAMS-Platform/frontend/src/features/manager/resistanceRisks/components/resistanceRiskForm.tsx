@@ -21,7 +21,7 @@ const riskSchema = z.object({
     if (data.criterion.type === "Numeric") {
         const minVal = data.criterion.min ? parseFloat(data.criterion.min) : null;
         const maxVal = data.criterion.max ? parseFloat(data.criterion.max) : null;
-        if (minVal !== null && maxVal !== null && minVal > maxVal) {
+        if (minVal !== null && maxVal !== null && minVal >= maxVal) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: "Min value cannot be greater than Max value",

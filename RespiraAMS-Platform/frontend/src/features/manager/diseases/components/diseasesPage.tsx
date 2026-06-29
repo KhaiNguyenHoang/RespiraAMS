@@ -9,16 +9,14 @@ import { Plus } from "lucide-react";
 import { DiseasesTable } from "./diseasesTable";
 import DiseaseForm from "./diseaseForm";
 import DeleteDiseasePanel from "./deleteDiseasePanel";
-
-import DiseaseDetailView from "./diseaseDetailPage";
+import { useRouter } from "next/navigation";
 
 type SheetView = "create" | "update" | "delete" | null;
 
 export function DiseasesPage() {
+    const router = useRouter();
     const [sheetView, setSheetView] = useState<SheetView>(null);
     const [selectedDisease, setSelectedDisease] = useState<DiseaseItem | null>(null);
-    
-    const [viewingDetailId, setViewingDetailId] = useState<string | null>(null);
 
     const createMutation = useCreateDisease();
     const updateMutation = useUpdateDisease();
@@ -34,69 +32,6 @@ export function DiseasesPage() {
         setSelectedDisease(null);
     };
 
-    const isSheetOpen = sheetView !== null;
-
-    if (viewingDetailId) {
-        return (
-            <div className="container mx-auto">
-                <DiseaseDetailView 
-                    id={viewingDetailId} 
-                    onBack={() => setViewingDetailId(null)} 
-                    onEditDisease={(disease) => openSheet("update", disease)}
-                    onDeleteDisease={(disease) => openSheet("delete", disease)}
-                />
-
-                <Sheet open={isSheetOpen} onOpenChange={(open) => { if (!open) closeSheet(); }}>
-                    <SheetContent side="right" className="overflow-y-auto w-[400px] sm:w-[540px]">
-                        <SheetHeader>
-                            <SheetTitle>
-                                {sheetView === "update" && "Update Disease"}
-                                {sheetView === "delete" && "Delete Disease"}
-                            </SheetTitle>
-                            <SheetDescription>
-                                {sheetView === "update" && "Modify the details of this disease."}
-                                {sheetView === "delete" && "Confirm deletion of this record."}
-                            </SheetDescription>
-                        </SheetHeader>
-
-                        <div className="p-4 mt-2">
-                            {(sheetView === "create" || (sheetView === "update" && selectedDisease)) && (
-                                <DiseaseForm
-                                    initialData={sheetView === "update" ? selectedDisease : null}
-                                    onSubmit={(data) => {
-                                        if (sheetView === "create") {
-                                            createMutation.mutate(data, { onSuccess: closeSheet });
-                                        } else if (sheetView === "update" && selectedDisease) {
-                                            updateMutation.mutate({ id: selectedDisease.id, ...data }, { onSuccess: closeSheet });
-                                        }
-                                    }}
-                                    onCancel={closeSheet}
-                                    isPending={createMutation.isPending || updateMutation.isPending}
-                                    error={createMutation.error || updateMutation.error}
-                                />
-                            )}
-
-                            {sheetView === "delete" && selectedDisease && (
-                                <DeleteDiseasePanel
-                                    disease={selectedDisease}
-                                    onConfirm={() => deleteMutation.mutate(selectedDisease.id, { 
-                                        onSuccess: () => {
-                                            closeSheet();
-                                            setViewingDetailId(null);
-                                        }
-                                    })}
-                                    onCancel={closeSheet}
-                                    isPending={deleteMutation.isPending}
-                                    error={deleteMutation.error}
-                                />
-                            )}
-                        </div>
-                    </SheetContent>
-                </Sheet>
-            </div>
-        );
-    }
-
     return (
         <div className="container mx-auto">
             <div className="flex items-center justify-between mb-6">
@@ -107,12 +42,12 @@ export function DiseasesPage() {
             </div>
 
             <DiseasesTable
-                onView={(item) => setViewingDetailId(item.id)}
+                onView={(item) => router.push(`/manager/diseases/${item.id}`)} 
                 onEdit={(item) => openSheet("update", item)}
                 onDelete={(item) => openSheet("delete", item)}
             />
 
-            <Sheet open={isSheetOpen} onOpenChange={(open) => { if (!open) closeSheet(); }}>
+            <Sheet open={sheetView !== null} onOpenChange={(open) => { if (!open) closeSheet(); }}>
                 <SheetContent side="right" className="overflow-y-auto w-[400px] sm:w-[540px]">
                     <SheetHeader>
                         <SheetTitle>
@@ -150,7 +85,6 @@ export function DiseasesPage() {
                                 onConfirm={() => deleteMutation.mutate(selectedDisease.id, { 
                                     onSuccess: () => {
                                         closeSheet();
-                                        setViewingDetailId(null);
                                     }
                                 })}
                                 onCancel={closeSheet}

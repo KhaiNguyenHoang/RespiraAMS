@@ -82,17 +82,19 @@ export function TreatmentProtocolsTable({ diseaseId, protocols, onView }: Props)
             </div>
 
             <Dialog open={dialogView !== null} onOpenChange={(val) => !val && closeDialog()}>
-                <DialogContent className="p-0 border-none bg-transparent shadow-none max-w-[600px] [&>button]:hidden">
+                <DialogContent  className="p-0 border-none bg-transparent shadow-none max-w-lg sm:max-w-3xl [&>button]:hidden">
                     <DialogTitle className="sr-only">
                         Treatment Protocol
                     </DialogTitle>
                     {dialogView === "create" && (
-                        <TreatmentProtocolForm
-                            onSubmit={(data) => createMutation.mutate(data, { onSuccess: closeDialog })}
-                            onCancel={closeDialog}
-                            isPending={createMutation.isPending}
-                            error={createMutation.error}
-                        />
+                        <div className="max-h-[90vh] overflow-hidden rounded-md flex flex-col">
+                            <TreatmentProtocolForm
+                                onSubmit={(data) => createMutation.mutate(data, { onSuccess: closeDialog })}
+                                onCancel={closeDialog}
+                                isPending={createMutation.isPending}
+                                error={createMutation.error}
+                            />
+                        </div>
                     )}
 
                     {dialogView === "delete" && selectedItem && (

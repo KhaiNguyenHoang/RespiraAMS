@@ -48,3 +48,7 @@ export async function deleteAntibiotic(id: string) {
         method: "DELETE"
     });
 }
+
+export async function getAntibioticsList(): Promise<AntibioticItem[]> {
+    return await apiFetch<AntibioticItem[]>(`${API_BASE}/antibiotics/list`) as AntibioticItem[];
+}

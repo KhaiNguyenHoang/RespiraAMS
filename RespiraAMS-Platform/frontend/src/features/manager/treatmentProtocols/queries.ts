@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import logger from "@/lib/logger";
-import { createTreatmentProtocol, deleteTreatmentProtocol } from "./api";
-import { CreateTreatmentProtocolRequest } from "./models";
+import { addProtocolCriteria, createTreatmentProtocol, deleteTreatmentProtocol, updateTreatmentProtocol } from "./api";
+import { AddProtocolCriteriaRequest, CreateTreatmentProtocolRequest, UpdateTreatmentProtocolRequest } from "./models";
 import { diseaseKeys } from "../diseases/queries"
 import {getTreatmentProtocolById} from "./api"
 
@@ -49,5 +49,41 @@ export function useTreatmentProtocolDetail(id: string) {
         queryKey: protocolKeys.detail(id),
         queryFn: () => getTreatmentProtocolById(id),
         enabled: !!id,
+    });
+}
+
+
+export function useUpdateTreatmentProtocol(diseaseId: string) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: (req: UpdateTreatmentProtocolRequest) => updateTreatmentProtocol(req),
+        onMutate: () => ({ toastID: toast.loading("Updating treatment protocol...") }),
+        onSuccess: async (_, updateProtocol, variables) => {
+            await qc.invalidateQueries({ queryKey: protocolKeys.detail(updateProtocol.id) });
+            await qc.invalidateQueries({ queryKey: diseaseKeys.detail(diseaseId) });
+            toast.success("Protocol updated successfully!");
+            toast.dismiss(variables.toastID);
+        },
+        onError: (error, _, variables) => {
+            toast.error(`Error: ${error.message}`);
+            toast.dismiss(variables?.toastID);
+        }
+    });
+}
+
+export function useAddProtocolCriteria(protocolId: string) {
+    const qc = useQueryClient();
+    return useMutation({
+        mutationFn: (req: AddProtocolCriteriaRequest) => addProtocolCriteria(protocolId, req),
+        onMutate: () => ({ toastID: toast.loading("Adding criteria...") }),
+        onSuccess: async (_, __, variables) => {
+            await qc.invalidateQueries({ queryKey: protocolKeys.detail(protocolId) });
+            toast.success("Criteria added successfully!");
+            toast.dismiss(variables.toastID);
+        },
+        onError: (error, _, variables) => {
+            toast.error(`Error: ${error.message}`);
+            toast.dismiss(variables?.toastID);
+        }
     });
 }

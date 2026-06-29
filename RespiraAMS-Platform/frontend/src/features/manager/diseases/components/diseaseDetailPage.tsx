@@ -6,37 +6,60 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/custom/error";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash, ArrowLeft } from "lucide-react";
-
+import { useRouter, useSearchParams } from "next/navigation";
 import { IcuHospitalizeCriteriaTable } from "../../icuHospitalizeCriteria/components/icuHospitalizeCriteriaTable";
 import { ResistanceRisksTable } from "../../resistanceRisks/components/resistanceRisksTable";
 import { DiseasePathogensTable } from "../../diseasePathogens/components/diseasePathogensTable";
 import { TreatmentProtocolsTable } from "../../treatmentProtocols/components/treatmentProtocolsTable";
-import { useState } from "react";
-import TreatmentProtocolDetailView from "../../treatmentProtocols/components/treatmentProtocolDetailView";
+import { useState, useRef, useEffect } from "react";
+import { useUpdateDisease, useDeleteDisease } from "@/features/manager/diseases/queries";
+import { DiseaseItem } from "../models"
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import DiseaseForm from "./diseaseForm";
+import DeleteDiseasePanel from "./deleteDiseasePanel";
 
 interface DiseaseDetailViewProps {
     id: string;
     onBack: () => void;
-    onEditDisease: (disease: DiseaseDetail) => void;
-    onDeleteDisease: (disease: DiseaseDetail) => void;
 }
+type SheetView = "update" | "delete" | null;
 
-export default function DiseaseDetailView({ id, onBack, onEditDisease, onDeleteDisease }: DiseaseDetailViewProps) {
+export default function DiseaseDetailView({ id, onBack}: DiseaseDetailViewProps) {
     const { data: disease, isLoading, isError } = useDiseaseDetail(id);
-    const [viewingProtocolId, setViewingProtocolId] = useState<string | null>(null);
+    const router = useRouter();
+
+    const [sheetView, setSheetView] = useState<SheetView>(null);
+    const [selectedDisease, setSelectedDisease] = useState<DiseaseItem | null>(null);
+
+    const updateMutation = useUpdateDisease();
+    const deleteMutation = useDeleteDisease();
+
+    const searchParams = useSearchParams();
+    const scrollTo = searchParams.get("scrollTo");
+    const protocolTableRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (!isLoading && disease && scrollTo === "protocols" && protocolTableRef.current) {
+            setTimeout(() => {
+                protocolTableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                router.replace(`/manager/diseases/${id}`, { scroll: false });
+            }, 100);
+        }
+    }, [isLoading, disease, scrollTo, id, router]);
+
+
+    const openSheet = (view: SheetView, item: DiseaseItem) => {
+        setSelectedDisease(item);
+        setSheetView(view);
+    };
+
+    const closeSheet = () => {
+        setSheetView(null);
+        setSelectedDisease(null);
+    };
+
 
     if (isLoading) return <Skeleton className="w-full h-[80vh] rounded-xl" />;
     if (isError || !disease) return <ErrorMessage error="Failed to load disease details" />;
-
-    if (viewingProtocolId) {
-    return (
-        <TreatmentProtocolDetailView 
-            id={viewingProtocolId} 
-            onBack={() => setViewingProtocolId(null)} 
-        />
-        );
-    }
-    
     return (
         <div className="flex flex-col gap-6 animate-in fade-in duration-300 pb-10">
             
@@ -52,10 +75,10 @@ export default function DiseaseDetailView({ id, onBack, onEditDisease, onDeleteD
                         <h1 className="text-2xl font-bold text-primary">{disease.name}</h1>
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => onEditDisease(disease)} className="gap-2">
+                        <Button variant="outline" onClick={() => openSheet("update", disease)} className="gap-2">
                             <Edit className="w-4 h-4" /> Edit
                         </Button>
-                        <Button variant="destructive" onClick={() => onDeleteDisease(disease)} className="gap-2">
+                        <Button variant="destructive" onClick={() => openSheet("delete", disease)} className="gap-2">
                             <Trash className="w-4 h-4" /> Delete
                         </Button>
                     </div>
@@ -83,7 +106,65 @@ export default function DiseaseDetailView({ id, onBack, onEditDisease, onDeleteD
             <IcuHospitalizeCriteriaTable diseaseId={disease.id} criteria={disease.icuHospitalizeCriteria} />
             <ResistanceRisksTable diseaseId={id} risks={disease.resistanceRisks} />
             <DiseasePathogensTable diseaseId={id} pathogens={disease.diseasePathogens} />
-            <TreatmentProtocolsTable diseaseId={id} protocols={disease.treatmentProtocols} onView={(protocolId) => setViewingProtocolId(protocolId)}/>
+            
+            <div ref={protocolTableRef} className="scroll-mt-6">
+                <TreatmentProtocolsTable 
+                    diseaseId={id} 
+                    protocols={disease.treatmentProtocols} 
+                    onView={(protocolId) => router.push(`/manager/diseases/${id}/protocols/${protocolId}`)}
+                />
+            </div>
+
+
+            <Sheet open={sheetView !== null} onOpenChange={(open) => { if (!open) closeSheet(); }}>
+                <SheetContent side="right" className="overflow-y-auto w-[400px] sm:w-[540px]">
+                    <SheetHeader>
+                        <SheetTitle>
+                            {sheetView === "update" && "Update Disease"}
+                            {sheetView === "delete" && "Delete Disease"}
+                        </SheetTitle>
+                        <SheetDescription>
+                            {sheetView === "update" && "Modify the details of this disease."}
+                            {sheetView === "delete" && "Confirm deletion of this record."}
+                        </SheetDescription>
+                    </SheetHeader>
+
+                    <div className="p-4 mt-2">
+                        {sheetView === "update" && selectedDisease && (
+                            <DiseaseForm
+                                initialData={selectedDisease}
+                                onSubmit={(data) => {
+                                    updateMutation.mutate(
+                                        { id: selectedDisease.id, ...data }, 
+                                        { onSuccess: closeSheet }
+                                    );
+                                }}
+                                onCancel={closeSheet}
+                                isPending={updateMutation.isPending}
+                                error={updateMutation.error}
+                            />
+                        )}
+
+                        {sheetView === "delete" && selectedDisease && (
+                            <DeleteDiseasePanel
+                                disease={selectedDisease}
+                                onConfirm={() => deleteMutation.mutate(
+                                    selectedDisease.id, 
+                                    { 
+                                        onSuccess: () => {
+                                            closeSheet();
+                                            router.push('/manager/diseases');
+                                        }
+                                    }
+                                )}
+                                onCancel={closeSheet}
+                                isPending={deleteMutation.isPending}
+                                error={deleteMutation.error}
+                            />
+                        )}
+                    </div>
+                </SheetContent>
+            </Sheet>
 
         </div>
     );

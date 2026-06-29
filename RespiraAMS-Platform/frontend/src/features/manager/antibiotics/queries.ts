@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import logger from "@/lib/logger";
-import { createAntibiotic, deleteAntibiotic, getAntibiotics, updateAntibiotic } from "./api";
+import { createAntibiotic, deleteAntibiotic, getAntibiotics, getAntibioticsList, updateAntibiotic } from "./api";
 import { CreateAntibioticRequest, GetAntibioticsParams, UpdateAntibioticRequest } from "./models";
 
 export const antibioticKeys = {
@@ -82,5 +82,12 @@ export function useDeleteAntibiotic() {
             toast.error("Failed to delete antibiotic");
             toast.dismiss(variables?.toastID);
         }
+    });
+}
+
+export function useAntibioticsList() {
+    return useQuery({
+        queryKey: ["antibiotics", "list-all"],
+        queryFn: getAntibioticsList,
     });
 }
