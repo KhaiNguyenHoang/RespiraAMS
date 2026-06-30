@@ -1,0 +1,380 @@
+"use client"
+
+import { useState } from "react"
+import { useMutation } from "@tanstack/react-query"
+
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useDisease } from "@/features/doctor/diagnose/api"
+import { diagnose } from "@/features/doctor/diagnose/api"
+import { DiagnoseResponse } from "@/features/doctor/diagnose/types"
+import { saveDiagnose } from "@/features/doctor/history/storage"
+import { PatientInfoSection } from "@/features/doctor/diagnose/components/patient-info-section"
+import { DiseaseSelectSection } from "@/features/doctor/diagnose/components/disease-select-section"
+import { IcuCriteriaSection } from "@/features/doctor/diagnose/components/icu-criteria-section"
+import { Curb65Section } from "@/features/doctor/diagnose/components/curb65-section"
+import { ResistanceRiskSection } from "@/features/doctor/diagnose/components/resistance-risk-section"
+import { RecommendationView } from "@/features/doctor/diagnose/components/recommendation-view"
+import { Loader2 } from "lucide-react"
+
+function calculateAge(dob: Date | undefined): string {
+  if (!dob) return "0"
+  const today = new Date()
+  let age = today.getFullYear() - dob.getFullYear()
+  const monthDiff = today.getMonth() - dob.getMonth()
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+    age--
+  }
+  return String(age)
+}
+
+const severityLabels: Record<string, string> = {
+  mild: "Nhẹ",
+  moderate: "Trung bình",
+  severe: "Nặng",
+  critical: "Nguy kịch",
+}
+
+const treatmentSiteLabels: Record<string, string> = {
+  outpatient: "Ngoại trú",
+  inpatient: "Nội trú",
+  intensiveCareUnit: "Khoa ICU",
+}
+
+interface FormValues {
+  patientName: string
+  dateOfBirth: Date | undefined
+  gender: string
+  confusion: boolean
+  age65: boolean
+  urea: string
+  respiratory: string
+  systolic: string
+  diastolic: string
+  icuCriteria: Record<string, boolean>
+  icuNumericValues: Record<string, string>
+  resistanceRisks: Record<string, boolean>
+  resistanceNumericValues: Record<string, string>
+  otherCriteriaEnabled: boolean
+  otherCriteria: string
+}
+
+const defaultFormValues: FormValues = {
+  patientName: "",
+  dateOfBirth: undefined,
+  gender: "",
+  confusion: false,
+  age65: false,
+  urea: "",
+  respiratory: "",
+  systolic: "",
+  diastolic: "",
+  icuCriteria: {},
+  icuNumericValues: {},
+  resistanceRisks: {},
+  resistanceNumericValues: {},
+  otherCriteriaEnabled: false,
+  otherCriteria: "",
+}
+
+export default function ClinicalFormPage() {
+  const [selectedDiseaseId, setSelectedDiseaseId] = useState("")
+  const [formValues, setFormValues] = useState<FormValues>(defaultFormValues)
+  const [diagnoseResult, setDiagnoseResult] = useState<DiagnoseResponse | null>(null)
+  const [showRecommendation, setShowRecommendation] = useState(false)
+  const { data: disease, isLoading: diseaseLoading, isError: diseaseError } = useDisease(selectedDiseaseId)
+
+  const updateField = <K extends keyof FormValues>(field: K, value: FormValues[K]) => {
+    setFormValues((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const { mutate: handleDiagnose, isPending: isDiagnosing } = useMutation<DiagnoseResponse | null, Error>({
+    mutationFn: () => {
+      const checkedIcuCriteria: string[] = Object.entries(formValues.icuCriteria)
+        .filter(([, checked]) => checked)
+        .map(([id]) => id)
+
+      const icuNumericWithValues: string[] = Object.entries(formValues.icuNumericValues)
+        .filter(([, value]) => value !== "")
+        .map(([id]) => id)
+
+      const checkedResistanceRisks: string[] = Object.entries(formValues.resistanceRisks)
+        .filter(([, checked]) => checked)
+        .map(([id]) => id)
+
+      const resistanceNumericWithValues: string[] = Object.entries(formValues.resistanceNumericValues)
+        .filter(([, value]) => value !== "")
+        .map(([id]) => id)
+
+      return diagnose({
+        diseaseId: selectedDiseaseId,
+        confusion: formValues.confusion,
+        urea: formValues.urea,
+        respiratory: formValues.respiratory,
+        systolic: formValues.systolic,
+        diastolic: formValues.diastolic,
+        age: calculateAge(formValues.dateOfBirth),
+        icuHospitalizeCriteria: [...checkedIcuCriteria, ...icuNumericWithValues],
+        resistanceRiskFactors: [...checkedResistanceRisks, ...resistanceNumericWithValues],
+        otherCriteria: formValues.otherCriteriaEnabled && formValues.otherCriteria.trim()
+          ? [formValues.otherCriteria.trim()]
+          : [],
+      })
+    },
+    onSuccess: (data) => {
+      if (data) {
+        setDiagnoseResult(data)
+      }
+    },
+    onError: (error: Error) => {
+      console.error("Chẩn đoán thất bại:", error)
+    },
+  })
+
+  const { mutate: handleDiagnoseAndRecommend, isPending: isSending } = useMutation<DiagnoseResponse | null, Error>({
+    mutationFn: () => {
+      const checkedIcuCriteria: string[] = Object.entries(formValues.icuCriteria)
+        .filter(([, checked]) => checked)
+        .map(([id]) => id)
+
+      const icuNumericWithValues: string[] = Object.entries(formValues.icuNumericValues)
+        .filter(([, value]) => value !== "")
+        .map(([id]) => id)
+
+      const checkedResistanceRisks: string[] = Object.entries(formValues.resistanceRisks)
+        .filter(([, checked]) => checked)
+        .map(([id]) => id)
+
+      const resistanceNumericWithValues: string[] = Object.entries(formValues.resistanceNumericValues)
+        .filter(([, value]) => value !== "")
+        .map(([id]) => id)
+
+      return diagnose({
+        diseaseId: selectedDiseaseId,
+        confusion: formValues.confusion,
+        urea: formValues.urea,
+        respiratory: formValues.respiratory,
+        systolic: formValues.systolic,
+        diastolic: formValues.diastolic,
+        age: calculateAge(formValues.dateOfBirth),
+        icuHospitalizeCriteria: [...checkedIcuCriteria, ...icuNumericWithValues],
+        resistanceRiskFactors: [...checkedResistanceRisks, ...resistanceNumericWithValues],
+        otherCriteria: formValues.otherCriteriaEnabled && formValues.otherCriteria.trim()
+          ? [formValues.otherCriteria.trim()]
+          : [],
+      })
+    },
+    onSuccess: (data) => {
+      if (data) {
+        setDiagnoseResult(data)
+        setShowRecommendation(true)
+      }
+    },
+    onError: (error: Error) => {
+      console.error("Gửi thông tin thất bại:", error)
+    },
+  })
+
+  const handleReset = () => {
+    setFormValues(defaultFormValues)
+    setSelectedDiseaseId("")
+    setDiagnoseResult(null)
+  }
+
+  const handleDiseaseChange = (id: string) => {
+    setSelectedDiseaseId(id)
+    setFormValues((prev) => ({
+      ...prev,
+      icuCriteria: {},
+      icuNumericValues: {},
+      resistanceRisks: {},
+      resistanceNumericValues: {},
+    }))
+  }
+
+  if (showRecommendation && diagnoseResult) {
+    return (
+      <div className="min-h-full">
+        <RecommendationView
+          diagnoseResult={diagnoseResult}
+          patientName={formValues.patientName}
+          diseaseName={disease?.name ?? ""}
+          onBack={() => setShowRecommendation(false)}
+          onSave={saveDiagnose}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div>
+      <div className="space-y-6 max-w-300 mx-auto px-4 pt-8 pb-4">
+      <header className="mb-8">
+        <p className="text-primary text-sm uppercase tracking-widest">
+          Đánh giá ban đầu
+        </p>
+        <h1 className="text-3xl font-bold mt-2">
+          Mẫu Thông tin Bệnh nhân
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Vui lòng hoàn thành tất cả các trường thông tin cần thiết để đánh
+          giá lâm sàng.
+        </p>
+      </header>
+
+      <form
+        className="space-y-6"
+        onSubmit={(e) => e.preventDefault()}
+      >
+        <PatientInfoSection
+          patientName={formValues.patientName}
+          dateOfBirth={formValues.dateOfBirth}
+          gender={formValues.gender}
+          onPatientNameChange={(v: string) => updateField("patientName", v)}
+          onDateOfBirthChange={(v: Date | undefined) => updateField("dateOfBirth", v)}
+          onGenderChange={(v: string) => updateField("gender", v)}
+        />
+
+        <DiseaseSelectSection
+          value={selectedDiseaseId}
+          onValueChange={handleDiseaseChange}
+        />
+
+        <Curb65Section
+          confusion={formValues.confusion}
+          age65={formValues.age65}
+          urea={formValues.urea}
+          respiratory={formValues.respiratory}
+          systolic={formValues.systolic}
+          diastolic={formValues.diastolic}
+          onConfusionChange={(v: boolean) => updateField("confusion", v)}
+          onAge65Change={(v: boolean) => updateField("age65", v)}
+          onUreaChange={(v: string) => updateField("urea", v)}
+          onRespiratoryChange={(v: string) => updateField("respiratory", v)}
+          onSystolicChange={(v: string) => updateField("systolic", v)}
+          onDiastolicChange={(v: string) => updateField("diastolic", v)}
+        />
+
+        {selectedDiseaseId && diseaseLoading && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Đang tải thông tin bệnh...</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground">Vui lòng chờ trong giây lát.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedDiseaseId && diseaseError && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Lỗi tải dữ liệu</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-destructive">Không thể tải thông tin bệnh lý. Vui lòng thử lại.</p>
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedDiseaseId && disease && !diseaseLoading && (
+          <>
+            <IcuCriteriaSection
+              disease={disease}
+              loading={diseaseLoading}
+              criteriaChecked={formValues.icuCriteria}
+              numericValues={formValues.icuNumericValues}
+              onCriteriaCheckChange={(id, checked) =>
+                updateField("icuCriteria", { ...formValues.icuCriteria, [id]: checked })
+              }
+              onNumericValueChange={(id, value) =>
+                updateField("icuNumericValues", { ...formValues.icuNumericValues, [id]: value })
+              }
+            />
+            <ResistanceRiskSection
+              disease={disease}
+              loading={diseaseLoading}
+              risksChecked={formValues.resistanceRisks}
+              numericValues={formValues.resistanceNumericValues}
+              otherCriteriaEnabled={formValues.otherCriteriaEnabled}
+              otherCriteria={formValues.otherCriteria}
+              onRiskCheckChange={(id, checked) =>
+                updateField("resistanceRisks", { ...formValues.resistanceRisks, [id]: checked })
+              }
+              onNumericValueChange={(id, value) =>
+                updateField("resistanceNumericValues", { ...formValues.resistanceNumericValues, [id]: value })
+              }
+              onOtherCriteriaEnabledChange={(v) => updateField("otherCriteriaEnabled", v)}
+              onOtherCriteriaChange={(v) => updateField("otherCriteria", v)}
+            />
+          </>
+        )}
+
+        {diagnoseResult && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Kết quả chẩn đoán</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="border rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">Mức độ nghiêm trọng</p>
+                  <p className="text-lg font-semibold mt-1">{severityLabels[diagnoseResult.severity] ?? diagnoseResult.severity}</p>
+                </div>
+                <div className="border rounded-lg p-4">
+                  <p className="text-sm text-muted-foreground">Nơi điều trị</p>
+                  <p className="text-lg font-semibold mt-1">{treatmentSiteLabels[diagnoseResult.treatmentSite] ?? diagnoseResult.treatmentSite}</p>
+                </div>
+              </div>
+              {diagnoseResult.infectionProbabilities.length > 0 && (
+                <div>
+                  <h3 className="font-semibold mb-3">Xác suất tác nhân gây bệnh</h3>
+                  <div className="space-y-2">
+                    {diagnoseResult.infectionProbabilities.map((item) => (
+                      <div
+                        key={item.pathogenId}
+                        className="flex items-center justify-between border rounded-lg p-3"
+                      >
+                        <div>
+                          <p className="font-medium text-sm">{item.pathogenName}</p>
+                        </div>
+                        <span className="text-sm font-semibold text-primary">{(Number(item.probability) * 100).toFixed(1)}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        <footer className="flex justify-between border-t pt-6">
+          <Button variant="outline" size="lg" onClick={handleReset}>
+            Đặt lại
+          </Button>
+
+          <div className="flex gap-3">
+            <Button
+              variant="secondary"
+              size="lg"
+              onClick={() => handleDiagnose()}
+              disabled={isDiagnosing || !selectedDiseaseId}
+            >
+              {isDiagnosing && <Loader2 className="animate-spin" />}
+              {isDiagnosing ? "Đang xử lý..." : "Chẩn đoán"}
+            </Button>
+            <Button
+              size="lg"
+              onClick={() => handleDiagnoseAndRecommend()}
+              disabled={isSending || !selectedDiseaseId}
+            >
+              {isSending && <Loader2 className="animate-spin" />}
+              {isSending ? "Đang xử lý..." : "Gửi thông tin"}
+            </Button>
+          </div>
+        </footer>
+      </form>
+      </div>
+    </div>
+  )
+}
