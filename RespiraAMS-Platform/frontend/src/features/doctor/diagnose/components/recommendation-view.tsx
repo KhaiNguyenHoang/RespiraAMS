@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DiagnoseResponse, TreatmentProtocolItem } from "@/features/doctor/diagnose/types"
-import { SavedDiagnose } from "@/features/doctor/history/storage"
+
 
 const severityLabels: Record<string, string> = {
   mild: "Nhẹ",
@@ -26,7 +26,7 @@ interface RecommendationViewProps {
   patientName: string
   diseaseName: string
   onBack: () => void
-  onSave: (record: SavedDiagnose) => void
+  onSave: (selectedProtocolId: string, reason: string | undefined) => void
 }
 
 function capitalize(str: string) {
@@ -84,17 +84,7 @@ export function RecommendationView({ diagnoseResult, patientName, diseaseName, o
   const selectedProtocol = protocols.find((p) => p.id === selectedProtocolId)
 
   const handleSave = () => {
-    onSave({
-      id: crypto.randomUUID(),
-      timestamp: new Date().toISOString(),
-      patientName,
-      diseaseName,
-      severity: diagnoseResult.severity,
-      treatmentSite: diagnoseResult.treatmentSite,
-      selectedProtocolId,
-      selectedProtocolName: selectedProtocol?.name ?? "",
-      reason: isRecommended ? undefined : reason,
-    })
+    onSave(selectedProtocolId, isRecommended ? undefined : reason)
     setSaved(true)
   }
 

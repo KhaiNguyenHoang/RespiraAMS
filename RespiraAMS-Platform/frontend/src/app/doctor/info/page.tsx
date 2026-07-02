@@ -1,13 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
-import { useAntibiotics, usePathogens, useDiseases } from "@/features/doctor/info/api"
-import { AntibioticItem, PathogenItem } from "@/features/doctor/info/types"
+import { Search, Bug, Stethoscope, Pill, FileText } from "lucide-react"
+import { useAntibiotics, usePathogens, useDiseases, useTreatmentProtocols } from "@/features/doctor/info/api"
+import { AntibioticItem, PathogenItem, TreatmentProtocolItem } from "@/features/doctor/info/types"
 
 function AntibioticsTab() {
   const { data, isLoading } = useAntibiotics({ page: 1, size: 100 })
@@ -31,51 +30,46 @@ function AntibioticsTab() {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tên thuốc</TableHead>
-                <TableHead>Phổ kháng khuẩn</TableHead>
-                <TableHead>Phân loại</TableHead>
-                <TableHead>Đường dùng</TableHead>
-                <TableHead>Liều dùng</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">Đang tải...</TableCell>
-                </TableRow>
-              )}
-              {!isLoading && filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground">Không có dữ liệu</TableCell>
-                </TableRow>
-              )}
-              {filtered.map((item: AntibioticItem) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell>{item.antibioticSpectrum.name}</TableCell>
-                  <TableCell className="capitalize">{item.category}</TableCell>
-                  <TableCell>{item.routeOfAdministrations.join(", ")}</TableCell>
-                  <TableCell>
-                    {item.routeOfAdministrations.map((route) => (
-                      <div key={route} className="text-sm">
-                        <span className="font-medium uppercase text-xs">{route}:</span>
-                        <ul className="list-disc pl-4">
-                          {item.dosages[route]?.map((d, i) => <li key={i}>{d}</li>)}
-                        </ul>
-                      </div>
-                    ))}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {isLoading ? (
+        <div className="text-center py-12 text-sm text-muted-foreground">Đang tải...</div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12 text-sm text-muted-foreground">Không có dữ liệu</div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((item: AntibioticItem) => (
+            <Card key={item.id}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Pill className="h-4 w-4 text-primary shrink-0" />
+                  {item.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Phổ kháng khuẩn</p>
+                  <p className="text-sm font-medium">{item.antibioticSpectrum.name}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Phân loại</p>
+                  <p className="text-sm font-medium capitalize">{item.category}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Đường dùng</p>
+                  <p className="text-sm">{item.routeOfAdministrations.join(", ")}</p>
+                </div>
+                {item.routeOfAdministrations.map((route) => (
+                  <div key={route}>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">{route}</p>
+                    <ul className="list-disc pl-4 text-sm">
+                      {item.dosages[route]?.map((d, i) => <li key={i}>{d}</li>)}
+                    </ul>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -102,36 +96,27 @@ function PathogensTab() {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tên tác nhân</TableHead>
-                <TableHead>Mô tả</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={2} className="text-center text-muted-foreground">Đang tải...</TableCell>
-                </TableRow>
-              )}
-              {!isLoading && filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={2} className="text-center text-muted-foreground">Không có dữ liệu</TableCell>
-                </TableRow>
-              )}
-              {filtered.map((item: PathogenItem) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell className="whitespace-normal wrap-break-word">{item.description}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {isLoading ? (
+        <div className="text-center py-12 text-sm text-muted-foreground">Đang tải...</div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12 text-sm text-muted-foreground">Không có dữ liệu</div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((item: PathogenItem) => (
+            <Card key={item.id}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Bug className="h-4 w-4 text-primary shrink-0" />
+                  {item.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -157,39 +142,104 @@ function DiseasesTab() {
           onChange={(e) => setSearch(e.target.value)}
         />
       </div>
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tên bệnh</TableHead>
-                <TableHead>Mô tả</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading && (
-                <TableRow>
-                  <TableCell colSpan={2} className="text-center text-muted-foreground">Đang tải...</TableCell>
-                </TableRow>
-              )}
-              {!isLoading && filtered.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={2} className="text-center text-muted-foreground">Không có dữ liệu</TableCell>
-                </TableRow>
-              )}
-              {filtered.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.name}</TableCell>
-                  <TableCell className="whitespace-normal wrap-break-word">{item.description}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {isLoading ? (
+        <div className="text-center py-12 text-sm text-muted-foreground">Đang tải...</div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12 text-sm text-muted-foreground">Không có dữ liệu</div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((item) => (
+            <Card key={item.id}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Stethoscope className="h-4 w-4 text-primary shrink-0" />
+                  {item.name}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">{item.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
+
+// function ProtocolsTab() {
+//   const { data, isLoading } = useTreatmentProtocols({ page: 1, size: 100 })
+//   const [search, setSearch] = useState("")
+
+//   const items = data?.items ?? []
+//   const filtered = items.filter(
+//     (p) =>
+//       p.name.toLowerCase().includes(search.toLowerCase()) ||
+//       p.issuer.toLowerCase().includes(search.toLowerCase())
+//   )
+
+//   return (
+//     <div className="space-y-4">
+//       <div className="relative max-w-sm">
+//         <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+//         <Input
+//           placeholder="Tìm phác đồ..."
+//           className="pl-8"
+//           value={search}
+//           onChange={(e) => setSearch(e.target.value)}
+//         />
+//       </div>
+//       {isLoading ? (
+//         <div className="text-center py-12 text-sm text-muted-foreground">Đang tải...</div>
+//       ) : filtered.length === 0 ? (
+//         <div className="text-center py-12 text-sm text-muted-foreground">Không có dữ liệu</div>
+//       ) : (
+//         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+//           {filtered.map((item: TreatmentProtocolItem) => (
+//             <Card key={item.id}>
+//               <CardHeader>
+//                 <CardTitle className="flex items-center gap-2">
+//                   <FileText className="h-4 w-4 text-primary shrink-0" />
+//                   {item.name}
+//                 </CardTitle>
+//               </CardHeader>
+//               <CardContent className="space-y-3">
+//                 <div className="flex items-center gap-3 text-xs text-muted-foreground">
+//                   <span className="rounded bg-muted px-2 py-0.5 font-medium">v{item.version}</span>
+//                   <span>{item.issuer}</span>
+//                   <span>{item.issueDate}</span>
+//                 </div>
+//                 <div>
+//                   <p className="text-xs text-muted-foreground uppercase tracking-wide mb-2">Thuốc trong phác đồ</p>
+//                   <div className="space-y-2">
+//                     {item.medicines.map((m) => (
+//                       <div key={m.id} className="rounded-lg border p-3">
+//                         <p className="text-sm font-medium">{m.name}</p>
+//                         <div className="mt-1 text-xs text-muted-foreground space-y-0.5">
+//                           <p>Phổ: {m.antibioticSpectrum.name}</p>
+//                           <p className="capitalize">Phân loại: {m.category}</p>
+//                           <p>Đường dùng: {m.routeOfAdministrations.join(", ")}</p>
+//                         </div>
+//                         {m.routeOfAdministrations.map((route) => (
+//                           <div key={route} className="mt-1">
+//                             <p className="text-xs font-medium uppercase text-muted-foreground">{route}</p>
+//                             <ul className="list-disc pl-4 text-xs text-muted-foreground">
+//                               {m.dosages[route]?.map((d, i) => <li key={i}>{d}</li>)}
+//                             </ul>
+//                           </div>
+//                         ))}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 </div>
+//               </CardContent>
+//             </Card>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   )
+// }
 
 export default function InfoPage() {
   return (
@@ -198,7 +248,7 @@ export default function InfoPage() {
         <p className="text-primary text-sm uppercase tracking-widest">Tra cứu</p>
         <h1 className="text-3xl font-bold mt-2">Thông tin tham khảo</h1>
         <p className="text-muted-foreground mt-2">
-          Tra cứu thông tin về thuốc, tác nhân gây bệnh và bệnh lý.
+          Tra cứu thông tin về thuốc, tác nhân gây bệnh, bệnh lý và phác đồ điều trị.
         </p>
       </header>
 
@@ -207,6 +257,7 @@ export default function InfoPage() {
           <TabsTrigger value="antibiotics">Thuốc kháng sinh</TabsTrigger>
           <TabsTrigger value="pathogens">Tác nhân gây bệnh</TabsTrigger>
           <TabsTrigger value="diseases">Bệnh lý</TabsTrigger>
+          <TabsTrigger value="protocols">Phác đồ điều trị</TabsTrigger>
         </TabsList>
         <TabsContent value="antibiotics" className="mt-6">
           <AntibioticsTab />
@@ -216,6 +267,9 @@ export default function InfoPage() {
         </TabsContent>
         <TabsContent value="diseases" className="mt-6">
           <DiseasesTab />
+        </TabsContent>
+        <TabsContent value="protocols" className="mt-6">
+          {/* <ProtocolsTab /> */}
         </TabsContent>
       </Tabs>
     </div>

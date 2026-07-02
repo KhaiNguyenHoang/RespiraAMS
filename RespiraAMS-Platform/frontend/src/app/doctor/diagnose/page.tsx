@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useDisease } from "@/features/doctor/diagnose/api"
 import { diagnose } from "@/features/doctor/diagnose/api"
-import { DiagnoseResponse } from "@/features/doctor/diagnose/types"
-import { saveDiagnose } from "@/features/doctor/history/storage"
+import { DiagnoseResponse, TreatmentProtocolItem } from "@/features/doctor/diagnose/types"
+import { useCreateTreatmentDecision } from "@/features/doctor/history/api"
+import { TreatmentProtocolSnapshotDTo } from "@/features/doctor/history/types"
 import { PatientInfoSection } from "@/features/doctor/diagnose/components/patient-info-section"
 import { DiseaseSelectSection } from "@/features/doctor/diagnose/components/disease-select-section"
 import { IcuCriteriaSection } from "@/features/doctor/diagnose/components/icu-criteria-section"
@@ -192,15 +193,75 @@ export default function ClinicalFormPage() {
     }))
   }
 
+  const { mutate: handleSaveDecision } = useCreateTreatmentDecision()
+
+  const buildSnapshot = (p: TreatmentProtocolItem): TreatmentProtocolSnapshotDTo => ({
+    treatmentProtocolId: p.id,
+    treatmentProtocolName: p.name,
+    treatmentProtocolIssuer: p.issuer,
+    treatmentProtocolIssueDate: p.issueDate,
+    treatmentProtocolVersion: p.version,
+    medicines: p.medicines.map(m => ({
+      name: m.name,
+      antibioticSpectrum: m.antibioticSpectrum.name,
+      category: m.category,
+      dosages: m.dosages,
+    })),
+  })
+
+  const handleSave = (selectedProtocolId: string, reason: string | undefined) => {
+    if (!diagnoseResult || !disease) return
+    const recommendedProtocol = diagnoseResult.recommend[0]
+    const chosenProtocol = diagnoseResult.recommend.find(p => p.id === selectedProtocolId) || recommendedProtocol
+
+    const criteriaSnapshots: { criterionId: string; criterionName: string; value: string | null }[] = []
+    for (const [id, checked] of Object.entries(formValues.icuCriteria)) {
+      if (!checked) continue
+      const item = disease.icuHospitalizeCriteria.find(c => c.criterion.id === id)
+      criteriaSnapshots.push({ criterionId: id, criterionName: item?.criterion.name ?? id, value: "true" })
+    }
+    for (const [id, value] of Object.entries(formValues.icuNumericValues)) {
+      if (!value) continue
+      const item = disease.icuHospitalizeCriteria.find(c => c.criterion.id === id)
+      criteriaSnapshots.push({ criterionId: id, criterionName: item?.criterion.name ?? id, value })
+    }
+    for (const [id, checked] of Object.entries(formValues.resistanceRisks)) {
+      if (!checked) continue
+      const item = disease.resistanceRisks.find(r => r.criterion.id === id)
+      criteriaSnapshots.push({ criterionId: id, criterionName: item?.criterion.name ?? id, value: "true" })
+    }
+    for (const [id, value] of Object.entries(formValues.resistanceNumericValues)) {
+      if (!value) continue
+      const item = disease.resistanceRisks.find(r => r.criterion.id === id)
+      criteriaSnapshots.push({ criterionId: id, criterionName: item?.criterion.name ?? id, value })
+    }
+
+    handleSaveDecision({
+      diseaseId: selectedDiseaseId,
+      diseaseName: disease.name,
+      severity: diagnoseResult.severity,
+      treatmentSite: diagnoseResult.treatmentSite,
+      infectionProbabilitySnapshots: diagnoseResult.infectionProbabilities.map(ip => ({
+        pathogenId: ip.pathogenId,
+        pathogenName: ip.pathogenName,
+        infectionProbability: Number(ip.probability),
+      })),
+      criteriaSnapshots,
+      recommended: buildSnapshot(recommendedProtocol),
+      chosen: buildSnapshot(chosenProtocol),
+      reason: reason ?? null,
+    })
+  }
+
   if (showRecommendation && diagnoseResult) {
     return (
-      <div className="min-h-full">
+      <div>
         <RecommendationView
           diagnoseResult={diagnoseResult}
           patientName={formValues.patientName}
           diseaseName={disease?.name ?? ""}
           onBack={() => setShowRecommendation(false)}
-          onSave={saveDiagnose}
+          onSave={handleSave}
         />
       </div>
     )
@@ -255,17 +316,6 @@ export default function ClinicalFormPage() {
           onDiastolicChange={(v: string) => updateField("diastolic", v)}
         />
 
-        {selectedDiseaseId && diseaseLoading && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Đang tải thông tin bệnh...</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">Vui lòng chờ trong giây lát.</p>
-            </CardContent>
-          </Card>
-        )}
-
         {selectedDiseaseId && diseaseError && (
           <Card>
             <CardHeader>
@@ -277,7 +327,7 @@ export default function ClinicalFormPage() {
           </Card>
         )}
 
-        {selectedDiseaseId && disease && !diseaseLoading && (
+        {selectedDiseaseId && disease && (
           <>
             <IcuCriteriaSection
               disease={disease}
@@ -348,7 +398,7 @@ export default function ClinicalFormPage() {
           </Card>
         )}
 
-        <footer className="flex justify-between border-t pt-6">
+        <footer className="flex justify-between border-t pt-4 -mt-6">
           <Button variant="outline" size="lg" onClick={handleReset}>
             Đặt lại
           </Button>
