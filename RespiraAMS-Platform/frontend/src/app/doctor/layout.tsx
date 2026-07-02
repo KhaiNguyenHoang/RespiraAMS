@@ -7,11 +7,11 @@ export default function DoctorLayout({
   children: React.ReactNode
 }>) {
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex">
       <DoctorSidebar />
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col min-h-screen">
         <DoctorHeader />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1">
           {children}
         </main>
       </div>

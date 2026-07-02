@@ -117,7 +117,7 @@ export function DoctorSidebar() {
     <TooltipProvider delayDuration={0}>
       <aside
         className={cn(
-          "relative flex flex-col h-screen border-r bg-background",
+          "sticky top-0 flex flex-col h-screen border-r bg-background",
           "transition-[width] duration-300 ease-in-out",
           collapsed ? "w-16" : "w-60"
         )}
