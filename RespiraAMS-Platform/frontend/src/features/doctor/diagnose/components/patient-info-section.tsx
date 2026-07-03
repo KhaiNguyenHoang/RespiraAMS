@@ -63,7 +63,7 @@ export function PatientInfoSection({
           {/* Họ tên */}
           <div className="w-full">
             <label className="text-sm font-medium">
-              Họ và tên *
+              Họ và tên<span className="text-red-500">*</span>
             </label>
 
             <Input
@@ -79,7 +79,7 @@ export function PatientInfoSection({
           {/* Ngày sinh */}
           <div className="w-full">
             <label className="text-sm font-medium">
-              Ngày sinh
+              Ngày sinh<span className="text-red-500">*</span>
             </label>
 
             <Popover>
@@ -126,7 +126,7 @@ export function PatientInfoSection({
           {/* Giới tính */}
           <div className="w-full">
             <label className="text-sm font-medium">
-              Giới tính
+              Giới tính<span className="text-red-500">*</span>
             </label>
 
             <Select

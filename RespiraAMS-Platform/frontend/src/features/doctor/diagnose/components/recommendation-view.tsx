@@ -6,14 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DiagnoseResponse, TreatmentProtocolItem } from "@/features/doctor/diagnose/types"
+import { SeverityBadge } from "@/features/doctor/components/badges"
 
-
-const severityLabels: Record<string, string> = {
-  mild: "Nhẹ",
-  moderate: "Trung bình",
-  severe: "Nặng",
-  critical: "Nguy kịch",
-}
 
 const treatmentSiteLabels: Record<string, string> = {
   outpatient: "Ngoại trú",
@@ -109,7 +103,7 @@ export function RecommendationView({ diagnoseResult, patientName, diseaseName, o
           </CardHeader>
           <CardContent>
             <p className="text-lg font-semibold">
-              {severityLabels[diagnoseResult.severity] ?? diagnoseResult.severity}
+              <SeverityBadge severity={diagnoseResult.severity} />
             </p>
           </CardContent>
         </Card>
@@ -134,8 +128,8 @@ export function RecommendationView({ diagnoseResult, patientName, diseaseName, o
             <div key={protocol.id}>
               <label
                 className={`flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors ${selectedProtocolId === protocol.id
-                    ? "border-primary bg-primary/5"
-                    : "hover:border-muted-foreground/30"
+                  ? "border-primary bg-primary/5"
+                  : "hover:border-muted-foreground/30"
                   }`}
               >
                 <input

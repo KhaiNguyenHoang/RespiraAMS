@@ -29,12 +29,7 @@ function calculateAge(dob: Date | undefined): string {
   return String(age)
 }
 
-const severityLabels: Record<string, string> = {
-  mild: "Nhẹ",
-  moderate: "Trung bình",
-  severe: "Nặng",
-  critical: "Nguy kịch",
-}
+import { SeverityBadge } from "@/features/doctor/components/badges"
 
 const treatmentSiteLabels: Record<string, string> = {
   outpatient: "Ngoại trú",
@@ -270,160 +265,160 @@ export default function ClinicalFormPage() {
   return (
     <div>
       <div className="space-y-6 max-w-300 mx-auto px-4 pt-8 pb-4">
-      <header className="mb-8">
-        <p className="text-primary text-sm uppercase tracking-widest">
-          Đánh giá ban đầu
-        </p>
-        <h1 className="text-3xl font-bold mt-2">
-          Mẫu Thông tin Bệnh nhân
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Vui lòng hoàn thành tất cả các trường thông tin cần thiết để đánh
-          giá lâm sàng.
-        </p>
-      </header>
+        <header className="mb-8">
+          <p className="text-primary text-sm uppercase tracking-widest">
+            Đánh giá ban đầu
+          </p>
+          <h1 className="text-3xl font-bold mt-2">
+            Mẫu Thông tin Bệnh nhân
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Vui lòng hoàn thành tất cả các trường thông tin cần thiết để đánh
+            giá lâm sàng.
+          </p>
+        </header>
 
-      <form
-        className="space-y-6"
-        onSubmit={(e) => e.preventDefault()}
-      >
-        <PatientInfoSection
-          patientName={formValues.patientName}
-          dateOfBirth={formValues.dateOfBirth}
-          gender={formValues.gender}
-          onPatientNameChange={(v: string) => updateField("patientName", v)}
-          onDateOfBirthChange={(v: Date | undefined) => updateField("dateOfBirth", v)}
-          onGenderChange={(v: string) => updateField("gender", v)}
-        />
+        <form
+          className="space-y-6"
+          onSubmit={(e) => e.preventDefault()}
+        >
+          <PatientInfoSection
+            patientName={formValues.patientName}
+            dateOfBirth={formValues.dateOfBirth}
+            gender={formValues.gender}
+            onPatientNameChange={(v: string) => updateField("patientName", v)}
+            onDateOfBirthChange={(v: Date | undefined) => updateField("dateOfBirth", v)}
+            onGenderChange={(v: string) => updateField("gender", v)}
+          />
 
-        <DiseaseSelectSection
-          value={selectedDiseaseId}
-          onValueChange={handleDiseaseChange}
-        />
+          <DiseaseSelectSection
+            value={selectedDiseaseId}
+            onValueChange={handleDiseaseChange}
+          />
 
-        <Curb65Section
-          confusion={formValues.confusion}
-          age65={formValues.age65}
-          urea={formValues.urea}
-          respiratory={formValues.respiratory}
-          systolic={formValues.systolic}
-          diastolic={formValues.diastolic}
-          onConfusionChange={(v: boolean) => updateField("confusion", v)}
-          onAge65Change={(v: boolean) => updateField("age65", v)}
-          onUreaChange={(v: string) => updateField("urea", v)}
-          onRespiratoryChange={(v: string) => updateField("respiratory", v)}
-          onSystolicChange={(v: string) => updateField("systolic", v)}
-          onDiastolicChange={(v: string) => updateField("diastolic", v)}
-        />
+          <Curb65Section
+            confusion={formValues.confusion}
+            age65={formValues.age65}
+            urea={formValues.urea}
+            respiratory={formValues.respiratory}
+            systolic={formValues.systolic}
+            diastolic={formValues.diastolic}
+            onConfusionChange={(v: boolean) => updateField("confusion", v)}
+            onAge65Change={(v: boolean) => updateField("age65", v)}
+            onUreaChange={(v: string) => updateField("urea", v)}
+            onRespiratoryChange={(v: string) => updateField("respiratory", v)}
+            onSystolicChange={(v: string) => updateField("systolic", v)}
+            onDiastolicChange={(v: string) => updateField("diastolic", v)}
+          />
 
-        {selectedDiseaseId && diseaseError && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Lỗi tải dữ liệu</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-destructive">Không thể tải thông tin bệnh lý. Vui lòng thử lại.</p>
-            </CardContent>
-          </Card>
-        )}
+          {selectedDiseaseId && diseaseError && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Lỗi tải dữ liệu</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-destructive">Không thể tải thông tin bệnh lý. Vui lòng thử lại.</p>
+              </CardContent>
+            </Card>
+          )}
 
-        {selectedDiseaseId && disease && (
-          <>
-            <IcuCriteriaSection
-              disease={disease}
-              loading={diseaseLoading}
-              criteriaChecked={formValues.icuCriteria}
-              numericValues={formValues.icuNumericValues}
-              onCriteriaCheckChange={(id, checked) =>
-                updateField("icuCriteria", { ...formValues.icuCriteria, [id]: checked })
-              }
-              onNumericValueChange={(id, value) =>
-                updateField("icuNumericValues", { ...formValues.icuNumericValues, [id]: value })
-              }
-            />
-            <ResistanceRiskSection
-              disease={disease}
-              loading={diseaseLoading}
-              risksChecked={formValues.resistanceRisks}
-              numericValues={formValues.resistanceNumericValues}
-              otherCriteriaEnabled={formValues.otherCriteriaEnabled}
-              otherCriteria={formValues.otherCriteria}
-              onRiskCheckChange={(id, checked) =>
-                updateField("resistanceRisks", { ...formValues.resistanceRisks, [id]: checked })
-              }
-              onNumericValueChange={(id, value) =>
-                updateField("resistanceNumericValues", { ...formValues.resistanceNumericValues, [id]: value })
-              }
-              onOtherCriteriaEnabledChange={(v) => updateField("otherCriteriaEnabled", v)}
-              onOtherCriteriaChange={(v) => updateField("otherCriteria", v)}
-            />
-          </>
-        )}
+          {selectedDiseaseId && disease && (
+            <>
+              <IcuCriteriaSection
+                disease={disease}
+                loading={diseaseLoading}
+                criteriaChecked={formValues.icuCriteria}
+                numericValues={formValues.icuNumericValues}
+                onCriteriaCheckChange={(id, checked) =>
+                  updateField("icuCriteria", { ...formValues.icuCriteria, [id]: checked })
+                }
+                onNumericValueChange={(id, value) =>
+                  updateField("icuNumericValues", { ...formValues.icuNumericValues, [id]: value })
+                }
+              />
+              <ResistanceRiskSection
+                disease={disease}
+                loading={diseaseLoading}
+                risksChecked={formValues.resistanceRisks}
+                numericValues={formValues.resistanceNumericValues}
+                otherCriteriaEnabled={formValues.otherCriteriaEnabled}
+                otherCriteria={formValues.otherCriteria}
+                onRiskCheckChange={(id, checked) =>
+                  updateField("resistanceRisks", { ...formValues.resistanceRisks, [id]: checked })
+                }
+                onNumericValueChange={(id, value) =>
+                  updateField("resistanceNumericValues", { ...formValues.resistanceNumericValues, [id]: value })
+                }
+                onOtherCriteriaEnabledChange={(v) => updateField("otherCriteriaEnabled", v)}
+                onOtherCriteriaChange={(v) => updateField("otherCriteria", v)}
+              />
+            </>
+          )}
 
-        {diagnoseResult && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Kết quả chẩn đoán</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="border rounded-lg p-4">
-                  <p className="text-sm text-muted-foreground">Mức độ nghiêm trọng</p>
-                  <p className="text-lg font-semibold mt-1">{severityLabels[diagnoseResult.severity] ?? diagnoseResult.severity}</p>
-                </div>
-                <div className="border rounded-lg p-4">
-                  <p className="text-sm text-muted-foreground">Nơi điều trị</p>
-                  <p className="text-lg font-semibold mt-1">{treatmentSiteLabels[diagnoseResult.treatmentSite] ?? diagnoseResult.treatmentSite}</p>
-                </div>
-              </div>
-              {diagnoseResult.infectionProbabilities.length > 0 && (
-                <div>
-                  <h3 className="font-semibold mb-3">Xác suất tác nhân gây bệnh</h3>
-                  <div className="space-y-2">
-                    {diagnoseResult.infectionProbabilities.map((item) => (
-                      <div
-                        key={item.pathogenId}
-                        className="flex items-center justify-between border rounded-lg p-3"
-                      >
-                        <div>
-                          <p className="font-medium text-sm">{item.pathogenName}</p>
-                        </div>
-                        <span className="text-sm font-semibold text-primary">{(Number(item.probability) * 100).toFixed(1)}%</span>
-                      </div>
-                    ))}
+          {diagnoseResult && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Kết quả chẩn đoán</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="border rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">Mức độ nghiêm trọng</p>
+                    <div className="mt-1"><SeverityBadge severity={diagnoseResult.severity} /></div>
+                  </div>
+                  <div className="border rounded-lg p-4">
+                    <p className="text-sm text-muted-foreground">Nơi điều trị</p>
+                    <p className="text-lg font-semibold mt-1">{treatmentSiteLabels[diagnoseResult.treatmentSite] ?? diagnoseResult.treatmentSite}</p>
                   </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+                {diagnoseResult.infectionProbabilities.length > 0 && (
+                  <div>
+                    <h3 className="font-semibold mb-3">Xác suất tác nhân gây bệnh</h3>
+                    <div className="space-y-2">
+                      {diagnoseResult.infectionProbabilities.map((item) => (
+                        <div
+                          key={item.pathogenId}
+                          className="flex items-center justify-between border rounded-lg p-3"
+                        >
+                          <div>
+                            <p className="font-medium text-sm">{item.pathogenName}</p>
+                          </div>
+                          <span className="text-sm font-semibold text-primary">{(Number(item.probability) * 100).toFixed(1)}%</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
-        <footer className="flex justify-between border-t pt-4 -mt-6">
-          <Button variant="outline" size="lg" onClick={handleReset}>
-            Đặt lại
-          </Button>
+          <footer className="flex justify-between border-t pt-4 -mt-6">
+            <Button variant="outline" size="lg" onClick={handleReset}>
+              Đặt lại
+            </Button>
 
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => handleDiagnose()}
-              disabled={isDiagnosing || !selectedDiseaseId}
-            >
-              {isDiagnosing && <Loader2 className="animate-spin" />}
-              {isDiagnosing ? "Đang xử lý..." : "Chẩn đoán"}
-            </Button>
-            <Button
-              size="lg"
-              onClick={() => handleDiagnoseAndRecommend()}
-              disabled={isSending || !selectedDiseaseId}
-            >
-              {isSending && <Loader2 className="animate-spin" />}
-              {isSending ? "Đang xử lý..." : "Gửi thông tin"}
-            </Button>
-          </div>
-        </footer>
-      </form>
+            <div className="flex gap-3">
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => handleDiagnose()}
+                disabled={isDiagnosing || !selectedDiseaseId}
+              >
+                {isDiagnosing && <Loader2 className="animate-spin" />}
+                {isDiagnosing ? "Đang xử lý..." : "Chẩn đoán"}
+              </Button>
+              <Button
+                size="lg"
+                onClick={() => handleDiagnoseAndRecommend()}
+                disabled={isSending || !selectedDiseaseId}
+              >
+                {isSending && <Loader2 className="animate-spin" />}
+                {isSending ? "Đang xử lý..." : "Gửi thông tin"}
+              </Button>
+            </div>
+          </footer>
+        </form>
       </div>
     </div>
   )

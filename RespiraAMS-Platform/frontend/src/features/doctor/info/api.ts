@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { apiFetch, API_BASE } from "@/lib/api"
-import { AntibioticItem, PathogenItem, DiseaseItem, TreatmentProtocolItem } from "./types"
+import { AntibioticItem, PathogenItem, DiseaseItem, DiseaseDetail, TreatmentProtocolDetail } from "./types"
 import { Pagination, PaginationParam } from "@/lib/models"
 
 export function getAntibiotics(params: PaginationParam) {
@@ -28,11 +28,12 @@ export function getDiseaseDetail(id: string) {
   return apiFetch<DiseaseItem>(`${API_BASE}/diseases/${id}`)
 }
 
-export function getTreatmentProtocols(params: PaginationParam) {
-  const searchParams = new URLSearchParams()
-  searchParams.set("Page", String(params.page))
-  searchParams.set("Size", String(params.size))
-  return apiFetch<Pagination<TreatmentProtocolItem>>(`${API_BASE}/treatment-protocols?${searchParams}`)
+export function getDiseaseDetailWithProtocols(id: string) {
+  return apiFetch<DiseaseDetail>(`${API_BASE}/diseases/${id}`)
+}
+
+export function getTreatmentProtocolDetail(id: string) {
+  return apiFetch<TreatmentProtocolDetail>(`${API_BASE}/treatment-protocols/${id}`)
 }
 
 export function useAntibiotics(params: PaginationParam = { page: 1, size: 100 }) {
@@ -56,9 +57,18 @@ export function useDiseases(params: PaginationParam) {
   })
 }
 
-export function useTreatmentProtocols(params: PaginationParam = { page: 1, size: 100 }) {
+export function useDiseaseDetailWithProtocols(id: string | undefined) {
   return useQuery({
-    queryKey: ["treatment-protocols", "list", params],
-    queryFn: () => getTreatmentProtocols(params),
+    queryKey: ["disease", "detail", id],
+    queryFn: () => getDiseaseDetailWithProtocols(id!),
+    enabled: !!id,
+  })
+}
+
+export function useTreatmentProtocolDetail(id: string | undefined) {
+  return useQuery({
+    queryKey: ["treatment-protocol", "detail", id],
+    queryFn: () => getTreatmentProtocolDetail(id!),
+    enabled: !!id,
   })
 }
