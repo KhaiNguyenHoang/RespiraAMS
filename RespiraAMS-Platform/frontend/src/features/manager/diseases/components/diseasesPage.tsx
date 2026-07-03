@@ -7,11 +7,12 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { DiseasesTable } from "./diseasesTable";
 import DiseaseForm from "./diseaseForm";
-import DeleteDiseasePanel from "./deleteDiseasePanel";
 import { useRouter } from "next/navigation";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { DeletePanel } from "../../shared/components/deletePanel";
+import { TableTitle } from "../../shared/components/tableTitle";
 
 type ActiveView = "create" | "update" | "delete" | null;
 
@@ -39,15 +40,10 @@ export function DiseasesPage() {
 
     return (
         <div className="container mx-auto">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">Diseases Management</h1>
-                <Button onClick={() => openView("create")}>
-                    <Plus className="mr-2 h-4 w-4" /> Add Disease
-                </Button>
-            </div>
+            <TableTitle title="Bệnh truyền nhiễm" onClick={() => openView("create")} />
 
             <DiseasesTable
-                onView={(item) => router.push(`/manager/diseases/${item.id}`)} 
+                onView={(item) => router.push(`/manager/diseases/${item.id}`)}
                 onEdit={(item) => openView("update", item)}
                 onDelete={(item) => openView("delete", item)}
             />
@@ -96,13 +92,8 @@ export function DiseasesPage() {
 
                     <div className="py-4 mt-4">
                         {activeView === "delete" && selectedDisease && (
-                            <DeleteDiseasePanel
-                                disease={selectedDisease}
-                                onConfirm={() => deleteMutation.mutate(selectedDisease.id, { 
-                                    onSuccess: () => {
-                                        closeView();
-                                    }
-                                })}
+                            <DeletePanel
+                                onConfirm={() => deleteMutation.mutate(selectedDisease.id, { onSuccess: () => closeView() })}
                                 onCancel={closeView}
                                 isPending={deleteMutation.isPending}
                                 error={deleteMutation.error}

@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { CreateResistanceRiskRequest, ResistanceRisk } from "../../resistanceRisks/models";
 import { usePathogensList } from "../../pathogens/queries";
 import { z } from "zod";
-import { CriterionFormFields, CriterionFormState } from "../../diseases/components/criterionFormFields";
+import { CriterionFormFields, CriterionFormState } from "../../shared/components/criterionFormFields";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronDown, Check } from "lucide-react";
 
@@ -49,7 +49,7 @@ export default function ResistanceRiskForm({ initialData, onSubmit, onCancel, is
     const [criterionObj, setCriterionObj] = useState<CriterionFormState>({
         name: "", type: "Boolean", min: "", max: "", unit: "", isExclusive: false
     });
-    
+
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -74,7 +74,7 @@ export default function ResistanceRiskForm({ initialData, onSubmit, onCancel, is
 
             const apiType = initialData.criterion.type;
             const mappedType = apiType === "numeric" ? "Numeric" : "Boolean";
-            
+
             setCriterionObj({
                 name: initialData.criterion.name || "",
                 type: mappedType,
@@ -91,7 +91,7 @@ export default function ResistanceRiskForm({ initialData, onSubmit, onCancel, is
         setFormErrors({});
     }, [initialData, pathogensList]);
 
-    const filteredPathogens = pathogensList?.filter(p => 
+    const filteredPathogens = pathogensList?.filter(p =>
         p.name.toLowerCase().includes(pathogenSearch.toLowerCase())
     ) || [];
 
@@ -140,12 +140,12 @@ export default function ResistanceRiskForm({ initialData, onSubmit, onCancel, is
                 {/* Risk Name */}
                 <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Risk Name <span className="text-red-500">*</span></label>
-                    <Input 
-                        value={name} 
+                    <Input
+                        value={name}
                         onChange={(e) => {
                             setName(e.target.value);
                             if (formErrors.name) setFormErrors(p => ({ ...p, name: "" }));
-                        }} 
+                        }}
                         disabled={isPending}
                         placeholder="e.g. CA-MRSA"
                         className={`block w-full border-gray-300 rounded-md py-2 px-3 text-sm text-gray-700 focus:ring-primary focus:border-primary ${formErrors.name ? "border-red-500" : ""}`}
@@ -155,7 +155,7 @@ export default function ResistanceRiskForm({ initialData, onSubmit, onCancel, is
 
                 <div className="relative" ref={dropdownRef}>
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Pathogen <span className="text-red-500">*</span></label>
-                    <div 
+                    <div
                         className={`flex items-center justify-between w-full border rounded-md py-2 px-3 text-sm cursor-pointer bg-white ${formErrors.pathogenId ? "border-red-500" : "border-gray-300"} ${isPending ? "opacity-50 pointer-events-none" : ""}`}
                         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     >
@@ -170,8 +170,8 @@ export default function ResistanceRiskForm({ initialData, onSubmit, onCancel, is
                         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
                             <div className="p-2 border-b flex items-center gap-2">
                                 <Search className="w-4 h-4 text-gray-400" />
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={pathogenSearch}
                                     onChange={(e) => setPathogenSearch(e.target.value)}
                                     placeholder="Search pathogen..."
@@ -180,8 +180,8 @@ export default function ResistanceRiskForm({ initialData, onSubmit, onCancel, is
                             </div>
                             <ul className="max-h-60 overflow-y-auto p-1">
                                 {filteredPathogens.length > 0 ? filteredPathogens.map(p => (
-                                    <li 
-                                        key={p.id} 
+                                    <li
+                                        key={p.id}
                                         className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex justify-between items-center"
                                         onClick={() => {
                                             setPathogenId(p.id);
@@ -203,15 +203,15 @@ export default function ResistanceRiskForm({ initialData, onSubmit, onCancel, is
 
                 <div className="border-t pt-4">
                     <h3 className="text-sm font-bold text-primary mb-4">Criterion Details</h3>
-                    <CriterionFormFields 
-                        value={criterionObj} 
-                        onChange={setCriterionObj} 
+                    <CriterionFormFields
+                        value={criterionObj}
+                        onChange={setCriterionObj}
                         disabled={isPending}
                         errors={formErrors}
                         isEditMode={isEdit}
                     />
                 </div>
-                
+
                 {apiError && <p className="text-sm text-red-500 font-bold">{apiError.message}</p>}
             </div>
 

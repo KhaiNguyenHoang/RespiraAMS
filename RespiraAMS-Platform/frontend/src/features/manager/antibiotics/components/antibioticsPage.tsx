@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { useCreateAntibiotic, useUpdateAntibiotic, useDeleteAntibiotic } from "../queries";
 import { AntibioticItem } from "../models";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import { AntibioticsTable } from "./antibioticsTable";
 import AntibioticForm from "./antibioticForm";
-import DeleteAntibioticPanel from "./deleteAntibioticPanel";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { TableTitle } from "../../shared/components/tableTitle";
+import { DeletePanel } from "../../shared/components/deletePanel";
 
 type ActiveView = "create" | "update" | "delete" | null;
 
@@ -37,12 +36,7 @@ export function AntibioticsPage() {
 
     return (
         <>
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">Antibiotics</h1>
-                <Button onClick={() => openView("create")}>
-                    <Plus className="mr-2" /> Create
-                </Button>
-            </div>
+            <TableTitle title="Kháng sinh" onClick={() => openView("create")} />
 
             <AntibioticsTable
                 onEdit={(item) => openView("update", item)}
@@ -93,8 +87,7 @@ export function AntibioticsPage() {
 
                     <div className="py-4 mt-4">
                         {activeView === "delete" && selectedAntibiotic && (
-                            <DeleteAntibioticPanel
-                                antibiotic={selectedAntibiotic}
+                            <DeletePanel
                                 onConfirm={() => deleteMutation.mutate(selectedAntibiotic.id, { onSuccess: closeView })}
                                 onCancel={closeView}
                                 isPending={deleteMutation.isPending}

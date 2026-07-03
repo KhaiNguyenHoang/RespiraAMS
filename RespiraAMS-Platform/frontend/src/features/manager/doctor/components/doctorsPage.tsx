@@ -10,8 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 
 import DoctorForm from "./doctorForm";
-import DeleteDoctorPanel from "./deleteDoctorPanel";
 import { useCreateDoctor, useDeleteDoctor } from "../queries";
+import { DeletePanel } from "../../shared/components/deletePanel";
 
 type ActiveView = "create" | "delete" | null;
 
@@ -47,9 +47,9 @@ export default function DoctorsManagementPage() {
                 </Button>
             </div>
 
-            <DoctorsTable 
-                onEdit={() => console.log("Update functionality skipped per request")} 
-                onDelete={(doctor) => openView("delete", doctor)} 
+            <DoctorsTable
+                onEdit={() => console.log("Update functionality skipped per request")}
+                onDelete={(doctor) => openView("delete", doctor)}
             />
 
             <Dialog open={isDialogOpen} onOpenChange={(open) => { if (!open) closeView(); }}>
@@ -90,8 +90,7 @@ export default function DoctorsManagementPage() {
 
                     <div className="py-4 mt-4">
                         {activeView === "delete" && selectedDoctor && (
-                            <DeleteDoctorPanel 
-                                doctor={selectedDoctor}
+                            <DeletePanel
                                 onConfirm={() => deleteMutation.mutate(selectedDoctor.id, { onSuccess: closeView })}
                                 onCancel={closeView}
                                 isPending={deleteMutation.isPending}

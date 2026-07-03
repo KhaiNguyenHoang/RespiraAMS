@@ -7,10 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PathogensTable } from "./pathogensTable";
 import PathogenForm from "./pathogenForm";
-import DeletePathogenPanel from "./deletePathogenPanel";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+import { TableTitle } from "../../shared/components/tableTitle";
+import { DeletePanel } from "../../shared/components/deletePanel";
 
 type ActiveView = "create" | "update" | "delete" | null;
 
@@ -37,12 +38,7 @@ export function PathogensPage() {
 
     return (
         <div className="container mx-auto">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">Pathogen Management</h1>
-                <Button onClick={() => openView("create")}>
-                    <Plus className="mr-2 h-4 w-4" /> Create
-                </Button>
-            </div>
+            <TableTitle title="Tác nhân gây bệnh" onClick={() => openView("create")} />
 
             <PathogensTable
                 onEdit={(item) => openView("update", item)}
@@ -91,8 +87,7 @@ export function PathogensPage() {
 
                     <div className="py-4 mt-4">
                         {activeView === "delete" && selectedPathogen && (
-                            <DeletePathogenPanel
-                                pathogen={selectedPathogen}
+                            <DeletePanel
                                 onConfirm={() => deleteMutation.mutate(selectedPathogen.id, { onSuccess: closeView })}
                                 onCancel={closeView}
                                 isPending={deleteMutation.isPending}

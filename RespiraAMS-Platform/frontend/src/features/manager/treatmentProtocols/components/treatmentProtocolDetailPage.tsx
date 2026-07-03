@@ -6,14 +6,14 @@ import { ErrorMessage } from "@/components/custom/error";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ArrowLeft, Edit, Plus, Trash } from "lucide-react";
-import { CriterionDisplay } from "../../diseases/components/criterionDisplay";
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import TreatmentProtocolForm from "./treatmentProtocolForm";
-import DeleteTreatmentProtocolPanel from "./deleteTreatmentProtocolPanel";
 import { useState } from "react";
 import { Severity, TreatmentSite } from "../../diseasePathogens/models";
 import ProtocolCriterionForm from "./protocolCriterionForm";
+import { CriterionBadge } from "../../shared/components/criterionBadge";
+import { DeletePanel } from "../../shared/components/deletePanel";
 
 interface ProtocolDetailViewProps {
     diseaseId: string;
@@ -23,7 +23,7 @@ interface ProtocolDetailViewProps {
 
 type ModalView = "update" | "delete" | "addCriterion" | "deleteCriterion" | null;
 
-export default function TreatmentProtocolDetailView({diseaseId, id, onBack }: ProtocolDetailViewProps) {
+export default function TreatmentProtocolDetailView({ diseaseId, id, onBack }: ProtocolDetailViewProps) {
     const { data: protocol, isLoading, isError } = useTreatmentProtocolDetail(id);
 
     const [modalView, setModalView] = useState<ModalView>(null);
@@ -36,7 +36,7 @@ export default function TreatmentProtocolDetailView({diseaseId, id, onBack }: Pr
 
     const confirmDeleteCriterion = () => {
         if (!protocol || !criterionToDelete) return;
-        
+
         const updatedCriteriaIds = protocol.otherCriteria
             .filter(c => c.id !== criterionToDelete.id)
             .map(c => c.id);
@@ -52,9 +52,9 @@ export default function TreatmentProtocolDetailView({diseaseId, id, onBack }: Pr
             version: protocol.version,
             severity: mapSeverity,
             treatmentSite: mapSite,
-            specialInfectionId: protocol.specialInfection?.id || null, 
+            specialInfectionId: protocol.specialInfection?.id || null,
             medicineIds: protocol.medicines?.map(m => m.id) || [],
-            otherCriteriaIds: updatedCriteriaIds 
+            otherCriteriaIds: updatedCriteriaIds
         }, {
             onSuccess: () => {
                 closeModal();
@@ -147,7 +147,7 @@ export default function TreatmentProtocolDetailView({diseaseId, id, onBack }: Pr
                                     </TableCell>
                                     <TableCell className="align-top text-sm text-zinc-600">
                                         <div className="font-semibold text-zinc-800">{item.antibioticSpectrum?.name || "N/A"}</div>
-                                        <div className="text-xs mt-1 text-zinc-500 leading-relaxed break-words whitespace-normal" title={item.antibioticSpectrum?.description}>
+                                        <div className="text-xs mt-1 text-zinc-500 leading-relaxed wrap-break-word whitespace-normal" title={item.antibioticSpectrum?.description}>
                                             {item.antibioticSpectrum?.description}
                                         </div>
                                     </TableCell>
@@ -198,13 +198,13 @@ export default function TreatmentProtocolDetailView({diseaseId, id, onBack }: Pr
                             {protocol.otherCriteria?.length > 0 ? protocol.otherCriteria.map((item) => (
                                 <TableRow key={item.id}>
                                     <TableCell className="font-medium">{item.name}</TableCell>
-                                    <TableCell><CriterionDisplay criterion={item as any} /></TableCell>
+                                    <TableCell><CriterionBadge criterion={item as any} /></TableCell>
                                     <TableCell className="text-right">
                                         <div className="flex gap-2 justify-end">
-                                            <Button 
-                                                variant="destructive" 
-                                                size="icon" 
-                                                disabled={updateMutation.isPending} 
+                                            <Button
+                                                variant="destructive"
+                                                size="icon"
+                                                disabled={updateMutation.isPending}
                                                 onClick={() => {
                                                     setCriterionToDelete({ id: item.id, name: item.name });
                                                     setModalView("deleteCriterion");
@@ -255,9 +255,8 @@ export default function TreatmentProtocolDetailView({diseaseId, id, onBack }: Pr
                     )}
 
                     {modalView === "delete" && (
-                        <DeleteTreatmentProtocolPanel
-                            item={protocol}
-                            onConfirm={() => deleteMutation.mutate(protocol.id, { 
+                        <DeletePanel
+                            onConfirm={() => deleteMutation.mutate(protocol.id, {
                                 onSuccess: () => {
                                     closeModal();
                                     onBack();

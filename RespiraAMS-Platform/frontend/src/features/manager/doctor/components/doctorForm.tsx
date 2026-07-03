@@ -45,7 +45,7 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
     };
 
     const toggleDegree = (degree: string) => {
-        setSelectedDegrees(prev => 
+        setSelectedDegrees(prev =>
             prev.includes(degree) ? prev.filter(d => d !== degree) : [...prev, degree]
         );
     };
@@ -60,7 +60,7 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
             setFormErrors(errs);
             return;
         }
-        
+
         setFormErrors({});
 
         const submitData = new FormData();
@@ -68,7 +68,7 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
             if (key === "dateOfBirth" && value) {
                 const dateOffset = new Date(value).toISOString();
                 submitData.append("DateOfBirth", dateOffset);
-            } 
+            }
             else if (key === "gender") {
                 submitData.append("Gender", value);
             } else {
@@ -137,7 +137,7 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
                 </div>
                 <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Gender <span className="text-red-500">*</span></label>
-                    <select value={formData.gender} onChange={(e) => handleInputChange("gender", e.target.value)} disabled={isPending} className="flex h-[36px] w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+                    <select value={formData.gender} onChange={(e) => handleInputChange("gender", e.target.value)} disabled={isPending} className="flex h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
                         <option value="true">Male</option>
                         <option value="false">Female</option>
                     </select>
@@ -153,13 +153,13 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Academic Title <span className="text-red-500">*</span></label>
-                    <select value={formData.academicTitle} onChange={(e) => handleInputChange("academicTitle", e.target.value)} disabled={isPending} className="flex h-[36px] w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+                    <select value={formData.academicTitle} onChange={(e) => handleInputChange("academicTitle", e.target.value)} disabled={isPending} className="flex h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
                         {AcademicTitleOptions.map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                 </div>
                 <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Position <span className="text-red-500">*</span></label>
-                    <select value={formData.position} onChange={(e) => handleInputChange("position", e.target.value)} disabled={isPending} className="flex h-[36px] w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
+                    <select value={formData.position} onChange={(e) => handleInputChange("position", e.target.value)} disabled={isPending} className="flex h-9 w-full rounded-md border border-input bg-white px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary">
                         {PositionOptions.map(p => <option key={p} value={p}>{p}</option>)}
                     </select>
                 </div>
@@ -170,10 +170,10 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-zinc-50 p-3 rounded-md border">
                     {DegreeOptions.map(deg => (
                         <label key={deg} className="flex items-center gap-2 cursor-pointer text-sm">
-                            <input 
-                                type="checkbox" 
-                                checked={selectedDegrees.includes(deg)} 
-                                onChange={() => toggleDegree(deg)} 
+                            <input
+                                type="checkbox"
+                                checked={selectedDegrees.includes(deg)}
+                                onChange={() => toggleDegree(deg)}
                                 disabled={isPending}
                                 className="rounded text-primary focus:ring-primary"
                             />
@@ -185,18 +185,18 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
 
             <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Avatar <span className="font-normal italic text-zinc-400">- Optional</span></label>
-                <Input 
-                    type="file" 
-                    accept="image/*" 
+                <Input
+                    type="file"
+                    accept="image/*"
                     onChange={(e) => {
                         if (e.target.files && e.target.files.length > 0) {
                             setAvatarFile(e.target.files[0]);
                         } else {
                             setAvatarFile(null);
                         }
-                    }} 
-                    disabled={isPending} 
-                    className="cursor-pointer bg-white pt-1.5" 
+                    }}
+                    disabled={isPending}
+                    className="cursor-pointer bg-white pt-1.5"
                 />
             </div>
 

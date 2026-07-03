@@ -3,16 +3,15 @@
 import { useState } from "react";
 import { useCreateAntibioticSpectrum, useUpdateAntibioticSpectrum, useDeleteAntibioticSpectrum } from "../queries";
 import { AntibioticSpectrumItem } from "../models";
-import { Button } from "@/components/ui/button";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
-import { Plus } from "lucide-react";
 import { AntibioticSpectraTable } from "./antibioticSpectraTable";
 import CreateAntibioticSpectrumForm from "./createAntibioticSpectrumForm";
 import UpdateAntibioticSpectrumForm from "./updateAntibioticSpectrumForm";
-import DeleteAntibioticSpectrumPanel from "./deleteAntibioticSpectrumPanel";
+import { TableTitle } from "../../shared/components/tableTitle";
+import { DeletePanel } from "../../shared/components/deletePanel";
 
 type ActiveView = "create" | "update" | "delete" | null;
 
@@ -39,12 +38,10 @@ export function AntibioticSpectraPage() {
 
     return (
         <>
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">Antibiotic Spectra</h1>
-                <Button onClick={() => openView("create")} className="gap-2">
-                    <Plus className="h-4 w-4" /> Create
-                </Button>
-            </div>
+            <TableTitle
+                title="Phổ kháng sinh"
+                onClick={() => openView("create")}
+            />
 
             <AntibioticSpectraTable
                 onEdit={(spectrum) => openView("update", spectrum)}
@@ -91,14 +88,15 @@ export function AntibioticSpectraPage() {
                     <SheetHeader>
                         <SheetTitle>Delete Antibiotic Spectrum</SheetTitle>
                         <SheetDescription>
-                            Confirm deletion of the antibiotic spectrum. This action cannot be undone.
+                            Confirm deletion of the antibiotic spectrum
+                            <strong className="text-red-600"> {selectedSpectrum?.name}</strong>.
+                            This action cannot be undone.
                         </SheetDescription>
                     </SheetHeader>
 
-                    <div className="py-4 mt-4">
+                    <div className="pb-4">
                         {activeView === "delete" && selectedSpectrum && (
-                            <DeleteAntibioticSpectrumPanel
-                                spectrum={selectedSpectrum}
+                            <DeletePanel
                                 onConfirm={() => deleteMutation.mutate(selectedSpectrum.id, { onSuccess: closeView })}
                                 onCancel={closeView}
                                 isPending={deleteMutation.isPending}

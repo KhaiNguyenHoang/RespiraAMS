@@ -1,11 +1,11 @@
 "use client"
 
 import { useDiseaseDetail } from "../queries";
-import { DiseaseItem, DiseaseDetail } from "../models";
+import { DiseaseItem } from "../models";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/custom/error";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash, ArrowLeft } from "lucide-react";
+import { Edit, Trash, ArrowLeft, CircleQuestionMark } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { IcuHospitalizeCriteriaTable } from "../../icuHospitalizeCriteria/components/icuHospitalizeCriteriaTable";
 import { ResistanceRisksTable } from "../../resistanceRisks/components/resistanceRisksTable";
@@ -14,13 +14,14 @@ import { TreatmentProtocolsTable } from "../../treatmentProtocols/components/tre
 import { useState, useRef, useEffect } from "react";
 import { useUpdateDisease, useDeleteDisease } from "@/features/manager/diseases/queries";
 
-// IMPORT CÁC COMPONENT CẦN THIẾT
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 import DiseaseForm from "./diseaseForm";
-import DeleteDiseasePanel from "./deleteDiseasePanel";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { DeletePanel } from "../../shared/components/deletePanel";
 
 interface DiseaseDetailViewProps {
     id: string;
@@ -98,64 +99,72 @@ export default function DiseaseDetailView({ id, onBack }: DiseaseDetailViewProps
                         {disease.description}
                     </p>
                 </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
-                    <div className="bg-zinc-50 p-4 rounded-lg border">
-                        <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Required ICU Main Criteria</p>
-                        <p className="text-xl font-bold mt-1 text-zinc-900">{disease.requiredIcuMainCriteria ?? "N/A"}</p>
-                    </div>
-                    <div className="bg-zinc-50 p-4 rounded-lg border">
-                        <p className="text-xs font-medium text-zinc-500 uppercase tracking-wider">Required ICU Secondary Criteria</p>
-                        <p className="text-xl font-bold mt-1 text-zinc-900">{disease.requiredIcuSecondaryCriteria ?? "N/A"}</p>
-                    </div>
-                </div>
             </div>
 
-            <Accordion 
-                type="single" 
-                collapsible 
-                value={accordionValue} 
+            <Accordion
+                type="single"
+                collapsible
+                value={accordionValue}
                 onValueChange={setAccordionValue}
                 className="w-full space-y-4"
             >
                 <AccordionItem value="icu" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
-                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6">
+                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6 items-center gap-2">
                         ICU Hospitalize Criteria
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <CircleQuestionMark />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>
+                                    Theo tiêu chuẩn của AST, từ {disease.requiredIcuMainCriteria} tiêu chuẩn chính
+                                    hoặc {disease.requiredIcuSecondaryCriteria} tiêu chuẩn phụ sẽ cần phải nhập ICU
+                                </p>
+                            </TooltipContent>
+                        </Tooltip>
                     </AccordionTrigger>
                     <AccordionContent>
-                        <IcuHospitalizeCriteriaTable diseaseId={disease.id} criteria={disease.icuHospitalizeCriteria} />
+                        <ScrollArea className="h-100">
+                            <IcuHospitalizeCriteriaTable diseaseId={disease.id} criteria={disease.icuHospitalizeCriteria} />
+                        </ScrollArea>
                     </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="risks" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
-                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6">
+                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6 items-center">
                         Resistance Risks
                     </AccordionTrigger>
                     <AccordionContent>
-                        <ResistanceRisksTable diseaseId={id} risks={disease.resistanceRisks} />
+                        <ScrollArea className="h-100">
+                            <ResistanceRisksTable diseaseId={id} risks={disease.resistanceRisks} />
+                        </ScrollArea>
                     </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="pathogens" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
-                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6">
+                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6 items-center">
                         Causes
                     </AccordionTrigger>
                     <AccordionContent>
-                        <DiseasePathogensTable diseaseId={id} pathogens={disease.diseasePathogens} />
+                        <ScrollArea className="h-100">
+                            <DiseasePathogensTable diseaseId={id} pathogens={disease.diseasePathogens} />
+                        </ScrollArea>
                     </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="protocols" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
                     <div ref={protocolTableRef} className="scroll-mt-6">
-                        <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6">
+                        <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6 items-center">
                             Treatment Protocols
                         </AccordionTrigger>
                         <AccordionContent>
-                            <TreatmentProtocolsTable 
-                                diseaseId={id} 
-                                protocols={disease.treatmentProtocols} 
-                                onView={(protocolId) => router.push(`/manager/diseases/${id}/protocols/${protocolId}`)}
-                            />
+                            <ScrollArea className="h-100">
+                                <TreatmentProtocolsTable
+                                    diseaseId={id}
+                                    protocols={disease.treatmentProtocols}
+                                    onView={(protocolId) => router.push(`/manager/diseases/${id}/protocols/${protocolId}`)}
+                                />
+                            </ScrollArea>
                         </AccordionContent>
                     </div>
                 </AccordionItem>
@@ -174,7 +183,7 @@ export default function DiseaseDetailView({ id, onBack }: DiseaseDetailViewProps
                                 initialData={selectedDisease}
                                 onSubmit={(data) => {
                                     updateMutation.mutate(
-                                        { id: selectedDisease.id, ...data }, 
+                                        { id: selectedDisease.id, ...data },
                                         { onSuccess: closeModal }
                                     );
                                 }}
@@ -196,17 +205,13 @@ export default function DiseaseDetailView({ id, onBack }: DiseaseDetailViewProps
 
                     <div className="py-4 mt-4">
                         {selectedDisease && (
-                            <DeleteDiseasePanel
-                                disease={selectedDisease}
-                                onConfirm={() => deleteMutation.mutate(
-                                    selectedDisease.id, 
-                                    { 
-                                        onSuccess: () => {
-                                            closeModal();
-                                            router.push('/manager/diseases');
-                                        }
+                            <DeletePanel
+                                onConfirm={() => deleteMutation.mutate(selectedDisease.id, {
+                                    onSuccess: () => {
+                                        closeModal();
+                                        router.push('/manager/diseases');
                                     }
-                                )}
+                                })}
                                 onCancel={closeModal}
                                 isPending={deleteMutation.isPending}
                                 error={deleteMutation.error}

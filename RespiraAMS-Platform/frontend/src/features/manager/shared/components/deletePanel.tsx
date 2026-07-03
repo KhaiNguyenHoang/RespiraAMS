@@ -1,30 +1,26 @@
-import { AntibioticSpectrumItem } from "../models";
+import { ErrorMessage } from "@/components/custom/error";
 import { Button } from "@/components/ui/button";
 
-interface DeleteAntibioticSpectrumPanelProps {
-    spectrum: AntibioticSpectrumItem;
+export interface DeleteItemProps {
     onConfirm: () => void;
     onCancel: () => void;
     isPending: boolean;
     error: Error | null;
 }
 
-export default function DeleteAntibioticSpectrumPanel({
-    spectrum,
+/**
+ * Delete panel for all the delete sheet, which contains cancel and delete buttons, and error message 
+ * if any.
+ */
+export function DeletePanel({
     onConfirm,
     onCancel,
     isPending,
     error,
-}: DeleteAntibioticSpectrumPanelProps) {
+}: DeleteItemProps) {
     return (
-        <div className="flex flex-col gap-4">
-            <p className="text-sm text-muted-foreground">
-                Are you sure you want to delete <strong className="text-red-600">{spectrum.name}</strong>? This action cannot be undone.
-            </p>
-
-            {error && (
-                <p className="text-sm text-destructive">{error.message}</p>
-            )}
+        <div className="flex flex-col gap-4 px-1">
+            {error && <ErrorMessage error={error.message} />}
 
             <div className="flex gap-2 justify-end">
                 <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>

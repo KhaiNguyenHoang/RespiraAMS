@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { z } from "zod";
-import { CriterionFormFields, CriterionFormState } from "../../diseases/components/criterionFormFields";
+import { CriterionFormFields, CriterionFormState } from "../../shared/components/criterionFormFields";
 import { AddProtocolCriteriaRequest } from "../models";
 
 const criteriaSchema = z.object({
@@ -67,9 +67,9 @@ export default function ProtocolCriterionForm({ onSubmit, onCancel, isPending, e
             </div>
 
             <div className="p-6 space-y-5 flex-1 overflow-y-auto">
-                <CriterionFormFields 
-                    value={criterionObj} 
-                    onChange={setCriterionObj} 
+                <CriterionFormFields
+                    value={criterionObj}
+                    onChange={setCriterionObj}
                     disabled={isPending}
                     errors={formErrors}
                 />

@@ -49,7 +49,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
     const [category, setCategory] = useState<AwareCategory | string>("");
     const [routes, setRoutes] = useState<string[]>([]);
     const [dosages, setDosages] = useState<Record<string, string[]>>({});
-    
+
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
@@ -132,16 +132,16 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate> 
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
             <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Antibiotic Name <span className="text-red-500">*</span></label>
-                <Input 
-                    value={name} 
+                <Input
+                    value={name}
                     onChange={(e) => {
                         setName(e.target.value);
                         if (formErrors.name) setFormErrors(p => ({ ...p, name: "" }));
-                    }} 
-                    disabled={isPending} 
+                    }}
+                    disabled={isPending}
                     placeholder="Enter antibiotic name..."
                     className={formErrors.name ? "border-red-500 focus-visible:ring-red-500" : ""}
                 />
@@ -150,8 +150,8 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
 
             <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Antibiotic Spectrum <span className="text-red-500">*</span></label>
-                <select 
-                    value={spectrumId} 
+                <select
+                    value={spectrumId}
                     onChange={(e) => {
                         setSpectrumId(e.target.value);
                         if (formErrors.antibioticSpectrumId) setFormErrors(p => ({ ...p, antibioticSpectrumId: "" }));
@@ -169,8 +169,8 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
 
             <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">AWaRe Category <span className="text-red-500">*</span></label>
-                <select 
-                    value={category} 
+                <select
+                    value={category}
                     onChange={(e) => {
                         setCategory(e.target.value);
                         if (formErrors.category) setFormErrors(p => ({ ...p, category: "" }));
@@ -191,7 +191,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
                     <label className="text-sm font-medium">Routes & Dosages <span className="text-red-500">*</span></label>
                     {formErrors.routes && <p className="text-sm text-red-500 font-medium mt-1">{formErrors.routes}</p>}
                 </div>
-                
+
                 {ROUTE_OPTIONS.map((route) => {
                     const isChecked = routes.includes(route.value);
                     const currentDosages = dosages[route.value] || [];
@@ -200,10 +200,10 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
                     return (
                         <div key={route.value} className={`rounded-xl border p-4 space-y-4 shadow-sm bg-zinc-50/50 ${routeError ? "border-red-500" : ""}`}>
                             <div className="flex items-center gap-3">
-                                <Checkbox 
+                                <Checkbox
                                     id={route.value}
-                                    checked={isChecked} 
-                                    onCheckedChange={(val) => handleRouteChange(route.value, !!val)} 
+                                    checked={isChecked}
+                                    onCheckedChange={(val) => handleRouteChange(route.value, !!val)}
                                     disabled={isPending}
                                 />
                                 <label htmlFor={route.value} className="font-semibold text-sm cursor-pointer">{route.label}</label>
@@ -236,7 +236,7 @@ export default function AntibioticForm({ initialData, onSubmit, onCancel, isPend
                                             </Button>
                                         </div>
                                     ))}
-                                    
+
                                     {routeError && <p className="text-sm text-red-500 font-medium">{routeError}</p>}
 
                                     <Button

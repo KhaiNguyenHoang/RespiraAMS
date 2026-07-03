@@ -1,4 +1,4 @@
-import DoctorsManagementPage from "@/features/manager/dotor/components/doctorsPage";
+import DoctorsManagementPage from "@/features/manager/doctor/components/doctorsPage";
 
 export default function Page() {
     return (

@@ -1,5 +1,5 @@
-import { ManagerSidebar } from "@/features/manager/components/sidebar";
-import { ManagerHeader } from "@/features/manager/components/header";
+import { ManagerHeader } from "@/features/manager/shared/components/header";
+import { ManagerSidebar } from "@/features/manager/shared/components/sidebar";
 
 export default function ManagerLayout({
     children,

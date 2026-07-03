@@ -21,7 +21,7 @@ const protocolSchema = z.object({
     severity: z.string().min(1, "Severity is required!"),
     treatmentSite: z.string().min(1, "Treatment site is required!"),
     specialInfectionId: z.string().nullable().optional(),
-    medicineIds: z.array(z.string()).min(1, "Must select at least one medicine!") 
+    medicineIds: z.array(z.string()).min(1, "Must select at least one medicine!")
 });
 
 interface ProtocolFormProps {
@@ -45,8 +45,8 @@ export default function TreatmentProtocolForm({ initialData, onSubmit, onCancel,
     const [treatmentSite, setTreatmentSite] = useState<TreatmentSite | string>("");
     const [specialInfectionId, setSpecialInfectionId] = useState<string | null>(null);
 
-    const [availableMeds, setAvailableMeds] = useState<{id: string, name: string}[]>([]);
-    const [selectedMeds, setSelectedMeds] = useState<{id: string, name: string}[]>([]);
+    const [availableMeds, setAvailableMeds] = useState<{ id: string, name: string }[]>([]);
+    const [selectedMeds, setSelectedMeds] = useState<{ id: string, name: string }[]>([]);
     const [leftSearch, setLeftSearch] = useState("");
     const [rightSearch, setRightSearch] = useState("");
     const [selectedLeftIds, setSelectedLeftIds] = useState<Set<string>>(new Set());
@@ -74,7 +74,7 @@ export default function TreatmentProtocolForm({ initialData, onSubmit, onCancel,
             setIssuer(initialData.issuer || "");
             setIssueDate(initialData.issueDate ? new Date(initialData.issueDate).toISOString().split('T')[0] : "");
             setVersion(initialData.version?.toString() || "1");
-            
+
             const mapSeverity = Object.values(Severity).find(s => s.toLowerCase() === initialData.severity?.toLowerCase()) || "";
             const mapSite = Object.values(TreatmentSite).find(t => t.toLowerCase() === initialData.treatmentSite?.toLowerCase()) || "";
             setSeverity(mapSeverity);
@@ -91,7 +91,7 @@ export default function TreatmentProtocolForm({ initialData, onSubmit, onCancel,
     useEffect(() => {
         if (antibioticsData) {
             const allMeds = antibioticsData.map(a => ({ id: a.id, name: a.name }));
-            
+
             if (isEdit && initialData?.medicines) {
                 const selectedIds = new Set(initialData.medicines.map(m => m.id));
                 const rightSide = allMeds.filter(m => selectedIds.has(m.id));
@@ -261,18 +261,18 @@ export default function TreatmentProtocolForm({ initialData, onSubmit, onCancel,
                         Prescribed Medicines <span className="text-red-500">*</span>
                     </label>
                     <p className="text-xs text-gray-500 mb-3">Select the antibiotics to include in this protocol.</p>
-                    
-                    <div className="flex flex-col md:flex-row gap-4 items-center h-[280px]">
+
+                    <div className="flex flex-col md:flex-row gap-4 items-center h-70">
                         <div className="w-full md:w-5/12 h-full flex flex-col border rounded-md overflow-hidden bg-zinc-50">
                             <div className="p-2 border-b bg-white relative">
                                 <Search className="w-4 h-4 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                                 <input type="text" placeholder="Search available..." value={leftSearch} onChange={(e) => setLeftSearch(e.target.value)} className="w-full text-xs pl-8 py-1 outline-none" />
                             </div>
                             <div className="flex-1 overflow-y-auto p-1 space-y-1">
-                                {isAntibioticsLoading ? <p className="text-xs text-center p-4 text-gray-400">Loading...</p> : 
+                                {isAntibioticsLoading ? <p className="text-xs text-center p-4 text-gray-400">Loading...</p> :
                                     availableMeds.filter(m => m.name.toLowerCase().includes(leftSearch.toLowerCase())).map(med => (
-                                        <div 
-                                            key={med.id} 
+                                        <div
+                                            key={med.id}
                                             onClick={() => toggleSelection(med.id, 'left')}
                                             className={`text-sm p-2 rounded cursor-pointer transition-colors ${selectedLeftIds.has(med.id) ? "bg-blue-100 text-[#0c3660] font-medium" : "hover:bg-gray-200 text-gray-700"}`}
                                         >
@@ -300,8 +300,8 @@ export default function TreatmentProtocolForm({ initialData, onSubmit, onCancel,
                             </div>
                             <div className="flex-1 overflow-y-auto p-1 space-y-1">
                                 {selectedMeds.filter(m => m.name.toLowerCase().includes(rightSearch.toLowerCase())).map(med => (
-                                    <div 
-                                        key={med.id} 
+                                    <div
+                                        key={med.id}
                                         onClick={() => toggleSelection(med.id, 'right')}
                                         className={`text-sm p-2 rounded cursor-pointer transition-colors ${selectedRightIds.has(med.id) ? "bg-red-100 text-red-700 font-medium" : "bg-white border shadow-sm hover:border-[#0c3660] text-gray-700"}`}
                                     >

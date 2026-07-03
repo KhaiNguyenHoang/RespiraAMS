@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { CreateIcuCriteriaRequest, IcuHospitalizeCriterion } from "../models";
 import { z } from "zod";
-import { CriterionFormFields, CriterionFormState } from "../../diseases/components/criterionFormFields";
+import { CriterionFormFields, CriterionFormState } from "../../shared/components/criterionFormFields";
 import { Switch } from "@/components/ui/switch";
 
 const icuSchema = z.object({
@@ -44,16 +44,16 @@ export default function IcuHospitalizeCriteriaForm({ initialData, onSubmit, onCa
     const [criterionObj, setCriterionObj] = useState<CriterionFormState>({
         name: "", type: "Boolean", min: "", max: "", unit: "", isExclusive: false
     });
-    
+
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
     useEffect(() => {
         if (initialData) {
             setIsMainCriteria(initialData.isMainCriteria);
-            
+
             const apiType = initialData.criterion.type;
             const mappedType = apiType === "numeric" ? "Numeric" : "Boolean";
-            
+
             setCriterionObj({
                 name: initialData.criterion.name || "",
                 type: mappedType,
@@ -108,27 +108,27 @@ export default function IcuHospitalizeCriteriaForm({ initialData, onSubmit, onCa
             </div>
 
             <div className="p-6 space-y-5 flex-1 overflow-y-auto">
-                <CriterionFormFields 
-                    value={criterionObj} 
-                    onChange={setCriterionObj} 
+                <CriterionFormFields
+                    value={criterionObj}
+                    onChange={setCriterionObj}
                     disabled={isPending}
                     errors={formErrors}
-                    isEditMode={isEdit} 
+                    isEditMode={isEdit}
                 />
 
                 <div className="border border-gray-200 rounded-md p-4 flex items-center space-x-4">
-                    <Switch 
-                        checked={isMainCriteria} 
-                        onCheckedChange={setIsMainCriteria} 
+                    <Switch
+                        checked={isMainCriteria}
+                        onCheckedChange={setIsMainCriteria}
                         disabled={isPending}
-                        className="data-[state=checked]:bg-primary" 
+                        className="data-[state=checked]:bg-primary"
                     />
                     <div>
                         <p className="text-sm font-bold text-gray-700">Is Main Criterion</p>
                         <p className="text-xs text-gray-500">Primary diagnostic marker for this disease.</p>
                     </div>
                 </div>
-                
+
                 {apiError && <p className="text-sm text-red-500 font-bold">{apiError.message}</p>}
             </div>
 

@@ -27,7 +27,7 @@ import {
     Contact,
 } from "lucide-react";
 import AccountSection, { UserInfo } from "./accountSection";
-import { useSidebarStore } from "@/features/manager/components/sidebarStore";
+import { useSidebarStore } from "../stores/sidebarStore";
 
 /*=== Navigation items ===*/
 
@@ -46,14 +46,14 @@ interface NavItemProps {
 
 const NAV_ITEMS: NavItem[] = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/manager/dashboard" },
-    { icon: Contact, label: "Doctors", href: "/manager/doctors" },
-    { icon: Microscope, label: "Antibiotic spectra", href: "/manager/antibiotic-spectra" },
-    { icon: Pill, label: "Antibiotics", href: "/manager/antibiotics" },
-    { icon: Atom, label: "Pathogens", href: "/manager/pathogens" },
-    { icon: Biohazard, label: "Diseases", href: "/manager/diseases" },
-    { icon: BarChart2, label: "Analytics", href: "/analytics" },
-    { icon: FileText, label: "Reports", href: "/reports" },
-    { icon: Settings, label: "Settings", href: "/settings" },
+    { icon: Contact, label: "Bác sĩ", href: "/manager/doctors" },
+    { icon: Microscope, label: "Phổ kháng sinh", href: "/manager/antibiotic-spectra" },
+    { icon: Pill, label: "Kháng sinh", href: "/manager/antibiotics" },
+    { icon: Atom, label: "Tác nhân gây bệnh", href: "/manager/pathogens" },
+    { icon: Biohazard, label: "Bệnh truyền nhiễm", href: "/manager/diseases" },
+    { icon: BarChart2, label: "Phân tích và thống kê", href: "/analytics" },
+    { icon: FileText, label: "Báo cáo", href: "/reports" },
+    { icon: Settings, label: "Cài đặt", href: "/settings" },
 ];
 
 const DEFAULT_USER: UserInfo = {
@@ -234,7 +234,7 @@ export function ManagerSidebar({
                             key={item.href}
                             item={item}
                             collapsed={collapsed}
-                            active={pathname === item.href}
+                            active={pathname === item.href || pathname.startsWith(item.href + "/")}
                         />
                     ))}
                 </nav>

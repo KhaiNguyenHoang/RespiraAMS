@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useInfiniteDoctors } from "../queries" 
+import { useInfiniteDoctors } from "../queries"
 
 interface Props {
     value: string | null;
@@ -62,11 +62,11 @@ export function InfiniteDoctorSelect({ value, onChange }: Props) {
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0" align="start">
+            <PopoverContent className="w-75 p-0" align="start">
                 <Command>
                     <CommandInput placeholder="Search doctor (local)..." />
                     <CommandEmpty>No doctor found.</CommandEmpty>
-                    <CommandList className="max-h-[300px] overflow-y-auto">
+                    <CommandList className="max-h-75 overflow-y-auto">
                         <CommandGroup>
                             <CommandItem
                                 value="all"
@@ -104,13 +104,13 @@ export function InfiniteDoctorSelect({ value, onChange }: Props) {
                                     </div>
                                 </CommandItem>
                             ))}
-                            
+
                             {hasNextPage && (
                                 <div ref={ref} className="p-4 flex justify-center items-center">
                                     <Loader2 className="h-5 w-5 animate-spin text-zinc-400" />
                                 </div>
                             )}
-                            
+
                             {!hasNextPage && !isLoading && allDoctors.length > 0 && (
                                 <p className="text-center text-xs text-zinc-400 py-3">End of list.</p>
                             )}

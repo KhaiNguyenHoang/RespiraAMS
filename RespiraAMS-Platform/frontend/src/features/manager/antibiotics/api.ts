@@ -1,13 +1,12 @@
 import { API_BASE, apiFetch } from "@/lib/api";
 import { Pagination } from "@/lib/models";
-import { 
-    AntibioticItem, 
-    CreateAntibioticRequest, 
-    CreateAntibioticResult, 
+import {
+    AntibioticItem,
+    CreateAntibioticRequest,
+    CreateAntibioticResult,
     UpdateAntibioticRequest,
-    GetAntibioticsParams 
+    GetAntibioticsParams
 } from "./models";
-import { AntibioticSpectrumItem } from "../antibiotic_spectra/models";
 
 export async function createAntibiotic(request: CreateAntibioticRequest): Promise<CreateAntibioticResult> {
     return await apiFetch<CreateAntibioticResult>(`${API_BASE}/antibiotics`, {
