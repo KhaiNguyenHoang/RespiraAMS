@@ -1,5 +1,5 @@
 import { API_BASE, apiFetch } from "@/lib/api";
-import { StatisticsData } from "./models";
+import { PagedDoctorResponse, StatisticsData } from "./models";
 
 export async function getStatistics(doctorId?: string | null, month?: number | null, year?: number | null): Promise<StatisticsData> {
     const params = new URLSearchParams();
@@ -10,4 +10,8 @@ export async function getStatistics(doctorId?: string | null, month?: number | n
     return await apiFetch<StatisticsData>(`${API_BASE}/statistics?${params.toString()}`, {
         headers: { "X-Role": "manager" }
     }) as StatisticsData;
+}
+
+export async function getPagedDoctors(page: number, pageSize: number = 10): Promise<PagedDoctorResponse> {
+    return await apiFetch<PagedDoctorResponse>(`${API_BASE}/Profile/doctors?page=${page}&pageSize=${pageSize}`) as PagedDoctorResponse;
 }

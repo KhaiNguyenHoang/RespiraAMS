@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { useInfiniteDoctors } from "../../dotor/queries" 
+import { useInfiniteDoctors } from "../queries" 
 
 interface Props {
     value: string | null;
@@ -68,7 +68,6 @@ export function InfiniteDoctorSelect({ value, onChange }: Props) {
                     <CommandEmpty>No doctor found.</CommandEmpty>
                     <CommandList className="max-h-[300px] overflow-y-auto">
                         <CommandGroup>
-                            {/* Option: ALL */}
                             <CommandItem
                                 value="all"
                                 onSelect={() => {

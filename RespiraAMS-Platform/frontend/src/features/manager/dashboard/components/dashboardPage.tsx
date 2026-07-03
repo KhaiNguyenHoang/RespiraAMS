@@ -99,13 +99,13 @@ export default function DashboardPage() {
                             <CardTitle>Total Decisions by Severity</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2  flex justify-center items-center relative">
                                 {stats.totalDecision.length > 0 ? (
 
                                 stats.totalDecision.map((item, i) => (
                                     <div key={i} className="bg-zinc-50 border p-4 rounded-xl flex flex-col items-center justify-center">
                                         <p className="text-sm font-semibold text-zinc-500 uppercase">{item.severity}</p>
-                                        <p className="text-3xl font-bold text-primary mt-1">{item.count} <span className="text-base font-medium text-zinc-400">ca</span></p>
+                                        <p className="text-3xl font-bold text-primary mt-1">{item.count} <span className="text-base font-medium text-zinc-400">cases</span></p>
                                     </div>
                                 ))
 
@@ -122,7 +122,7 @@ export default function DashboardPage() {
                             <CardDescription>Line chart displaying accuracy for each month in {selectedYear}</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="h-[300px] w-full mt-4">
+                            <div className="h-[300px] w-full mt-4 flex justify-center items-center relative">
                                 {stats.recommendationAccuracy.length > 0 ? (
                                 <ResponsiveContainer width="100%" height="100%">
                                     <LineChart data={[...stats.recommendationAccuracy].sort((a, b) => a.month - b.month)}>
@@ -132,11 +132,11 @@ export default function DashboardPage() {
                                         <Tooltip 
                                             formatter={(value) => {
                                                 if (typeof value !== 'number') {
-                                                    return ['N/A', 'Độ chính xác']
+                                                    return ['N/A', 'Accuracy']
                                                 }
-                                                return [`${(value * 100).toFixed(1)}%`, 'Độ chính xác']
+                                                return [`${(value * 100).toFixed(1)}%`, 'Accuracy']
                                             }}
-                                            labelFormatter={(label) => `Tháng ${label}`}
+                                            labelFormatter={(label) => `Month ${label}`}
                                             contentStyle={{ borderRadius: '8px', border: '1px solid #e4e4e7', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                         />
                                         <Line type="monotone" dataKey="accuracy" stroke="#0c3660" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
@@ -177,7 +177,7 @@ export default function DashboardPage() {
                                                 formatter={(value, name, props) => {
                                                     const numericValue = typeof value === 'number' ? value : Number(value)
                                                     const rateLabel = Number.isFinite(numericValue)
-                                                        ? `${(numericValue * 100).toFixed(1)}% (${props?.payload?.count ?? 0} ca)`
+                                                        ? `${(numericValue * 100).toFixed(1)}% (${props?.payload?.count ?? 0} cases)`
                                                         : 'N/A'
                                                     return [rateLabel, name ?? '']
                                                 }}

@@ -24,6 +24,7 @@ import {
     Pill,
     Atom,
     Biohazard,
+    Contact,
 } from "lucide-react";
 import AccountSection, { UserInfo } from "./accountSection";
 import { useSidebarStore } from "@/features/manager/components/sidebarStore";
@@ -45,6 +46,7 @@ interface NavItemProps {
 
 const NAV_ITEMS: NavItem[] = [
     { icon: LayoutDashboard, label: "Dashboard", href: "/manager/dashboard" },
+    { icon: Contact, label: "Doctors", href: "/manager/doctors" },
     { icon: Microscope, label: "Antibiotic spectra", href: "/manager/antibiotic-spectra" },
     { icon: Pill, label: "Antibiotics", href: "/manager/antibiotics" },
     { icon: Atom, label: "Pathogens", href: "/manager/pathogens" },
