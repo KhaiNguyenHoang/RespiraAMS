@@ -13,7 +13,7 @@ export default function DeleteAntibioticPanel({ antibiotic, onConfirm, onCancel,
     return (
         <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-                Are you sure you want to delete the antibiotic <strong>{antibiotic.name}</strong>? This action cannot be undone.
+                Are you sure you want to delete the antibiotic <strong className="text-red-600">{antibiotic.name}</strong>? This action cannot be undone.
             </p>
 
             {error && (
@@ -25,7 +25,7 @@ export default function DeleteAntibioticPanel({ antibiotic, onConfirm, onCancel,
                     Cancel
                 </Button>
                 <Button type="button" variant="destructive" onClick={onConfirm} disabled={isPending}>
-                    {isPending ? "Deleting..." : "Delete"}
+                    {isPending ? "Deleting..." : "Confirm Delete"}
                 </Button>
             </div>
         </div>

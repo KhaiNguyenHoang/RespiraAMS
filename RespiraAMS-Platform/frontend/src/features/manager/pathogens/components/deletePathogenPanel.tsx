@@ -25,7 +25,7 @@ export default function DeletePathogenPanel({ pathogen, onConfirm, onCancel, isP
                     Cancel
                 </Button>
                 <Button type="button" variant="destructive" onClick={onConfirm} disabled={isPending}>
-                    {isPending ? "Deleting..." : "Delete"}
+                    {isPending ? "Deleting..." : "Confirm Delete"}
                 </Button>
             </div>
         </div>

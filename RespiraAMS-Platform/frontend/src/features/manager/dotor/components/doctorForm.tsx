@@ -63,24 +63,20 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
         
         setFormErrors({});
 
-        // Gói vô FormData để gửi file
         const submitData = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
-            // Ép kiểu DateOfBirth chuẩn ISO ISO 8601 mà Backend C# ăn được
             if (key === "dateOfBirth" && value) {
                 const dateOffset = new Date(value).toISOString();
                 submitData.append("DateOfBirth", dateOffset);
             } 
             else if (key === "gender") {
-                submitData.append("Gender", value); // "true" or "false"
+                submitData.append("Gender", value);
             } else {
-                // Viết hoa chữ cái đầu cho đúng field name C# record Dto
                 const csharpKey = key.charAt(0).toUpperCase() + key.slice(1);
                 submitData.append(csharpKey, value);
             }
         });
 
-        // Gửi mảng Degrees (FormData hỗ trợ append cùng tên key nhiều lần)
         selectedDegrees.forEach(degree => {
             submitData.append("Degrees", degree);
         });
@@ -169,7 +165,6 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
                 </div>
             </div>
 
-            {/* DEGREES MULTI-SELECT */}
             <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-2">Degrees</label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-zinc-50 p-3 rounded-md border">
@@ -188,7 +183,6 @@ export default function DoctorForm({ onSubmit, onCancel, isPending, error: apiEr
                 </div>
             </div>
 
-            {/* AVATAR FILE */}
             <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1">Avatar <span className="font-normal italic text-zinc-400">- Optional</span></label>
                 <Input 

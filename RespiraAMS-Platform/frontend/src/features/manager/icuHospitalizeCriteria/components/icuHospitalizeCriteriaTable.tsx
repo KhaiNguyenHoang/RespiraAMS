@@ -40,7 +40,7 @@ export function IcuHospitalizeCriteriaTable({ diseaseId, criteria }: Props) {
     return (
         <div className="bg-white p-6 rounded-xl border shadow-sm flex flex-col gap-4">
             <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold">ICU Hospitalization Criteria</h2>
+                {/* <h2 className="text-lg font-bold">ICU Hospitalization Criteria</h2> */}
                 <Button size="sm" className="gap-2 bg-primary hover:bg-primary/90" onClick={() => openDialog("create")}>
                     <Plus className="w-4 h-4" /> Add ICU Criterion
                 </Button>

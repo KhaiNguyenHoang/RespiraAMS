@@ -51,7 +51,7 @@ export function AntibioticSpectraTable({ onEdit, onDelete }: AntibioticSpectraTa
                                 </span>
                             </TableCell>
                             <TableCell className="flex gap-2">
-                                <Button variant="default" onClick={() => onEdit(spectrum)}>
+                                <Button variant="outline" onClick={() => onEdit(spectrum)}>
                                     <Edit />
                                 </Button>
                                 <Button variant="destructive" onClick={() => onDelete(spectrum)}>

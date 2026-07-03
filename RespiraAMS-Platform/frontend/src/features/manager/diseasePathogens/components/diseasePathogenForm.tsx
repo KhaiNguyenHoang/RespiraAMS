@@ -164,7 +164,7 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
                             if (formErrors.severity) setFormErrors(p => ({ ...p, severity: "" }));
                         }}
                         disabled={isPending}
-                        className={`flex w-full rounded-md border bg-white px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[#0c3660] focus:border-[#0c3660] ${formErrors.severity ? "border-red-500" : "border-gray-300"}`}
+                        className={`flex w-full rounded-md border bg-white px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary focus:border-primary ${formErrors.severity ? "border-red-500" : "border-gray-300"}`}
                     >
                         <option value="" disabled>-- Select Severity --</option>
                         {Object.values(Severity).map(s => <option key={s} value={s}>{s}</option>)}
@@ -181,7 +181,7 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
                             if (formErrors.treatmentSite) setFormErrors(p => ({ ...p, treatmentSite: "" }));
                         }}
                         disabled={isPending}
-                        className={`flex w-full rounded-md border bg-white px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-[#0c3660] focus:border-[#0c3660] ${formErrors.treatmentSite ? "border-red-500" : "border-gray-300"}`}
+                        className={`flex w-full rounded-md border bg-white px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-primary focus:border-primary ${formErrors.treatmentSite ? "border-red-500" : "border-gray-300"}`}
                     >
                         <option value="" disabled>-- Select Treatment Site --</option>
                         {Object.values(TreatmentSite).map(t => <option key={t} value={t}>{t}</option>)}
@@ -193,10 +193,10 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
             </div>
 
             <div className="px-6 py-4 border-t border-gray-100 flex justify-end space-x-3 bg-gray-50/50 rounded-b-md">
-                <button type="button" onClick={onCancel} disabled={isPending} className="px-6 py-2 border border-gray-300 rounded-md text-sm font-bold text-[#0c3660] bg-white hover:bg-gray-50 transition">
+                <button type="button" onClick={onCancel} disabled={isPending} className="px-6 py-2 border border-gray-300 rounded-md text-sm font-bold text-primary bg-white hover:bg-gray-50 transition">
                     Cancel
                 </button>
-                <button type="submit" disabled={isPending} className="px-6 py-2 rounded-md text-sm font-bold text-white bg-[#0c3660] hover:opacity-90 transition disabled:opacity-50">
+                <button type="submit" disabled={isPending} className="px-6 py-2 rounded-md text-sm font-bold text-white bg-primary hover:opacity-90 transition disabled:opacity-50">
                     {isPending ? "Saving..." : "Save Cause"}
                 </button>
             </div>

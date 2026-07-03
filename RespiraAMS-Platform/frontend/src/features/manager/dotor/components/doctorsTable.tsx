@@ -1,3 +1,4 @@
+// File: src/features/manager/doctors/components/doctorsTable.tsx
 "use client"
 
 import { useState } from "react";
@@ -92,34 +93,28 @@ export function DoctorsTable({ onEdit, onDelete }: DoctorsTableProps) {
                     </TableBody>
                 </Table>
 
-                <div className="border-t p-4 flex justify-end bg-zinc-50/50">
+                <div className="border-t p-4 flex justify-end">
                     <Pagination>
                         <PaginationContent>
-                            <PaginationItem>
-                                <Button 
-                                    variant="ghost" 
-                                    className="gap-1 pl-2.5"
-                                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                                    disabled={!data.metadata.hasPrevious}
-                                >
-                                    <PaginationPrevious className="h-4 w-4" />
-                                </Button>
-                            </PaginationItem>
-                            
-                            <span className="text-sm text-zinc-600 flex items-center px-4 font-medium">
+                            {data.metadata.hasPrevious && (
+                                <PaginationItem>
+                                    <PaginationPrevious 
+                                        onClick={() => setPage((p) => Math.max(1, p - 1))} 
+                                        className="cursor-pointer" 
+                                    />
+                                </PaginationItem>
+                            )}
+                            <span className="text-sm text-muted-foreground flex items-center px-4 font-medium">
                                 Page {data.metadata.pageIndex} of {data.metadata.totalPages || 1}
                             </span>
-                            
-                            <PaginationItem>
-                                <Button 
-                                    variant="ghost" 
-                                    className="gap-1 pr-2.5"
-                                    onClick={() => setPage((p) => p + 1)}
-                                    disabled={!data.metadata.hasNext}
-                                >
-                                    <PaginationNext className="h-4 w-4" />
-                                </Button>
-                            </PaginationItem>
+                            {data.metadata.hasNext && (
+                                <PaginationItem>
+                                    <PaginationNext 
+                                        onClick={() => setPage((p) => p + 1)} 
+                                        className="cursor-pointer" 
+                                    />
+                                </PaginationItem>
+                            )}
                         </PaginationContent>
                     </Pagination>
                 </div>
