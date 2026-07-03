@@ -1,7 +1,7 @@
 "use client"
 
 import { useDiseaseDetail } from "../queries";
-import { DiseaseDetail } from "../models";
+import { DiseaseItem, DiseaseDetail } from "../models";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorMessage } from "@/components/custom/error";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,12 @@ import { DiseasePathogensTable } from "../../diseasePathogens/components/disease
 import { TreatmentProtocolsTable } from "../../treatmentProtocols/components/treatmentProtocolsTable";
 import { useState, useRef, useEffect } from "react";
 import { useUpdateDisease, useDeleteDisease } from "@/features/manager/diseases/queries";
-import { DiseaseItem } from "../models"
+
+// IMPORT CÁC COMPONENT CẦN THIẾT
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
 import DiseaseForm from "./diseaseForm";
 import DeleteDiseasePanel from "./deleteDiseasePanel";
 
@@ -22,47 +26,51 @@ interface DiseaseDetailViewProps {
     id: string;
     onBack: () => void;
 }
-type SheetView = "update" | "delete" | null;
 
-export default function DiseaseDetailView({ id, onBack}: DiseaseDetailViewProps) {
+type ModalView = "update" | "delete" | null;
+
+export default function DiseaseDetailView({ id, onBack }: DiseaseDetailViewProps) {
     const { data: disease, isLoading, isError } = useDiseaseDetail(id);
     const router = useRouter();
 
-    const [sheetView, setSheetView] = useState<SheetView>(null);
+    const [modalView, setModalView] = useState<ModalView>(null);
     const [selectedDisease, setSelectedDisease] = useState<DiseaseItem | null>(null);
-
-    const updateMutation = useUpdateDisease();
-    const deleteMutation = useDeleteDisease();
 
     const searchParams = useSearchParams();
     const scrollTo = searchParams.get("scrollTo");
+    const [accordionValue, setAccordionValue] = useState<string | undefined>(undefined);
+
+    const updateMutation = useUpdateDisease();
+    const deleteMutation = useDeleteDisease();
     const protocolTableRef = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
-        if (!isLoading && disease && scrollTo === "protocols" && protocolTableRef.current) {
-            setTimeout(() => {
-                protocolTableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                router.replace(`/manager/diseases/${id}`, { scroll: false });
-            }, 100);
+        if (!isLoading && disease && scrollTo === "protocols") {
+            setAccordionValue("protocols");
+            if (protocolTableRef.current) {
+                setTimeout(() => {
+                    protocolTableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    router.replace(`/manager/diseases/${id}`, { scroll: false });
+                }, 200);
+            }
         }
     }, [isLoading, disease, scrollTo, id, router]);
 
-
-    const openSheet = (view: SheetView, item: DiseaseItem) => {
+    const openModal = (view: ModalView, item: any) => {
         setSelectedDisease(item);
-        setSheetView(view);
+        setModalView(view);
     };
 
-    const closeSheet = () => {
-        setSheetView(null);
+    const closeModal = () => {
+        setModalView(null);
         setSelectedDisease(null);
     };
 
-
     if (isLoading) return <Skeleton className="w-full h-[80vh] rounded-xl" />;
     if (isError || !disease) return <ErrorMessage error="Failed to load disease details" />;
+
     return (
         <div className="flex flex-col gap-6 animate-in fade-in duration-300 pb-10">
-            
             <div className="flex items-center justify-between">
                 <Button variant="ghost" onClick={onBack} className="gap-2">
                     <ArrowLeft className="w-4 h-4" /> Back to List
@@ -75,10 +83,10 @@ export default function DiseaseDetailView({ id, onBack}: DiseaseDetailViewProps)
                         <h1 className="text-2xl font-bold text-primary">{disease.name}</h1>
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="outline" onClick={() => openSheet("update", disease)} className="gap-2">
+                        <Button variant="outline" onClick={() => openModal("update", disease)} className="gap-2">
                             <Edit className="w-4 h-4" /> Edit
                         </Button>
-                        <Button variant="destructive" onClick={() => openSheet("delete", disease)} className="gap-2">
+                        <Button variant="destructive" onClick={() => openModal("delete", disease)} className="gap-2">
                             <Trash className="w-4 h-4" /> Delete
                         </Button>
                     </div>
@@ -103,61 +111,103 @@ export default function DiseaseDetailView({ id, onBack}: DiseaseDetailViewProps)
                 </div>
             </div>
 
-            <IcuHospitalizeCriteriaTable diseaseId={disease.id} criteria={disease.icuHospitalizeCriteria} />
-            <ResistanceRisksTable diseaseId={id} risks={disease.resistanceRisks} />
-            <DiseasePathogensTable diseaseId={id} pathogens={disease.diseasePathogens} />
-            
-            <div ref={protocolTableRef} className="scroll-mt-6">
-                <TreatmentProtocolsTable 
-                    diseaseId={id} 
-                    protocols={disease.treatmentProtocols} 
-                    onView={(protocolId) => router.push(`/manager/diseases/${id}/protocols/${protocolId}`)}
-                />
-            </div>
+            <Accordion 
+                type="single" 
+                collapsible 
+                value={accordionValue} 
+                onValueChange={setAccordionValue}
+                className="w-full space-y-4"
+            >
+                <AccordionItem value="icu" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
+                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6">
+                        ICU Hospitalize Criteria
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <IcuHospitalizeCriteriaTable diseaseId={disease.id} criteria={disease.icuHospitalizeCriteria} />
+                    </AccordionContent>
+                </AccordionItem>
 
+                <AccordionItem value="risks" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
+                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6">
+                        Resistance Risks
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <ResistanceRisksTable diseaseId={id} risks={disease.resistanceRisks} />
+                    </AccordionContent>
+                </AccordionItem>
 
-            <Sheet open={sheetView !== null} onOpenChange={(open) => { if (!open) closeSheet(); }}>
-                <SheetContent side="right" className="overflow-y-auto w-[400px] sm:w-[540px]">
-                    <SheetHeader>
-                        <SheetTitle>
-                            {sheetView === "update" && "Update Disease"}
-                            {sheetView === "delete" && "Delete Disease"}
-                        </SheetTitle>
-                        <SheetDescription>
-                            {sheetView === "update" && "Modify the details of this disease."}
-                            {sheetView === "delete" && "Confirm deletion of this record."}
-                        </SheetDescription>
-                    </SheetHeader>
+                <AccordionItem value="pathogens" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
+                    <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6">
+                        Causes
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <DiseasePathogensTable diseaseId={id} pathogens={disease.diseasePathogens} />
+                    </AccordionContent>
+                </AccordionItem>
 
-                    <div className="p-4 mt-2">
-                        {sheetView === "update" && selectedDisease && (
+                <AccordionItem value="protocols" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
+                    <div ref={protocolTableRef} className="scroll-mt-6">
+                        <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6">
+                            Treatment Protocols
+                        </AccordionTrigger>
+                        <AccordionContent>
+                            <TreatmentProtocolsTable 
+                                diseaseId={id} 
+                                protocols={disease.treatmentProtocols} 
+                                onView={(protocolId) => router.push(`/manager/diseases/${id}/protocols/${protocolId}`)}
+                            />
+                        </AccordionContent>
+                    </div>
+                </AccordionItem>
+            </Accordion>
+
+            <Dialog open={modalView === "update"} onOpenChange={(open) => { if (!open) closeModal(); }}>
+                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Update Disease</DialogTitle>
+                        <DialogDescription>Modify the details of this disease.</DialogDescription>
+                    </DialogHeader>
+
+                    <div className="py-2">
+                        {selectedDisease && (
                             <DiseaseForm
                                 initialData={selectedDisease}
                                 onSubmit={(data) => {
                                     updateMutation.mutate(
                                         { id: selectedDisease.id, ...data }, 
-                                        { onSuccess: closeSheet }
+                                        { onSuccess: closeModal }
                                     );
                                 }}
-                                onCancel={closeSheet}
+                                onCancel={closeModal}
                                 isPending={updateMutation.isPending}
                                 error={updateMutation.error}
                             />
                         )}
+                    </div>
+                </DialogContent>
+            </Dialog>
 
-                        {sheetView === "delete" && selectedDisease && (
+            <Sheet open={modalView === "delete"} onOpenChange={(open) => { if (!open) closeModal(); }}>
+                <SheetContent side="right">
+                    <SheetHeader>
+                        <SheetTitle>Delete Disease</SheetTitle>
+                        <SheetDescription>Confirm deletion of this record. This action cannot be undone.</SheetDescription>
+                    </SheetHeader>
+
+                    <div className="py-4 mt-4">
+                        {selectedDisease && (
                             <DeleteDiseasePanel
                                 disease={selectedDisease}
                                 onConfirm={() => deleteMutation.mutate(
                                     selectedDisease.id, 
                                     { 
                                         onSuccess: () => {
-                                            closeSheet();
+                                            closeModal();
                                             router.push('/manager/diseases');
                                         }
                                     }
                                 )}
-                                onCancel={closeSheet}
+                                onCancel={closeModal}
                                 isPending={deleteMutation.isPending}
                                 error={deleteMutation.error}
                             />

@@ -4,85 +4,99 @@ import { useState } from "react";
 import { useCreateAntibiotic, useUpdateAntibiotic, useDeleteAntibiotic } from "../queries";
 import { AntibioticItem } from "../models";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Plus } from "lucide-react";
 import { AntibioticsTable } from "./antibioticsTable";
 import AntibioticForm from "./antibioticForm";
 import DeleteAntibioticPanel from "./deleteAntibioticPanel";
 
-type SheetView = "create" | "update" | "delete" | null;
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+
+type ActiveView = "create" | "update" | "delete" | null;
 
 export function AntibioticsPage() {
-    const [sheetView, setSheetView] = useState<SheetView>(null);
+    const [activeView, setActiveView] = useState<ActiveView>(null);
     const [selectedAntibiotic, setSelectedAntibiotic] = useState<AntibioticItem | null>(null);
 
     const createMutation = useCreateAntibiotic();
     const updateMutation = useUpdateAntibiotic();
     const deleteMutation = useDeleteAntibiotic();
 
-    const openSheet = (view: SheetView, item?: AntibioticItem) => {
+    const openView = (view: ActiveView, item?: AntibioticItem) => {
         setSelectedAntibiotic(item ?? null);
-        setSheetView(view);
+        setActiveView(view);
     };
 
-    const closeSheet = () => {
-        setSheetView(null);
+    const closeView = () => {
+        setActiveView(null);
         setSelectedAntibiotic(null);
     };
 
-    const isSheetOpen = sheetView !== null;
+    const isDialogOpen = activeView === "create" || activeView === "update";
+    const isSheetOpen = activeView === "delete";
 
     return (
         <>
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">Antibiotics</h1>
-                <Button onClick={() => openSheet("create")}>
+                <Button onClick={() => openView("create")}>
                     <Plus className="mr-2" /> Create
                 </Button>
             </div>
 
             <AntibioticsTable
-                onEdit={(item) => openSheet("update", item)}
-                onDelete={(item) => openSheet("delete", item)}
+                onEdit={(item) => openView("update", item)}
+                onDelete={(item) => openView("delete", item)}
             />
 
-            <Sheet open={isSheetOpen} onOpenChange={(open) => { if (!open) closeSheet(); }}>
-                <SheetContent side="right" className="overflow-y-auto w-[400px] sm:w-[540px]">
-                    <SheetHeader>
-                        <SheetTitle>
-                            {sheetView === "create" && "Create New Antibiotic"}
-                            {sheetView === "update" && "Update Antibiotic"}
-                            {sheetView === "delete" && "Delete Antibiotic"}
-                        </SheetTitle>
-                        <SheetDescription>
-                            {sheetView === "create" && "Fill in the information below to create a new entry."}
-                            {sheetView === "update" && "Modify the antibiotic details."}
-                            {sheetView === "delete" && "Are you sure you want to delete this antibiotic?"}
-                        </SheetDescription>
-                    </SheetHeader>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => { if (!open) closeView(); }}>
+                <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>
+                            {activeView === "create" && "Create New Antibiotic"}
+                            {activeView === "update" && "Update Antibiotic"}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {activeView === "create" && "Fill in the information below to create a new entry."}
+                            {activeView === "update" && "Modify the antibiotic details."}
+                        </DialogDescription>
+                    </DialogHeader>
 
-                    <div className="p-4 mt-4">
-                        {(sheetView === "create" || (sheetView === "update" && selectedAntibiotic)) && (
+                    <div className="py-2">
+                        {(activeView === "create" || (activeView === "update" && selectedAntibiotic)) && (
                             <AntibioticForm
-                                initialData={sheetView === "update" ? selectedAntibiotic : null}
+                                initialData={activeView === "update" ? selectedAntibiotic : null}
                                 onSubmit={(data) => {
-                                    if (sheetView === "create") {
-                                        createMutation.mutate(data, { onSuccess: closeSheet });
-                                    } else if (sheetView === "update" && selectedAntibiotic) {
-                                        updateMutation.mutate({ id: selectedAntibiotic.id, ...data }, { onSuccess: closeSheet });
+                                    if (activeView === "create") {
+                                        createMutation.mutate(data, { onSuccess: closeView });
+                                    } else if (activeView === "update" && selectedAntibiotic) {
+                                        updateMutation.mutate({ id: selectedAntibiotic.id, ...data }, { onSuccess: closeView });
                                     }
                                 }}
-                                onCancel={closeSheet}
+                                onCancel={closeView}
                                 isPending={createMutation.isPending || updateMutation.isPending}
                                 error={createMutation.error || updateMutation.error}
                             />
                         )}
+                    </div>
+                </DialogContent>
+            </Dialog>
 
-                        {sheetView === "delete" && selectedAntibiotic && (
+            <Sheet open={isSheetOpen} onOpenChange={(open) => { if (!open) closeView(); }}>
+                <SheetContent side="right">
+                    <SheetHeader>
+                        <SheetTitle>Delete Antibiotic</SheetTitle>
+                        <SheetDescription>
+                            Are you sure you want to delete this antibiotic? This action cannot be undone.
+                        </SheetDescription>
+                    </SheetHeader>
+
+                    <div className="py-4 mt-4">
+                        {activeView === "delete" && selectedAntibiotic && (
                             <DeleteAntibioticPanel
                                 antibiotic={selectedAntibiotic}
-                                onConfirm={() => deleteMutation.mutate(selectedAntibiotic.id, { onSuccess: closeSheet })}
-                                onCancel={closeSheet}
+                                onConfirm={() => deleteMutation.mutate(selectedAntibiotic.id, { onSuccess: closeView })}
+                                onCancel={closeView}
                                 isPending={deleteMutation.isPending}
                                 error={deleteMutation.error}
                             />

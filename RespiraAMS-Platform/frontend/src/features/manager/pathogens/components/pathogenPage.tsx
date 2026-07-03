@@ -4,85 +4,97 @@ import { useState } from "react";
 import { useCreatePathogen, useUpdatePathogen, useDeletePathogen } from "../queries";
 import { PathogenItem } from "../models";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { Plus } from "lucide-react";
 import { PathogensTable } from "./pathogensTable";
 import PathogenForm from "./pathogenForm";
 import DeletePathogenPanel from "./deletePathogenPanel";
 
-type SheetView = "create" | "update" | "delete" | null;
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
+
+type ActiveView = "create" | "update" | "delete" | null;
 
 export function PathogensPage() {
-    const [sheetView, setSheetView] = useState<SheetView>(null);
+    const [activeView, setActiveView] = useState<ActiveView>(null);
     const [selectedPathogen, setSelectedPathogen] = useState<PathogenItem | null>(null);
 
     const createMutation = useCreatePathogen();
     const updateMutation = useUpdatePathogen();
     const deleteMutation = useDeletePathogen();
 
-    const openSheet = (view: SheetView, item?: PathogenItem) => {
+    const openView = (view: ActiveView, item?: PathogenItem) => {
         setSelectedPathogen(item ?? null);
-        setSheetView(view);
+        setActiveView(view);
     };
 
-    const closeSheet = () => {
-        setSheetView(null);
+    const closeView = () => {
+        setActiveView(null);
         setSelectedPathogen(null);
     };
 
-    const isSheetOpen = sheetView !== null;
+    const isDialogOpen = activeView === "create" || activeView === "update";
+    const isSheetOpen = activeView === "delete";
 
     return (
         <div className="container mx-auto">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">Pathogen Management</h1>
-                <Button onClick={() => openSheet("create")}>
+                <Button onClick={() => openView("create")}>
                     <Plus className="mr-2 h-4 w-4" /> Create
                 </Button>
             </div>
 
             <PathogensTable
-                onEdit={(item) => openSheet("update", item)}
-                onDelete={(item) => openSheet("delete", item)}
+                onEdit={(item) => openView("update", item)}
+                onDelete={(item) => openView("delete", item)}
             />
 
-            <Sheet open={isSheetOpen} onOpenChange={(open) => { if (!open) closeSheet(); }}>
-                <SheetContent side="right" className="overflow-y-auto w-[400px] sm:w-[500px]">
-                    <SheetHeader>
-                        <SheetTitle>
-                            {sheetView === "create" && "Create New Pathogen"}
-                            {sheetView === "update" && "Update Pathogen"}
-                            {sheetView === "delete" && "Delete Pathogen"}
-                        </SheetTitle>
-                        <SheetDescription>
-                            {sheetView === "create" && "Fill in the information below to create a new entry."}
-                            {sheetView === "update" && "Modify the pathogen name or description."}
-                            {sheetView === "delete" && "Confirm pathogen deletion."}
-                        </SheetDescription>
-                    </SheetHeader>
+            <Dialog open={isDialogOpen} onOpenChange={(open) => { if (!open) closeView(); }}>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>
+                            {activeView === "create" && "Create New Pathogen"}
+                            {activeView === "update" && "Update Pathogen"}
+                        </DialogTitle>
+                        <DialogDescription>
+                            {activeView === "create" && "Fill in the information below to create a new entry."}
+                            {activeView === "update" && "Modify the pathogen name or description."}
+                        </DialogDescription>
+                    </DialogHeader>
 
-                    <div className="p-4 mt-2">
-                        {(sheetView === "create" || (sheetView === "update" && selectedPathogen)) && (
+                    <div className="py-2">
+                        {(activeView === "create" || (activeView === "update" && selectedPathogen)) && (
                             <PathogenForm
-                                initialData={sheetView === "update" ? selectedPathogen : null}
+                                initialData={activeView === "update" ? selectedPathogen : null}
                                 onSubmit={(data) => {
-                                    if (sheetView === "create") {
-                                        createMutation.mutate(data, { onSuccess: closeSheet });
-                                    } else if (sheetView === "update" && selectedPathogen) {
-                                        updateMutation.mutate({ id: selectedPathogen.id, ...data }, { onSuccess: closeSheet });
+                                    if (activeView === "create") {
+                                        createMutation.mutate(data, { onSuccess: closeView });
+                                    } else if (activeView === "update" && selectedPathogen) {
+                                        updateMutation.mutate({ id: selectedPathogen.id, ...data }, { onSuccess: closeView });
                                     }
                                 }}
-                                onCancel={closeSheet}
+                                onCancel={closeView}
                                 isPending={createMutation.isPending || updateMutation.isPending}
                                 error={createMutation.error || updateMutation.error}
                             />
                         )}
+                    </div>
+                </DialogContent>
+            </Dialog>
 
-                        {sheetView === "delete" && selectedPathogen && (
+            <Sheet open={isSheetOpen} onOpenChange={(open) => { if (!open) closeView(); }}>
+                <SheetContent side="right">
+                    <SheetHeader>
+                        <SheetTitle>Delete Pathogen</SheetTitle>
+                        <SheetDescription>Confirm pathogen deletion. This action cannot be undone.</SheetDescription>
+                    </SheetHeader>
+
+                    <div className="py-4 mt-4">
+                        {activeView === "delete" && selectedPathogen && (
                             <DeletePathogenPanel
                                 pathogen={selectedPathogen}
-                                onConfirm={() => deleteMutation.mutate(selectedPathogen.id, { onSuccess: closeSheet })}
-                                onCancel={closeSheet}
+                                onConfirm={() => deleteMutation.mutate(selectedPathogen.id, { onSuccess: closeView })}
+                                onCancel={closeView}
                                 isPending={deleteMutation.isPending}
                                 error={deleteMutation.error}
                             />
