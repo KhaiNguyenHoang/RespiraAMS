@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Edit, Trash } from "lucide-react";
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 10;
 
 interface AntibioticSpectraTableProps {
     onEdit: (spectrum: AntibioticSpectrumItem) => void;
@@ -51,7 +51,7 @@ export function AntibioticSpectraTable({ onEdit, onDelete }: AntibioticSpectraTa
                                 </span>
                             </TableCell>
                             <TableCell className="flex gap-2">
-                                <Button variant="default" onClick={() => onEdit(spectrum)}>
+                                <Button variant="outline" onClick={() => onEdit(spectrum)}>
                                     <Edit />
                                 </Button>
                                 <Button variant="destructive" onClick={() => onDelete(spectrum)}>

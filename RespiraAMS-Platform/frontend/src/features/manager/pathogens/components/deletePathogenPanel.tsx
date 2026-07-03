@@ -1,32 +1,26 @@
-import { AntibioticSpectrumItem } from "../models";
+import { PathogenItem } from "../models";
 import { Button } from "@/components/ui/button";
 
-interface DeleteAntibioticSpectrumPanelProps {
-    spectrum: AntibioticSpectrumItem;
+interface DeletePathogenPanelProps {
+    pathogen: PathogenItem;
     onConfirm: () => void;
     onCancel: () => void;
     isPending: boolean;
     error: Error | null;
 }
 
-export default function DeleteAntibioticSpectrumPanel({
-    spectrum,
-    onConfirm,
-    onCancel,
-    isPending,
-    error,
-}: DeleteAntibioticSpectrumPanelProps) {
+export default function DeletePathogenPanel({ pathogen, onConfirm, onCancel, isPending, error }: DeletePathogenPanelProps) {
     return (
         <div className="flex flex-col gap-4">
-            <p className="text-sm text-muted-foreground">
-                Are you sure you want to delete <strong className="text-red-600">{spectrum.name}</strong>? This action cannot be undone.
+            <p className="text-sm text-zinc-600">
+                Are you sure you want to delete the pathogen <strong className="text-red-600">{pathogen.name}</strong>? This action cannot be undone.
             </p>
 
             {error && (
-                <p className="text-sm text-destructive">{error.message}</p>
+                <p className="text-sm text-destructive font-medium">{error.message}</p>
             )}
 
-            <div className="flex gap-2 justify-end">
+            <div className="flex gap-2 justify-end mt-4 pt-4 border-t">
                 <Button type="button" variant="outline" onClick={onCancel} disabled={isPending}>
                     Cancel
                 </Button>
