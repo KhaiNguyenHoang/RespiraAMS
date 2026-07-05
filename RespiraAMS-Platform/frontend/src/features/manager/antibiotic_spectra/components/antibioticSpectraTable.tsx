@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Edit, Trash } from "lucide-react";
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 10;
 
 interface AntibioticSpectraTableProps {
     onEdit: (spectrum: AntibioticSpectrumItem) => void;
@@ -40,22 +40,22 @@ export function AntibioticSpectraTable({ onEdit, onDelete }: AntibioticSpectraTa
                 <TableBody>
                     {data.items.map((spectrum) => (
                         <TableRow key={spectrum.id}>
-                            <TableCell>
-                                <span className="text-muted-foreground w-fit shrink-0">
+                            <TableCell className="font-medium align-middle">
+                                <span className="text-primary w-fit shrink-0">
                                     {spectrum.name}
                                 </span>
                             </TableCell>
-                            <TableCell>
-                                <span className="text-muted-foreground w-fit shrink-0">
+                            <TableCell className="align-middle">
+                                <span className="text-foreground wrap-break-word whitespace-normal">
                                     {spectrum.description}
                                 </span>
                             </TableCell>
                             <TableCell className="flex gap-2">
-                                <Button variant="default" onClick={() => onEdit(spectrum)}>
+                                <Button variant="ghost" onClick={() => onEdit(spectrum)}>
                                     <Edit />
                                 </Button>
-                                <Button variant="destructive" onClick={() => onDelete(spectrum)}>
-                                    <Trash />
+                                <Button variant="ghost" onClick={() => onDelete(spectrum)}>
+                                    <Trash className="text-destructive" />
                                 </Button>
                             </TableCell>
                         </TableRow>
@@ -65,21 +65,23 @@ export function AntibioticSpectraTable({ onEdit, onDelete }: AntibioticSpectraTa
 
             <Pagination>
                 <PaginationContent>
-                    {data.metadata.hasPreviousPage && (
-                        <PaginationItem>
-                            <PaginationPrevious onClick={() => setPage((p) => p - 1)} />
-                        </PaginationItem>
-                    )}
+                    <PaginationItem>
+                        <PaginationPrevious
+                            className={data.metadata.hasPreviousPage ? "" : "pointer-events-none opacity-50"}
+                            onClick={() => setPage((p) => p - 1)}
+                        />
+                    </PaginationItem>
 
                     <span className="text-sm text-muted-foreground">
                         Page {page} of {data.metadata.pageCount}
                     </span>
 
-                    {data.metadata.hasNextPage && (
-                        <PaginationItem>
-                            <PaginationNext onClick={() => setPage((p) => p + 1)} />
-                        </PaginationItem>
-                    )}
+                    <PaginationItem>
+                        <PaginationNext
+                            className={data.metadata.hasNextPage ? "" : "pointer-events-none opacity-50"}
+                            onClick={() => setPage((p) => p + 1)}
+                        />
+                    </PaginationItem>
                 </PaginationContent>
             </Pagination>
         </>

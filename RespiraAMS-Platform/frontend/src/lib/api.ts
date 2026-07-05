@@ -4,10 +4,14 @@ import { ApiResult } from "./models";
 export const API_BASE = "/api/1.0";
 
 export async function apiFetch<T>(url: string, opts?: RequestInit): Promise<T | null> {
+    const isFormData = opts?.body instanceof FormData;
+    const headers = new Headers(opts?.headers);
+    if (!isFormData && !headers.has("Content-Type")) {
+        headers.set("Content-Type", "application/json");
+    }
+
     const resp = await fetch(url, {
-        headers: {
-            "Content-Type": "application/json",
-        },
+        headers: headers,
         ...opts,
     })
 

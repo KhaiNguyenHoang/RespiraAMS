@@ -1,9 +1,13 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
 
+/**
+ * User info for the account section
+ */
 export interface UserInfo {
     name: string;
     email: string;
@@ -13,11 +17,14 @@ export interface UserInfo {
     initials: string;
 }
 
+/**
+ * Account section component.
+ */
 export default function AccountSection({ user, collapsed }: { user: UserInfo; collapsed?: boolean }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <button className={cn(
+                <div className={cn(
                     "flex items-center rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-accent overflow-hidden",
                     collapsed ? "justify-center w-full px-0" : "gap-2.5"
                 )}>
@@ -37,7 +44,7 @@ export default function AccountSection({ user, collapsed }: { user: UserInfo; co
                             <p className="text-xs text-muted-foreground leading-none mt-1">{user.email}</p>
                         </div>
                     </div>
-                </button>
+                </div>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56">
@@ -53,14 +60,14 @@ export default function AccountSection({ user, collapsed }: { user: UserInfo; co
                 <DropdownMenuItem asChild>
                     <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
                         <User className="h-4 w-4" />
-                        Profile
+                        Quản lý tài khoản
                     </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild>
                     <Link href="/settings" className="flex items-center gap-2 cursor-pointer">
                         <Settings className="h-4 w-4" />
-                        Account settings
+                        Cài đặt
                     </Link>
                 </DropdownMenuItem>
 
@@ -72,7 +79,7 @@ export default function AccountSection({ user, collapsed }: { user: UserInfo; co
                         className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
                     >
                         <LogOut className="h-4 w-4" />
-                        Log out
+                        Đăng xuất
                     </Link>
                 </DropdownMenuItem>
             </DropdownMenuContent>

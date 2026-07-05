@@ -2,6 +2,8 @@ import { useState } from "react";
 import { CreateAntibioticSpectrumRequest } from "../models";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 type CreateAntibioticSpectrumFormValue = CreateAntibioticSpectrumRequest;
 
@@ -34,7 +36,7 @@ export default function CreateAntibioticSpectrumForm({
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
-                <label htmlFor="name" className="text-sm font-medium">Name</label>
+                <Label>Name</Label>
                 <Input
                     id="name"
                     placeholder="Enter spectrum name"
@@ -46,8 +48,8 @@ export default function CreateAntibioticSpectrumForm({
             </div>
 
             <div className="flex flex-col gap-2">
-                <label htmlFor="description" className="text-sm font-medium">Description</label>
-                <textarea
+                <Label>Description</Label>
+                <Textarea
                     id="description"
                     placeholder="Enter spectrum description"
                     value={form.description}
