@@ -5,17 +5,8 @@ export interface DiseasePathogen {
     treatmentSite: "Outpatient" | "Inpatient" | "IntensiveCareUnit" | string;
 }
 
-export enum Severity {
-    Mild = "Mild",
-    Moderate = "Moderate",
-    Severe = "Severe"
-}
-
-export enum TreatmentSite {
-    Outpatient = "Outpatient",
-    Inpatient = "Inpatient",
-    IntensiveCareUnit = "IntensiveCareUnit"
-}
+import { Severity, TreatmentSite } from "../shared/models";
+export { Severity, TreatmentSite };
 
 export interface CreateDiseasePathogenRequest {
     pathogenId: string;

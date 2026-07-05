@@ -1,8 +1,7 @@
-import {Severity, TreatmentSite} from "../diseasePathogens/models"
-import {Criterion} from "../diseases/criterionModels"
-import {AntibioticItem} from "../antibiotics/models"
-import {PathogenItem} from "../pathogens/models"
-import { CreateCriterionDto } from "../diseases/criterionModels";
+import { Severity, TreatmentSite } from "../shared/models"
+import { AntibioticItem } from "../antibiotics/models"
+import { PathogenItem } from "../pathogens/models"
+import { CreateCriterionDto, Criterion } from "../shared/models";
 
 export interface TreatmentProtocol {
     id: string;

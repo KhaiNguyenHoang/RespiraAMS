@@ -16,3 +16,15 @@ export interface CreateCriterionDto {
     unit?: string | null;
     isExclusive?: boolean | null;
 }
+
+export enum Severity {
+    Mild = "Mild",
+    Moderate = "Moderate",
+    Severe = "Severe"
+}
+
+export enum TreatmentSite {
+    Outpatient = "Outpatient",
+    Inpatient = "Inpatient",
+    IntensiveCareUnit = "IntensiveCareUnit"
+}

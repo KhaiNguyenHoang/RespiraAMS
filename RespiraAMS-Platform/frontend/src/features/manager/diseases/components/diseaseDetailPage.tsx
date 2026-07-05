@@ -110,7 +110,7 @@ export default function DiseaseDetailView({ id, onBack }: DiseaseDetailViewProps
             >
                 <AccordionItem value="icu" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
                     <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6 items-center gap-2">
-                        ICU Hospitalize Criteria
+                        Tiêu chí nhập ICU
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <CircleQuestionMark />
@@ -132,7 +132,7 @@ export default function DiseaseDetailView({ id, onBack }: DiseaseDetailViewProps
 
                 <AccordionItem value="risks" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
                     <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6 items-center">
-                        Resistance Risks
+                        Yếu tố đánh giá nguy cơ nhiễm khuẩn đặc biệt và kháng thuốc
                     </AccordionTrigger>
                     <AccordionContent>
                         <ScrollArea className="h-100">
@@ -143,7 +143,7 @@ export default function DiseaseDetailView({ id, onBack }: DiseaseDetailViewProps
 
                 <AccordionItem value="pathogens" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
                     <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6 items-center">
-                        Causes
+                        Tác nhân gây bệnh
                     </AccordionTrigger>
                     <AccordionContent>
                         <ScrollArea className="h-100">
@@ -155,7 +155,7 @@ export default function DiseaseDetailView({ id, onBack }: DiseaseDetailViewProps
                 <AccordionItem value="protocols" className="bg-white rounded-xl border shadow-sm px-6 data-[state=open]:pb-6 border-b-0">
                     <div ref={protocolTableRef} className="scroll-mt-6">
                         <AccordionTrigger className="hover:no-underline font-bold text-lg text-primary py-6 items-center">
-                            Treatment Protocols
+                            Phác đồ điều trị
                         </AccordionTrigger>
                         <AccordionContent>
                             <ScrollArea className="h-100">
