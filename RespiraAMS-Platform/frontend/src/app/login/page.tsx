@@ -3,19 +3,16 @@
 import Image from "next/image";
 import { useState, useCallback, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
-import { login, type UserData } from "@/lib/auth";
+import { login } from "@/lib/auth";
 import {
 	Mail,
 	Lock,
 	Eye,
 	EyeOff,
 	ArrowRight,
-	Activity,
 	Shield,
 	Loader2,
 } from "lucide-react";
-
-const API_VERSION = process.env.NEXT_PUBLIC_API_VERSION ?? "1.0";
 
 export default function LoginPage() {
 	const router = useRouter();
@@ -39,8 +36,16 @@ export default function LoginPage() {
 			setIsLoading(true);
 
 			try {
-				await login({ email, password });
-				router.push("/test");
+				const user = await login({ email, password });
+				const role = user.role?.toLowerCase() ?? "";
+				if (role.includes("admin") || role.includes("manager")) {
+					router.push("/manager/dashboard");
+				} else if (role.includes("doctor")) {
+					router.push("/doctor/diagnose");
+				} else {
+					console.warn("LoginPage: unknown role", user.role, "defaulting to /manager/dashboard");
+					router.push("/manager/dashboard");
+				}
 			} catch (err) {
 				setError(
 					err instanceof Error
@@ -63,9 +68,9 @@ export default function LoginPage() {
 					backgroundPosition: "center",
 				}}
 			>
-				<div className="absolute inset-0 bg-gradient-to-br from-cyan-950/60 via-[#0a1628]/70 to-blue-950/60" />
+				<div className="absolute inset-0 bg-linear-to-br from-cyan-950/60 via-[#0a1628]/70 to-blue-950/60" />
 				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(56,189,248,0.08),transparent_60%)]" />
-				<div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-[#0a1628] via-[#0a1628]/80 to-transparent" />
+				<div className="absolute bottom-0 left-0 right-0 h-1/2 bg-linear-to-t from-[#0a1628] via-[#0a1628]/80 to-transparent" />
 
 				<div className="absolute inset-0 opacity-[0.03] hidden"
 					style={{
@@ -96,7 +101,7 @@ export default function LoginPage() {
 				</div>
 
 				<div className="relative z-10 space-y-6">
-					<div className="flex items-center gap-5 pt-2 hidden">
+					<div className="flex items-center gap-5 pt-2">
 						<div className="flex items-center gap-2 text-xs text-slate-500">
 							<Shield className="h-3.5 w-3.5 text-cyan-500/70" />
 							<span>256-bit Encrypted</span>
@@ -127,7 +132,7 @@ export default function LoginPage() {
 			</div>
 
 			<div className="flex w-1/2 flex-col items-center justify-center bg-white px-6 dark:bg-[#0d1117]">
-				<div className="w-full max-w-[460px]">
+				<div className="w-full max-w-115">
 					<div className="mb-10 flex items-center gap-3 lg:hidden">
 						<div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#39B8FD]">
 							<Image

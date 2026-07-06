@@ -13,12 +13,9 @@ public static class Utils
 
     public static bool SetValueFromHeaderToContext(HttpContext context, string header)
     {
-        if (context.Request.Headers.TryGetValue(header, out var value))
-        {
-            context.Items[header] = value;
-            return true;
-        }
+        if (!context.Request.Headers.TryGetValue(header, out var value)) return false;
+        context.Items[header] = Uri.UnescapeDataString(value!);
+        return true;
 
-        return false;
     }
 }

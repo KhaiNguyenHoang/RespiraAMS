@@ -56,7 +56,11 @@ builder
                     )?.Value;
                 var role = user.FindFirst(ClaimTypes.Role)?.Value;
                 var email = user.FindFirst(ClaimTypes.Email)?.Value;
-
+                var name =
+                    $"{user.FindFirst(ClaimTypes.Surname)?.Value} {user.FindFirst(ClaimTypes.GivenName)?.Value}";
+                
+                // Since request header only accept ASCII characters, we need to escape it or gateway will crash
+                // User ID (which is a UUID) and role should be safe for this, but email and name aren't 
                 if (!string.IsNullOrEmpty(userId))
                 {
                     transformContext.ProxyRequest.Headers.Remove("X-ID");
@@ -70,7 +74,12 @@ builder
                 if (!string.IsNullOrEmpty(email))
                 {
                     transformContext.ProxyRequest.Headers.Remove("X-Email");
-                    transformContext.ProxyRequest.Headers.TryAddWithoutValidation("X-Email", email);
+                    transformContext.ProxyRequest.Headers.TryAddWithoutValidation("X-Email", Uri.EscapeDataString(email));
+                }
+                if (!string.IsNullOrEmpty(name))
+                {
+                    transformContext.ProxyRequest.Headers.Remove("X-Name");
+                    transformContext.ProxyRequest.Headers.TryAddWithoutValidation("X-Name", Uri.EscapeDataString(name));
                 }
             }
             return ValueTask.CompletedTask;

@@ -4,13 +4,14 @@ import { useState } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useHistory } from "@/features/doctor/history/api"
+import { getUser } from "@/lib/auth"
 import { Loader2 } from "lucide-react"
 
-const DOCTOR_ID = "00000000-0000-0000-0000-000000000001"
-
 export default function HistoryPage() {
+  const user = getUser()
+  const doctorId = user?.id ?? ""
   const [page] = useState(1)
-  const { data, isLoading } = useHistory(DOCTOR_ID, { page, size: 100 })
+  const { data, isLoading } = useHistory(doctorId, { page, size: 100 })
 
   const items = data?.items ?? []
 

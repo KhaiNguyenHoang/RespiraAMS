@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
@@ -25,6 +25,8 @@ import {
   BarChart3,
 } from "lucide-react"
 import AccountSection from "@/features/manager/shared/components/accountSection"
+import { getUser } from "@/lib/auth"
+import { useSidebarStore } from "@/features/manager/shared/stores/sidebarStore"
 
 interface NavItem {
   icon: LucideIcon
@@ -46,10 +48,20 @@ const NAV_ITEMS: NavItem[] = [
   { icon: BarChart3, label: "Thống kê", href: "/doctor/statistics" },
 ]
 
-const DEFAULT_USER = {
-  name: "Nguyen Van A",
-  email: "nguyenvana@medcare.vn",
-  initials: "NA",
+function useCurrentUser() {
+  const [user, setUser] = useState(() => {
+    const u = getUser();
+    return u
+      ? { name: `${u.firstName} ${u.lastName}`, email: u.email, initials: `${u.firstName.charAt(0)}${u.lastName.charAt(0)}`.toUpperCase() }
+      : { name: "User", email: "user@respira.com", initials: "U" };
+  });
+  useEffect(() => {
+    const u = getUser();
+    if (u) {
+      setUser({ name: `${u.firstName} ${u.lastName}`, email: u.email, initials: `${u.firstName.charAt(0)}${u.lastName.charAt(0)}`.toUpperCase() });
+    }
+  }, []);
+  return user;
 }
 
 function NavItemLink({ item, collapsed, active }: NavItemProps) {
@@ -109,8 +121,11 @@ function NavItemLink({ item, collapsed, active }: NavItemProps) {
 }
 
 export function DoctorSidebar() {
+  const user = useCurrentUser()
+  const collapsed = useSidebarStore((state) => state.collapsed)
+  const collapse = useSidebarStore((state) => state.collapse)
+  const expand = useSidebarStore((state) => state.expand)
   const pathname = usePathname()
-  const [collapsed, setCollapsed] = useState(false)
   const [logoError, setLogoError] = useState(false)
 
   return (
@@ -168,7 +183,7 @@ export function DoctorSidebar() {
               variant="ghost"
               size="icon"
               className="h-7 w-7 shrink-0 text-muted-foreground hover:text-foreground"
-              onClick={() => setCollapsed(true)}
+              onClick={collapse}
               aria-label="Collapse sidebar"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -182,7 +197,7 @@ export function DoctorSidebar() {
               variant="outline"
               size="icon"
               className="h-6 w-6 rounded-full bg-background shadow-md border"
-              onClick={() => setCollapsed(false)}
+              onClick={expand}
               aria-label="Expand sidebar"
             >
               <ChevronRight className="h-3 w-3" />
@@ -199,13 +214,13 @@ export function DoctorSidebar() {
               key={item.href}
               item={item}
               collapsed={collapsed}
-              active={pathname === item.href}
+              active={pathname === item.href || pathname.startsWith(item.href + "/")}
             />
           ))}
         </nav>
 
         <div className="border-t px-2 py-3 shrink-0">
-          <AccountSection user={DEFAULT_USER} collapsed={collapsed} />
+          <AccountSection user={user} collapsed={collapsed} />
         </div>
       </aside>
     </TooltipProvider>

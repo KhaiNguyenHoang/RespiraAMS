@@ -10,8 +10,7 @@ import {
   BarChart, Bar,
 } from "recharts"
 import { useStatistics } from "@/features/doctor/history/api"
-
-const DOCTOR_ID = "00000000-0000-0000-0000-000000000001"
+import { getUser } from "@/lib/auth"
 
 const severityLabels: Record<string, string> = {
   mild: "Nhẹ",
@@ -24,8 +23,10 @@ const severityColors = ["#22c55e", "#eab308", "#f97316", "#ef4444"]
 const siteColors = ["#3b82f6", "#8b5cf6", "#ec4899"]
 
 export default function StatisticsPage() {
+  const user = getUser()
+  const doctorId = user?.id ?? ""
   const [selectedYear, setSelectedYear] = useState(2026)
-  const { data, isLoading } = useStatistics(DOCTOR_ID, undefined, selectedYear)
+  const { data, isLoading } = useStatistics(doctorId, undefined, selectedYear)
 
   if (isLoading) {
     return (

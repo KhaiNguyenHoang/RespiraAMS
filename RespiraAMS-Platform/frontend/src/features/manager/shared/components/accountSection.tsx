@@ -1,9 +1,12 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
+import { getUser, logout } from "@/lib/auth";
 
 /**
  * User info for the account section
@@ -21,6 +24,13 @@ export interface UserInfo {
  * Account section component.
  */
 export default function AccountSection({ user, collapsed }: { user: UserInfo; collapsed?: boolean }) {
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await logout();
+        router.push("/login");
+    };
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -74,13 +84,13 @@ export default function AccountSection({ user, collapsed }: { user: UserInfo; co
                 <DropdownMenuSeparator />
 
                 <DropdownMenuItem asChild>
-                    <Link
-                        href="/auth/signout"
-                        className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive"
+                    <button
+                        onClick={handleLogout}
+                        className="flex w-full items-center gap-2 cursor-pointer text-destructive focus:text-destructive px-2 py-1.5 text-sm"
                     >
                         <LogOut className="h-4 w-4" />
                         Đăng xuất
-                    </Link>
+                    </button>
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
