@@ -1,4 +1,10 @@
-﻿/**
+﻿import { PaginationParam } from "@/lib/models";
+
+export interface GetAntibioticSpectraParams extends PaginationParam {
+    name?: string;
+}
+
+/**
  * Create antibiotic spectrum request DTO
  */
 export interface CreateAntibioticSpectrumRequest {

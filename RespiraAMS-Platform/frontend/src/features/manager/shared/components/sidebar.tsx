@@ -62,10 +62,10 @@ function useCurrentUser(): UserInfo {
         const u = getUser();
         return u
             ? {
-                  name: `${u.firstName} ${u.lastName}`,
-                  email: u.email,
-                  initials: `${u.firstName.charAt(0)}${u.lastName.charAt(0)}`.toUpperCase(),
-              }
+                name: `${u.lastName} ${u.firstName}`,
+                email: u.email,
+                initials: `${u.firstName.charAt(0)}${u.lastName.charAt(0)}`.toUpperCase(),
+            }
             : { name: "User", email: "user@respira.com", initials: "U" };
     });
 
@@ -73,9 +73,9 @@ function useCurrentUser(): UserInfo {
         const u = getUser();
         if (u) {
             setUser({
-                name: `${u.firstName} ${u.lastName}`,
+                name: `${u.lastName} ${u.firstName}`,
                 email: u.email,
-                initials: `${u.firstName.charAt(0)}${u.lastName.charAt(0)}`.toUpperCase(),
+                initials: `${u.lastName.charAt(0)}${u.firstName.charAt(0)}`.toUpperCase(),
             });
         }
     }, []);

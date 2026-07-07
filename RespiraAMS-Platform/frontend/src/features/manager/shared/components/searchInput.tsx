@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface SearchInputProps {
     onSearch: (value: string) => void;
@@ -18,16 +19,28 @@ export function SearchInput({ onSearch, placeholder = "Search..." }: SearchInput
         }
     };
 
+    const handleSearch = () => {
+        onSearch(value);
+    };
+
     return (
-        <div className="relative flex-1 max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={placeholder}
-                className="pl-9"
-            />
+        <div className="flex flex-1 max-w-md gap-2">
+            <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder={placeholder}
+                    className="pl-9"
+                />
+            </div>
+
+            <Button
+                onClick={handleSearch}
+                className="inline-flex items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-white">
+                <Search /> Tìm kiếm
+            </Button>
         </div>
     );
 }

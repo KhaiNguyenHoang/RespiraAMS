@@ -1,7 +1,6 @@
-import { PaginationParam } from "@/lib/models";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createAntibioticSpectrum, deleteAntibioticSpectrum, getAntibioticSpectra, updateAntibioticSpectrum } from "./api";
-import { CreateAntibioticSpectrumRequest, UpdateAntibioticSpectrumRequest } from "./models";
+import { CreateAntibioticSpectrumRequest, GetAntibioticSpectraParams, UpdateAntibioticSpectrumRequest } from "./models";
 import { toast } from "sonner";
 import logger from "@/lib/logger";
 
@@ -10,10 +9,10 @@ import logger from "@/lib/logger";
  */
 export const antibioticSpectrumKeys = {
     all: ["antibiotic-spectra"] as const,
-    list: (params: PaginationParam) => ["antibiotic-spectra", "list", params] as const,
+    list: (params: GetAntibioticSpectraParams) => ["antibiotic-spectra", "list", params] as const,
 }
 
-export function useAntibioticSpectra(params: PaginationParam) {
+export function useAntibioticSpectra(params: GetAntibioticSpectraParams) {
     return useQuery({
         queryKey: antibioticSpectrumKeys.list(params),
         queryFn: () => getAntibioticSpectra(params),

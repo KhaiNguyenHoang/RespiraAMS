@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts"
 import { InfiniteDoctorSelect } from "./infiniteDoctorSelect"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function DashboardPage() {
     const currentYear = new Date().getFullYear()
@@ -35,8 +36,8 @@ export default function DashboardPage() {
         return arr
     }, [selectedYear, currentYear, currentMonth])
 
-    const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const y = parseInt(e.target.value)
+    const handleYearChange = (value: string) => {
+        const y = parseInt(value)
         setSelectedYear(y)
         if (y === currentYear && selectedMonth > currentMonth) {
             setSelectedMonth(currentMonth)
@@ -60,24 +61,32 @@ export default function DashboardPage() {
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-zinc-600 uppercase">Year</label>
-                        <select
-                            value={selectedYear}
-                            onChange={handleYearChange}
-                            className="flex h-10.5 w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        >
-                            {years.map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
+                        <Select value={String(selectedYear)} onValueChange={handleYearChange}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent position="popper" side="bottom">
+                                {years.map(y => (
+                                    <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-zinc-600 uppercase">Month</label>
-                        <select
-                            value={selectedMonth}
-                            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                            className="flex h-10.5 w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        >
-                            {months.map(m => <option key={m} value={m}>Tháng {m}</option>)}
-                        </select>
+                        <Select
+                            value={String(selectedMonth)}
+                            onValueChange={(v) => setSelectedMonth(parseInt(v))}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent position="popper" side="bottom">
+                                {months.map(m => (
+                                    <SelectItem key={m} value={String(m)}>Tháng {m}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </CardContent>
             </Card>

@@ -1,5 +1,6 @@
 ﻿using Application.Abstracts.CQRS;
 using Application.Abstracts.Data;
+using Microsoft.EntityFrameworkCore;
 using RespiraAMS_Platform.Shared.DTOs;
 using X.PagedList.EF;
 
@@ -8,10 +9,19 @@ namespace Application.Features.Diseases.GetPagedDiseases;
 public class GetPagedDiseasesHandler(IDbContext context)
     : IQueryHandler<GetPagedDiseasesQuery, Pagination<DiseaseItem>>
 {
-    public async Task<Pagination<DiseaseItem>> HandleAsync(GetPagedDiseasesQuery query, CancellationToken cancellationToken = default)
+    public async Task<Pagination<DiseaseItem>> HandleAsync(GetPagedDiseasesQuery query,
+        CancellationToken cancellationToken = default)
     {
-        var diseases = await context
-            .Diseases.OrderByDescending(x => x.CreatedAt)
+        // Construct filter
+        var queryable = context.Diseases.AsQueryable();
+        // Search by name (contains, case-insensitive)
+        if (query.Filter?.Name != null)
+        {
+            queryable = queryable.Where(x => EF.Functions.ILike(x.Name, $"%{query.Filter.Name}%"));
+        }
+
+        var diseases = await queryable
+            .OrderByDescending(x => x.CreatedAt)
             .Select(x => new DiseaseItem()
             {
                 Id = x.Id,
