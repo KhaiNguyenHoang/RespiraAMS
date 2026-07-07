@@ -7,7 +7,6 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
   PieChart, Pie, Cell,
-  BarChart, Bar,
 } from "recharts"
 import { useStatistics } from "@/features/doctor/history/api"
 import { getUser } from "@/lib/auth"
@@ -20,7 +19,7 @@ const severityLabels: Record<string, string> = {
 }
 
 const severityColors = ["#22c55e", "#eab308", "#f97316", "#ef4444"]
-const siteColors = ["#3b82f6", "#8b5cf6", "#ec4899"]
+const antibioticColors = ["#0c3660", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"]
 
 export default function StatisticsPage() {
   const user = getUser()
@@ -151,19 +150,41 @@ export default function StatisticsPage() {
           <CardHeader>
             <CardTitle className="text-base">Tỷ lệ tiêu thụ kháng sinh</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center">
             {antibioticData.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-10 text-center">Chưa có dữ liệu</p>
+              <p className="text-sm text-muted-foreground py-10">Chưa có dữ liệu</p>
             ) : (
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={antibioticData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" tick={{ fontSize: 11 }} />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="count" name="Số ca" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <PieChart width={320} height={280}>
+                <Pie
+                  data={antibioticData.map((d) => ({
+                    name: d.category,
+                    value: d.count,
+                  }))}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={55}
+                  outerRadius={100}
+                  paddingAngle={3}
+                  dataKey="value"
+                >
+                  {antibioticData.map((_, i) => (
+                    <Cell key={i} fill={antibioticColors[i % antibioticColors.length]} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value, name, props) => {
+                    const count = props?.payload?.count ?? 0
+                    const total = antibioticData.reduce((s, d) => s + d.count, 0)
+                    const pct = total > 0 ? ((count / total) * 100).toFixed(1) : "0"
+                    return [`${count} ca (${pct}%)`, name]
+                  }}
+                />
+                <Legend
+                  formatter={(value) => (
+                    <span className="text-sm text-muted-foreground">{value}</span>
+                  )}
+                />
+              </PieChart>
             )}
           </CardContent>
         </Card>
