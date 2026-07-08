@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, HelpCircle, Loader2 } from "lucide-react"
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
   PieChart, Pie, Cell,
+  BarChart, Bar,
 } from "recharts"
 import { useStatistics } from "@/features/doctor/statistics/api"
 import { severityLabels } from "@/features/doctor/lib/mappers"
@@ -171,7 +172,7 @@ export default function StatisticsPage() {
                   nameKey="category"
                 >
                   {antibioticData.map((_, i) => (
-                    <Cell key={i} fill={siteColors[i % siteColors.length]} />
+                    <Cell key={i} fill={antibioticColors[i % antibioticColors.length]} />
                   ))}
                 </Pie>
                 <RechartsTooltip formatter={(value, name) => [`${value} ca`, name]} />
