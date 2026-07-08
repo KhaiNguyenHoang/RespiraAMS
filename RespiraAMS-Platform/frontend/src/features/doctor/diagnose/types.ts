@@ -75,6 +75,12 @@ export interface ResistanceRiskFactorItem {
   name: string
 }
 
+export interface DiagnosisTemplate {
+  icuHospitalizeCriteria: CriterionItem[]
+  resistanceRiskFactors: CriterionItem[]
+  otherCriteria: CriterionItem[]
+}
+
 export interface DiseaseResult {
   id: string
   name: string

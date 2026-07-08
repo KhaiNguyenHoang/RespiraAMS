@@ -24,7 +24,7 @@ import {
   History,
   BarChart3,
 } from "lucide-react"
-import AccountSection from "@/features/manager/components/accountSection"
+import AccountSection from "@/features/doctor/components/accountSection"
 
 interface NavItem {
   icon: LucideIcon

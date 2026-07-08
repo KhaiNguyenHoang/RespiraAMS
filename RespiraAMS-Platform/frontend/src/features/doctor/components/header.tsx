@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import AccountSection from "@/features/manager/components/accountSection"
+import AccountSection from "@/features/doctor/components/accountSection"
 
 const DEFAULT_USER = {
   name: "Nguyen Van A",

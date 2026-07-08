@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { apiFetch, API_BASE } from "@/lib/api"
-import { CreateTreatmentDecisionDto, CreateTreatmentDecisionResult, StatisticsResult, TreatmentDecisionItem, TreatmentDecisionResult } from "./types"
+import { CreateTreatmentDecisionDto, CreateTreatmentDecisionResult, TreatmentDecisionItem, TreatmentDecisionResult } from "./types"
 import { Pagination, PaginationParam } from "@/lib/models"
 import { toast } from "sonner"
 
@@ -24,15 +24,6 @@ export function getHistory(doctorId: string, params: PaginationParam) {
   )
 }
 
-export function getStatistics(doctorId?: string, month?: number, year?: number) {
-  const searchParams = new URLSearchParams()
-  if (doctorId) searchParams.set("DoctorId", doctorId)
-  if (month != null) searchParams.set("Month", String(month))
-  if (year != null) searchParams.set("Year", String(year))
-  const qs = searchParams.toString()
-  return apiFetch<StatisticsResult>(`${API_BASE}/statistics${qs ? `?${qs}` : ""}`)
-}
-
 export function useCreateTreatmentDecision() {
   return useMutation<CreateTreatmentDecisionResult | null, Error, CreateTreatmentDecisionDto>({
     mutationFn: (payload) => createTreatmentDecision(payload),
@@ -53,12 +44,5 @@ export function useTreatmentDecision(id: string) {
     queryKey: ["treatment-decision", id],
     queryFn: () => getTreatmentDecision(id),
     enabled: !!id,
-  })
-}
-
-export function useStatistics(doctorId?: string, month?: number, year?: number) {
-  return useQuery({
-    queryKey: ["statistics", doctorId, month, year],
-    queryFn: () => getStatistics(doctorId, month, year),
   })
 }

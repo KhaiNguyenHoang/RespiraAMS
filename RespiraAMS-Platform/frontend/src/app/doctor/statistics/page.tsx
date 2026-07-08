@@ -3,22 +3,17 @@
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { ChevronLeft, ChevronRight, HelpCircle, Loader2 } from "lucide-react"
 import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
+  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
   PieChart, Pie, Cell,
   BarChart, Bar,
 } from "recharts"
-import { useStatistics } from "@/features/doctor/history/api"
+import { useStatistics } from "@/features/doctor/statistics/api"
+import { severityLabels } from "@/features/doctor/lib/mappers"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 const DOCTOR_ID = "00000000-0000-0000-0000-000000000001"
-
-const severityLabels: Record<string, string> = {
-  mild: "Nhẹ",
-  moderate: "Trung bình",
-  severe: "Nặng",
-  critical: "Nguy kịch",
-}
 
 const severityColors = ["#22c55e", "#eab308", "#f97316", "#ef4444"]
 const siteColors = ["#3b82f6", "#8b5cf6", "#ec4899"]
@@ -60,19 +55,36 @@ export default function StatisticsPage() {
 
   return (
     <div className="container mx-auto px-4 pt-8 pb-4">
-      <header className="mb-8">
-        <p className="text-primary text-sm uppercase tracking-widest">Thống kê</p>
-        <h1 className="text-3xl font-bold mt-2">Thống kê cá nhân</h1>
-        <p className="text-muted-foreground mt-2">
-          Tổng quan về các ca chẩn đoán đã thực hiện.
-        </p>
+      <header className="mb-8 flex items-center justify-between">
+        <div>
+          <p className="text-primary text-sm uppercase tracking-widest">Thống kê</p>
+          <h1 className="text-3xl font-bold mt-2">Thống kê cá nhân</h1>
+          <p className="text-muted-foreground mt-2">
+            Tổng quan về các ca chẩn đoán đã thực hiện.
+          </p>
+        </div>
+        <Card className="min-w-36">
+          <CardContent className="p-4 text-center">
+            <p className="text-sm text-muted-foreground mt-1">Tổng số ca</p>
+            <p className="text-3xl font-bold text-primary">{totalCases}</p>
+          </CardContent>
+        </Card>
       </header>
 
       <Card className="mb-6">
         <CardHeader className="flex flex-row items-center justify-between">
           <div className="flex items-center gap-3">
             <CardTitle className="text-base">Độ chính xác khuyến nghị theo tháng</CardTitle>
-            <span className="text-base">Tổng: {totalCases} ca</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Tỷ lệ phần trăm số ca bác sĩ chọn đúng phác đồ đề xuất theo từng tháng.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
           <div className="flex items-center gap-2">
             <Button
@@ -98,7 +110,7 @@ export default function StatisticsPage() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" interval={0} tick={{ fontSize: 11 }} />
               <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} />
-              <Tooltip formatter={(v) => `${v}%`} />
+              <RechartsTooltip formatter={(v) => `${v}%`} />
               <Legend />
               <Line
                 type="monotone"
@@ -118,30 +130,23 @@ export default function StatisticsPage() {
           <CardHeader>
             <CardTitle className="text-base">Mức độ nghiêm trọng</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent>
             {severityData.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-10">Chưa có dữ liệu</p>
+              <p className="text-sm text-muted-foreground py-10 text-center">Chưa có dữ liệu</p>
             ) : (
-              <PieChart width={280} height={250}>
-                <Pie
-                  data={severityData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={50}
-                  outerRadius={90}
-                  paddingAngle={3}
-                  dataKey="value"
-                >
-                  {severityData.map((entry, i) => (
-                    <Cell key={i} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Legend
-                  formatter={(value) => (
-                    <span className="text-sm text-muted-foreground">{value}</span>
-                  )}
-                />
-              </PieChart>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={severityData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+                  <YAxis />
+                  <RechartsTooltip />
+                  <Bar dataKey="value" name="Số ca" radius={[4, 4, 0, 0]}>
+                    {severityData.map((entry, i) => (
+                      <Cell key={i} fill={entry.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             )}
           </CardContent>
         </Card>
@@ -150,19 +155,32 @@ export default function StatisticsPage() {
           <CardHeader>
             <CardTitle className="text-base">Tỷ lệ tiêu thụ kháng sinh</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center">
             {antibioticData.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-10 text-center">Chưa có dữ liệu</p>
+              <p className="text-sm text-muted-foreground py-10">Chưa có dữ liệu</p>
             ) : (
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={antibioticData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="category" tick={{ fontSize: 11 }} />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="count" name="Số ca" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <PieChart width={280} height={250}>
+                <Pie
+                  data={antibioticData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={50}
+                  outerRadius={90}
+                  paddingAngle={3}
+                  dataKey="count"
+                  nameKey="category"
+                >
+                  {antibioticData.map((_, i) => (
+                    <Cell key={i} fill={siteColors[i % siteColors.length]} />
+                  ))}
+                </Pie>
+                <RechartsTooltip formatter={(value, name) => [`${value} ca`, name]} />
+                <Legend
+                  formatter={(value) => (
+                    <span className="text-sm text-muted-foreground">{value}</span>
+                  )}
+                />
+              </PieChart>
             )}
           </CardContent>
         </Card>
