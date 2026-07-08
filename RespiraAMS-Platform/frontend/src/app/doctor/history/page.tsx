@@ -85,20 +85,21 @@ export default function HistoryPage() {
 
       <Sheet open={!!selectedId} onOpenChange={(o) => { if (!o) setSelectedId("") }}>
         <SheetContent className="sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>{detail ? detail.diseaseName : "Chi tiết ca chẩn đoán"}</SheetTitle>
+            {detail && (
+              <SheetDescription>
+                {new Date(detail.createdAt).toLocaleString("vi-VN")}
+              </SheetDescription>
+            )}
+          </SheetHeader>
+
           {detailLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
             </div>
           ) : detail ? (
-            <>
-              <SheetHeader>
-                <SheetTitle>{detail.diseaseName}</SheetTitle>
-                <SheetDescription>
-                  {new Date(detail.createdAt).toLocaleString("vi-VN")}
-                </SheetDescription>
-              </SheetHeader>
-
-              <div className="px-4 pb-4 space-y-6">
+            <div className="px-4 pb-4 space-y-6">
                 <section className="space-y-3">
                   <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
                     Thông tin chung
@@ -195,7 +196,6 @@ export default function HistoryPage() {
                   </>
                 )}
               </div>
-            </>
           ) : (
             <div className="flex items-center justify-center py-12">
               <p className="text-sm text-muted-foreground">Không tìm thấy thông tin.</p>
