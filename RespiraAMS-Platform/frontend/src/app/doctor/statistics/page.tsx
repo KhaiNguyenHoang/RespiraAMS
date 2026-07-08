@@ -7,20 +7,20 @@ import { ChevronLeft, ChevronRight, HelpCircle, Loader2 } from "lucide-react"
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, Legend,
   PieChart, Pie, Cell,
-  BarChart, Bar,
 } from "recharts"
 import { useStatistics } from "@/features/doctor/statistics/api"
 import { severityLabels } from "@/features/doctor/lib/mappers"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-
-const DOCTOR_ID = "00000000-0000-0000-0000-000000000001"
+import { getUser } from "@/lib/auth"
 
 const severityColors = ["#22c55e", "#eab308", "#f97316", "#ef4444"]
-const siteColors = ["#3b82f6", "#8b5cf6", "#ec4899"]
+const antibioticColors = ["#0c3660", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6"]
 
 export default function StatisticsPage() {
+  const user = getUser()
+  const doctorId = user?.id ?? ""
   const [selectedYear, setSelectedYear] = useState(2026)
-  const { data, isLoading } = useStatistics(DOCTOR_ID, undefined, selectedYear)
+  const { data, isLoading } = useStatistics(doctorId, undefined, selectedYear)
 
   if (isLoading) {
     return (

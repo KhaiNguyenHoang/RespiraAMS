@@ -3,9 +3,15 @@ using RespiraAMS_Platform.Shared.DTOs;
 
 namespace Application.Features.Diseases.GetPagedDiseases;
 
+public class DiseaseFilter
+{
+    public string? Name { get; set; } = string.Empty;
+}
+
 public class GetPagedDiseasesQuery : IQuery
 {
     public PaginationParam Param { get; set; } = null!;
+    public DiseaseFilter? Filter { get; set; }
 }
 
 public class DiseaseItem
@@ -14,10 +20,12 @@ public class DiseaseItem
     /// Disease ID
     /// </summary>
     public Guid Id { get; set; }
+
     /// <summary>
     /// Disease name
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
     /// <summary>
     /// Disease description
     /// </summary>

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useAntibioticSpectra } from "../queries";
 import { AntibioticSpectrumItem } from "../models";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Pagination, PaginationContent, PaginationItem, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { Edit, Trash } from "lucide-react";
+import { useSearchStore } from "../../shared/stores/searchStore";
 
 const PAGE_SIZE = 10;
 
@@ -20,7 +21,23 @@ interface AntibioticSpectraTableProps {
 
 export function AntibioticSpectraTable({ onEdit, onDelete }: AntibioticSpectraTableProps) {
     const [page, setPage] = useState(1);
-    const params = useMemo(() => ({ page, size: PAGE_SIZE }), [page]);
+    const searchName = useSearchStore((s) => s.value);
+    const clearSearch = useSearchStore((s) => s.clear);
+
+    useEffect(() => {
+        clearSearch();
+    }, [clearSearch]);
+
+    useEffect(() => {
+        setPage(1);
+    }, [searchName]);
+
+    const params = useMemo(() => ({
+        page,
+        size: PAGE_SIZE,
+        name: searchName || undefined,
+    }), [page, searchName]);
+
     const { data, isLoading, isError } = useAntibioticSpectra(params);
 
     if (isLoading) return <Skeleton className="mx-auto w-[80vw] h-[80vh]" />;

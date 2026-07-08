@@ -13,6 +13,10 @@ public class GetPagedAntibioticSpectraDto
     /// Page size. Must be a positive integer and less than or equal to 100
     /// </summary>
     public int Size { get; set; } = 10;
+    /// <summary>
+    /// Query filter: antibiotic spectrum name. Case-insensitive
+    /// </summary>
+    public string? Name { get; set; }
 
     public GetPagedAntibioticSpectraQuery ToQuery()
     {
@@ -22,6 +26,10 @@ public class GetPagedAntibioticSpectraDto
             {
                 Page = Page,
                 Size = Size
+            },
+            Filter = new AntibioticSpectrumFilter()
+            {
+                Name = Name,
             }
         };
     }

@@ -11,6 +11,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "
 import DiseasePathogenForm from "./diseasePathogenForm";
 import { useCreateDiseasePathogen, useUpdateDiseasePathogen, useDeleteDiseasePathogen } from "../queries";
 import { DeletePanel } from "../../shared/components/deletePanel";
+import { SeverityBadge } from "../../shared/components/severityBadge";
+import { TreatmentSiteBadge } from "../../shared/components/treatmentSiteBadge";
 
 interface Props {
     diseaseId: string;
@@ -70,14 +72,10 @@ export function DiseasePathogensTable({ diseaseId, pathogens }: Props) {
                                 </span>
                             </TableCell>
                             <TableCell className="align-middle">
-                                <span className="px-2 py-1 rounded bg-zinc-100 text-zinc-700 text-xs font-semibold">
-                                    {item.severity}
-                                </span>
+                                <SeverityBadge severity={item.severity} />
                             </TableCell>
                             <TableCell className="align-middle">
-                                <span className="px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-semibold border border-blue-100">
-                                    {item.treatmentSite}
-                                </span>
+                                <TreatmentSiteBadge treatmentSite={item.treatmentSite} />
                             </TableCell>
                             <TableCell className="flex gap-2">
                                 <Button variant="ghost" onClick={() => openDialog("update", item)}><Edit /></Button>

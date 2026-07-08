@@ -3,9 +3,15 @@ using RespiraAMS_Platform.Shared.DTOs;
 
 namespace Application.Features.AntibioticSpectra.GetPagedAntibioticSpectra;
 
+public class AntibioticSpectrumFilter
+{
+    public string? Name { get; set; } = string.Empty;
+}
+
 public class GetPagedAntibioticSpectraQuery : IQuery
 {
     public PaginationParam Param { get; set; } = null!;
+    public AntibioticSpectrumFilter? Filter { get; set; }
 }
 
 public class AntibioticSpectrumItem
@@ -14,10 +20,12 @@ public class AntibioticSpectrumItem
     /// Antibiotic spectrum ID
     /// </summary>
     public Guid Id { get; set; }
+
     /// <summary>
     /// Antibiotic spectrum name
     /// </summary>
     public string Name { get; set; } = string.Empty;
+
     /// <summary>
     /// Antibiotic spectrum description
     /// </summary>

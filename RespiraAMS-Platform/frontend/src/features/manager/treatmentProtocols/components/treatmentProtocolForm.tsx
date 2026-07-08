@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { CreateTreatmentProtocolRequest, TreatmentProtocolDetail } from "../models";
-import { Severity, TreatmentSite } from "../../diseasePathogens/models";
+import { Severity, TreatmentSite } from "../../shared/models";
 import { usePathogensList } from "../../pathogens/queries";
 import { useAntibioticsList } from "../../antibiotics/queries";
 import { z } from "zod";

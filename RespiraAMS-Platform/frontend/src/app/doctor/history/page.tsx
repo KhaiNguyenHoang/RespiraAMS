@@ -21,14 +21,15 @@ import { useHistory, useTreatmentDecision } from "@/features/doctor/history/api"
 import { Separator } from "@/components/ui/separator"
 import { SeverityBadge } from "@/features/doctor/components/badges"
 import { treatmentSiteLabels } from "@/features/doctor/lib/mappers"
+import { getUser } from "@/lib/auth"
 import { Loader2 } from "lucide-react"
 
-const DOCTOR_ID = "00000000-0000-0000-0000-000000000001"
-
 export default function HistoryPage() {
+  const user = getUser()
+  const doctorId = user?.id ?? ""
   const [page] = useState(1)
   const [selectedId, setSelectedId] = useState("")
-  const { data, isLoading } = useHistory(DOCTOR_ID, { page, size: 100 })
+  const { data, isLoading } = useHistory(doctorId, { page, size: 100 })
   const { data: detail, isLoading: detailLoading } = useTreatmentDecision(selectedId)
 
   const items = data?.items ?? []

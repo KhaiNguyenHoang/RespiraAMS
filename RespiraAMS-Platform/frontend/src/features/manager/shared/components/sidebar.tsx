@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import AccountSection, { UserInfo } from "./accountSection";
 import { useSidebarStore } from "../stores/sidebarStore";
+import { getUser } from "@/lib/auth";
 
 /*=== Navigation items ===*/
 
@@ -56,11 +57,31 @@ const NAV_ITEMS: NavItem[] = [
     { icon: Settings, label: "Cài đặt", href: "/settings" },
 ];
 
-const DEFAULT_USER: UserInfo = {
-    name: "Nguyen Van A",
-    email: "nguyenvana@medcare.vn",
-    initials: "NA",
-};
+function useCurrentUser(): UserInfo {
+    const [user, setUser] = useState<UserInfo>(() => {
+        const u = getUser();
+        return u
+            ? {
+                name: `${u.lastName} ${u.firstName}`,
+                email: u.email,
+                initials: `${u.firstName.charAt(0)}${u.lastName.charAt(0)}`.toUpperCase(),
+            }
+            : { name: "User", email: "user@respira.com", initials: "U" };
+    });
+
+    useEffect(() => {
+        const u = getUser();
+        if (u) {
+            setUser({
+                name: `${u.lastName} ${u.firstName}`,
+                email: u.email,
+                initials: `${u.lastName.charAt(0)}${u.firstName.charAt(0)}`.toUpperCase(),
+            });
+        }
+    }, []);
+
+    return user;
+}
 
 function NavItemLink({ item, collapsed, active }: NavItemProps) {
     const { icon: Icon, label, href, badge } = item;
@@ -133,9 +154,11 @@ export interface AppSidebarProps {
 
 export function ManagerSidebar({
     className,
-    user = DEFAULT_USER,
+    user: propUser,
     navItems = NAV_ITEMS,
 }: AppSidebarProps) {
+    const currentUser = useCurrentUser();
+    const user = propUser ?? currentUser;
     const pathname = usePathname();
     const [logoError, setLogoError] = useState(false);
     const collapsed = useSidebarStore((state) => state.collapsed);

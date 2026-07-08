@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts"
 import { InfiniteDoctorSelect } from "./infiniteDoctorSelect"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function DashboardPage() {
     const currentYear = new Date().getFullYear()
@@ -35,15 +36,33 @@ export default function DashboardPage() {
         return arr
     }, [selectedYear, currentYear, currentMonth])
 
-    const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const y = parseInt(e.target.value)
+    const handleYearChange = (value: string) => {
+        const y = parseInt(value)
         setSelectedYear(y)
         if (y === currentYear && selectedMonth > currentMonth) {
             setSelectedMonth(currentMonth)
         }
     }
 
+    const severityLabels: Record<string, string> = {
+        mild: "Nhẹ",
+        moderate: "Trung bình",
+        severe: "Nặng",
+        critical: "Nguy kịch",
+    }
+
+    const severityColors = ["#22c55e", "#eab308", "#f97316", "#ef4444"]
+
     const COLORS = ['#0c3660', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+
+    const lineData = Array.from({ length: 12 }, (_, i) => {
+        const month = i + 1
+        const acc = (stats?.recommendationAccuracy ?? []).find((a) => a.month === month)
+        return {
+            month: `Th${month}`,
+            accuracy: acc ? Number((acc.accuracy * 100).toFixed(1)) : 0,
+        }
+    })
 
     return (
         <div className="container mx-auto pb-10 space-y-6">
@@ -60,24 +79,32 @@ export default function DashboardPage() {
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-zinc-600 uppercase">Year</label>
-                        <select
-                            value={selectedYear}
-                            onChange={handleYearChange}
-                            className="flex h-10.5 w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        >
-                            {years.map(y => <option key={y} value={y}>{y}</option>)}
-                        </select>
+                        <Select value={String(selectedYear)} onValueChange={handleYearChange}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent position="popper" side="bottom">
+                                {years.map(y => (
+                                    <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-zinc-600 uppercase">Month</label>
-                        <select
-                            value={selectedMonth}
-                            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-                            className="flex h-10.5 w-full items-center justify-between rounded-md border border-input bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                        >
-                            {months.map(m => <option key={m} value={m}>Tháng {m}</option>)}
-                        </select>
+                        <Select
+                            value={String(selectedMonth)}
+                            onValueChange={(v) => setSelectedMonth(parseInt(v))}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent position="popper" side="bottom">
+                                {months.map(m => (
+                                    <SelectItem key={m} value={String(m)}>Tháng {m}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 </CardContent>
             </Card>
@@ -92,105 +119,111 @@ export default function DashboardPage() {
                     Failed to fetch statistics data.
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                    <Card className="shadow-sm border md:col-span-2">
-                        <CardHeader>
-                            <CardTitle>Total Decisions by Severity</CardTitle>
+                <div className="space-y-6">
+                    <Card className="shadow-sm border">
+                        <CardHeader className="flex flex-row items-center justify-between">
+                            <div>
+                                <CardTitle>Recommendation Accuracy</CardTitle>
+                                <CardDescription>Line chart displaying accuracy for each month in {selectedYear}</CardDescription>
+                            </div>
+                            <span className="text-base font-semibold">
+                                Total: {stats.totalDecision.reduce((s, d) => s + d.count, 0)} cases
+                            </span>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid-cols-1 sm:grid-cols-3 gap-4 mt-2 flex justify-center items-center relative">
+                            <ResponsiveContainer width="100%" height={300}>
+                                <LineChart data={lineData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="month" interval={0} tick={{ fontSize: 11 }} />
+                                    <YAxis domain={[0, 100]} tickFormatter={(v) => `${v}%`} tick={{ fontSize: 11 }} />
+                                    <Tooltip formatter={(v) => `${v}%`} />
+                                    <Legend />
+                                    <Line type="monotone" dataKey="accuracy" name="Accuracy" stroke="#2563eb" strokeWidth={2} dot={{ r: 4 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Card className="shadow-sm border">
+                            <CardHeader>
+                                <CardTitle>Total Decisions by Severity</CardTitle>
+                            </CardHeader>
+                            <CardContent className="flex justify-center">
                                 {stats.totalDecision.length > 0 ? (
-
-                                    stats.totalDecision.map((item, i) => (
-                                        <div key={i} className="bg-zinc-50 border p-4 rounded-xl flex flex-col items-center justify-center">
-                                            <p className="text-sm font-semibold text-zinc-500 uppercase">{item.severity}</p>
-                                            <p className="text-3xl font-bold text-primary mt-1">{item.count} <span className="text-base font-medium text-zinc-400">cases</span></p>
-                                        </div>
-                                    ))
-
+                                    <PieChart width={320} height={280}>
+                                        <Pie
+                                            data={stats.totalDecision.map((d) => ({
+                                                name: severityLabels[d.severity] ?? d.severity,
+                                                value: d.count,
+                                            }))}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={55}
+                                            outerRadius={100}
+                                            paddingAngle={3}
+                                            dataKey="value"
+                                        >
+                                            {stats.totalDecision.map((_, i) => (
+                                                <Cell key={i} fill={severityColors[i % severityColors.length]} />
+                                            ))}
+                                        </Pie>
+                                        <Tooltip />
+                                        <Legend
+                                            formatter={(value) => (
+                                                <span className="text-sm text-muted-foreground">{value}</span>
+                                            )}
+                                        />
+                                    </PieChart>
                                 ) : (
-                                    <p className="text-zinc-400 italic text-sm absolute">No decision data data for this month.</p>
+                                    <p className="text-sm text-muted-foreground py-10">No decision data for this month.</p>
                                 )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                            </CardContent>
+                        </Card>
 
-                    <Card className="shadow-sm border">
-                        <CardHeader>
-                            <CardTitle>Recommendation Accuracy</CardTitle>
-                            <CardDescription>Line chart displaying accuracy for each month in {selectedYear}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="h-75 w-full mt-4 flex justify-center items-center relative">
-                                {stats.recommendationAccuracy.length > 0 ? (
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={[...stats.recommendationAccuracy].sort((a, b) => a.month - b.month)}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e4e4e7" />
-                                            <XAxis dataKey="month" tickFormatter={(val) => `T${val}`} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                                            <YAxis tickFormatter={(val) => `${(val * 100).toFixed(0)}%`} domain={[0, 1]} tick={{ fontSize: 12 }} tickLine={false} axisLine={false} />
-                                            <Tooltip
-                                                formatter={(value) => {
-                                                    if (typeof value !== 'number') {
-                                                        return ['N/A', 'Accuracy']
-                                                    }
-                                                    return [`${(value * 100).toFixed(1)}%`, 'Accuracy']
-                                                }}
-                                                labelFormatter={(label) => `Month ${label}`}
-                                                contentStyle={{ borderRadius: '8px', border: '1px solid #e4e4e7', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                            />
-                                            <Line type="monotone" dataKey="accuracy" stroke="#0c3660" strokeWidth={3} dot={{ r: 4, strokeWidth: 2 }} activeDot={{ r: 6 }} />
-                                        </LineChart>
-                                    </ResponsiveContainer>
-                                ) : (
-                                    <p className="text-zinc-400 italic text-sm absolute">No consumption data for this year.</p>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    <Card className="shadow-sm border">
-                        <CardHeader>
-                            <CardTitle>Antibiotic Consumption Rates</CardTitle>
-                            <CardDescription>Antibiotic consumption rates by AWaRe categories for {selectedMonth}/{selectedYear}</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="h-75 w-full mt-4 flex justify-center items-center relative">
-                                {stats.antibioticConsumptionRates.length > 0 ? (
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <PieChart>
-                                            <Pie
-                                                data={stats.antibioticConsumptionRates}
-                                                cx="50%"
-                                                cy="50%"
-                                                innerRadius={60}
-                                                outerRadius={100}
-                                                paddingAngle={5}
-                                                dataKey="rate"
-                                                nameKey="category"
-                                            >
-                                                {stats.antibioticConsumptionRates.map((entry, index) => (
-                                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                                ))}
-                                            </Pie>
-                                            <Tooltip
-                                                formatter={(value, name, props) => {
-                                                    const numericValue = typeof value === 'number' ? value : Number(value)
-                                                    const rateLabel = Number.isFinite(numericValue)
-                                                        ? `${(numericValue * 100).toFixed(1)}% (${props?.payload?.count ?? 0} cases)`
-                                                        : 'N/A'
-                                                    return [rateLabel, name ?? '']
-                                                }}
-                                            />
-                                            <Legend verticalAlign="bottom" height={36} iconType="circle" />
-                                        </PieChart>
-                                    </ResponsiveContainer>
-                                ) : (
-                                    <p className="text-zinc-400 italic text-sm absolute">No consumption data for this month.</p>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                        <Card className="shadow-sm border">
+                            <CardHeader>
+                                <CardTitle>Antibiotic Consumption Rates</CardTitle>
+                                <CardDescription>By AWaRe categories for {selectedMonth}/{selectedYear}</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-75 w-full mt-4 flex justify-center items-center relative">
+                                    {stats.antibioticConsumptionRates.length > 0 ? (
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                <Pie
+                                                    data={stats.antibioticConsumptionRates}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    innerRadius={60}
+                                                    outerRadius={100}
+                                                    paddingAngle={5}
+                                                    dataKey="rate"
+                                                    nameKey="category"
+                                                >
+                                                    {stats.antibioticConsumptionRates.map((entry, index) => (
+                                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                                    ))}
+                                                </Pie>
+                                                <Tooltip
+                                                    formatter={(value, name, props) => {
+                                                        const numericValue = typeof value === 'number' ? value : Number(value)
+                                                        const rateLabel = Number.isFinite(numericValue)
+                                                            ? `${(numericValue * 100).toFixed(1)}% (${props?.payload?.count ?? 0} cases)`
+                                                            : 'N/A'
+                                                        return [rateLabel, name ?? '']
+                                                    }}
+                                                />
+                                                <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    ) : (
+                                        <p className="text-zinc-400 italic text-sm absolute">No consumption data for this month.</p>
+                                    )}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             )}
         </div>

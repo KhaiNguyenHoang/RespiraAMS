@@ -29,6 +29,10 @@ appsettings.Development.json
 [Tt]ools/
 !packages.config
 [Cc]onfig/
+
+# Ignore all appsettings.json
+*appsettings*.json
+
 # =========================
 # Next.js
 # =========================

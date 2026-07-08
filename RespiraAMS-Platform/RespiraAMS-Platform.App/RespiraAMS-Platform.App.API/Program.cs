@@ -107,7 +107,7 @@ app.UseSerilogRequestLogging();
 
 app.MapControllers();
 app.UseClaimsPropagation();
-// app.UseAuthorizationMiddleware(); // Remove comment to allow authorization
+app.UseAuthorizationMiddleware(); // Remove comment to allow authorization
 
 if (app.Environment.IsDevelopment())
 {

@@ -1,6 +1,6 @@
 ﻿import { API_BASE, apiFetch } from "@/lib/api";
-import { AntibioticSpectrumItem, CreateAntibioticSpectrumRequest, CreateAntibioticSpectrumResult, UpdateAntibioticSpectrumRequest } from "./models";
-import { Pagination, PaginationParam } from "@/lib/models";
+import { AntibioticSpectrumItem, CreateAntibioticSpectrumRequest, CreateAntibioticSpectrumResult, GetAntibioticSpectraParams, UpdateAntibioticSpectrumRequest } from "./models";
+import { Pagination } from "@/lib/models";
 
 export async function createAntibioticSpectrum(request: CreateAntibioticSpectrumRequest): Promise<CreateAntibioticSpectrumResult> {
     return await apiFetch<CreateAntibioticSpectrumResult>(`${API_BASE}/antibiotic-spectra`, {
@@ -9,7 +9,7 @@ export async function createAntibioticSpectrum(request: CreateAntibioticSpectrum
     }) as CreateAntibioticSpectrumResult;
 }
 
-export async function getAntibioticSpectra(params: PaginationParam): Promise<Pagination<AntibioticSpectrumItem>> {
+export async function getAntibioticSpectra(params: GetAntibioticSpectraParams): Promise<Pagination<AntibioticSpectrumItem>> {
     const searchParams = new URLSearchParams();
 
     if (params?.page !== undefined) {
@@ -17,6 +17,9 @@ export async function getAntibioticSpectra(params: PaginationParam): Promise<Pag
     }
     if (params?.size !== undefined) {
         searchParams.set("Size", String(params.size));
+    }
+    if (params?.name) {
+        searchParams.set("Name", params.name);
     }
 
     const query = searchParams.toString();
