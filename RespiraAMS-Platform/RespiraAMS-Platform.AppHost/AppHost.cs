@@ -1,5 +1,7 @@
 #pragma warning disable ASPIREJAVASCRIPT001
 
+using Microsoft.Extensions.Hosting;
+
 var builder = DistributedApplication.CreateBuilder(args);
 
 var cache = builder.AddRedis("cache");
@@ -60,12 +62,26 @@ var gateway = builder
     .WithExternalHttpEndpoints();
 
 var frontend = builder
-    .AddNextJsApp("frontend", "../frontend/", "dev")
+    .AddNextJsApp("frontend", "../frontend/")
     .WithReference(authenticationApi)
     .WithReference(doctorApi)
     .WithReference(mediaApi)
+    .WithReference(appApi)
+    .WithReference(decisionApi)
     .WithReference(gateway)
-    .WithExternalHttpEndpoints();
+    .WithEnvironment("GATEWAY_URL", gateway.GetEndpoint("https"));
+
+if (builder.Environment.IsDevelopment())
+{
+    // Expose frontend port without proxy since NextJS run dev server use HMR (WebSocket internally), and 
+    // Aspire didn't provide configuration on that. When running with production, HMR is disable, then Aspire
+    // will work
+    frontend.WithEndpoint("http", e =>
+    {
+        e.IsProxied = false;
+        e.TargetPort = 3000;
+    });
+}
 
 appApi.WithReference(gateway).WaitFor(gateway);
 decisionApi.WithReference(gateway).WaitFor(gateway);
