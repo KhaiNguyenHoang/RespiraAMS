@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { apiFetch, API_BASE } from "@/lib/api"
-import { DiagnoseRequest, DiagnoseResponse, DiseaseItem, DiseaseResult } from "./types"
+import { DiagnoseRequest, DiagnoseResponse, DiagnosisTemplate, DiseaseItem, DiseaseResult } from "./types"
 import { Pagination, PaginationParam } from "@/lib/models"
 import { toast } from "sonner"
 
@@ -40,6 +40,18 @@ export function useDisease(id: string) {
   return useQuery({
     queryKey: ["disease", id],
     queryFn: () => getDisease(id),
+    enabled: !!id,
+  })
+}
+
+export function getDiagnosisTemplate(id: string) {
+  return apiFetch<DiagnosisTemplate>(`${API_BASE}/diseases/${id}/template`)
+}
+
+export function useDiagnosisTemplate(id: string) {
+  return useQuery({
+    queryKey: ["disease-template", id],
+    queryFn: () => getDiagnosisTemplate(id),
     enabled: !!id,
   })
 }

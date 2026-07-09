@@ -16,7 +16,7 @@ export function AwareBadge({ category }: { category: string }) {
   if (cat === "accesswatch")
     return <span className="inline-block rounded px-1.5 py-0.5 text-md font-medium capitalize bg-chart-2/10 text-chart-2">{category}</span>
   if (cat === "watch")
-    return <span className="inline-block rounded px-1.5 py-0.5 text-md font-medium capitalize bg-accent text-accent-foreground">{category}</span>
+    return <span className="inline-block rounded px-1.5 py-0.5 text-md font-medium capitalize bg-sidebar-primary/10 text-sidebar-primary">{category}</span>
   if (cat === "reserve")
     return <span className="inline-block rounded px-1.5 py-0.5 text-md font-medium capitalize bg-destructive/10 text-destructive">{category}</span>
   return <span className="inline-block rounded px-1.5 py-0.5 text-md font-medium capitalize bg-muted text-muted-foreground">{category}</span>

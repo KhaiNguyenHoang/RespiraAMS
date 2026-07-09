@@ -142,24 +142,9 @@ function CriterionField({
           value={numericValue}
           onChange={(e) => onValueChange(e.target.value)}
         />
-        {criterion.unit ? (
-          <span className="gap-1 inline-flex items-center border border-input bg-muted px-2.5 py-2 text-sm text-muted-foreground rounded-md rounded-l-none whitespace-nowrap">
-            {criterion.min != null && criterion.max != null && criterion.max < 1.79e308 && (
-              <span className="ml-1">({criterion.min} - {criterion.max})</span>
-            )}
-            {criterion.min != null && (criterion.max == null || criterion.max >= 1.79e308) && (
-              <span className="ml-1">(&ge; {criterion.min})</span>
-            )}
+        {criterion.unit && (
+          <span className="inline-flex items-center border border-input bg-muted px-2.5 py-2 text-sm text-muted-foreground rounded-md rounded-l-none whitespace-nowrap">
             {criterion.unit}
-          </span>
-        ) : criterion.min != null && (
-          <span className="inline-flex items-center border border-input bg-muted px-2.5 py-1 text-sm text-muted-foreground rounded-md whitespace-nowrap">
-            {criterion.max != null && criterion.max < 1.79e308 && (
-              <span>({criterion.min} - {criterion.max})</span>
-            )}
-            {(criterion.max == null || criterion.max >= 1.79e308) && (
-              <span>(&ge; {criterion.min})</span>
-            )}
           </span>
         )}
       </div>

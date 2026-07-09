@@ -7,13 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DiagnoseResponse, TreatmentProtocolItem } from "@/features/doctor/diagnose/types"
 import { SeverityBadge } from "@/features/doctor/components/badges"
-
-
-const treatmentSiteLabels: Record<string, string> = {
-  outpatient: "Ngoại trú",
-  inpatient: "Nội trú",
-  intensiveCareUnit: "Khoa ICU",
-}
+import { treatmentSiteLabels } from "@/features/doctor/lib/mappers"
 
 interface RecommendationViewProps {
   diagnoseResult: DiagnoseResponse

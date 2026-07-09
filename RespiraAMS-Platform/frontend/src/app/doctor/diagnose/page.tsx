@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useDisease } from "@/features/doctor/diagnose/api"
+import { useDisease, useDiagnosisTemplate } from "@/features/doctor/diagnose/api"
 import { diagnose } from "@/features/doctor/diagnose/api"
 import { DiagnoseResponse, TreatmentProtocolItem } from "@/features/doctor/diagnose/types"
 import { useCreateTreatmentDecision } from "@/features/doctor/history/api"
@@ -15,6 +15,7 @@ import { DiseaseSelectSection } from "@/features/doctor/diagnose/components/dise
 import { IcuCriteriaSection } from "@/features/doctor/diagnose/components/icu-criteria-section"
 import { Curb65Section } from "@/features/doctor/diagnose/components/curb65-section"
 import { ResistanceRiskSection } from "@/features/doctor/diagnose/components/resistance-risk-section"
+import { OtherCriteriaSection } from "@/features/doctor/diagnose/components/other-criteria-section"
 import { RecommendationView } from "@/features/doctor/diagnose/components/recommendation-view"
 import { Loader2 } from "lucide-react"
 
@@ -30,12 +31,7 @@ function calculateAge(dob: Date | undefined): string {
 }
 
 import { SeverityBadge } from "@/features/doctor/components/badges"
-
-const treatmentSiteLabels: Record<string, string> = {
-  outpatient: "Ngoại trú",
-  inpatient: "Nội trú",
-  intensiveCareUnit: "Khoa ICU",
-}
+import { treatmentSiteLabels } from "@/features/doctor/lib/mappers"
 
 interface FormValues {
   patientName: string
@@ -51,8 +47,8 @@ interface FormValues {
   icuNumericValues: Record<string, string>
   resistanceRisks: Record<string, boolean>
   resistanceNumericValues: Record<string, string>
-  otherCriteriaEnabled: boolean
-  otherCriteria: string
+  otherCriteriaChecked: Record<string, boolean>
+  otherCriteriaNumericValues: Record<string, string>
 }
 
 const defaultFormValues: FormValues = {
@@ -69,8 +65,8 @@ const defaultFormValues: FormValues = {
   icuNumericValues: {},
   resistanceRisks: {},
   resistanceNumericValues: {},
-  otherCriteriaEnabled: false,
-  otherCriteria: "",
+  otherCriteriaChecked: {},
+  otherCriteriaNumericValues: {},
 }
 
 export default function ClinicalFormPage() {
@@ -79,6 +75,8 @@ export default function ClinicalFormPage() {
   const [diagnoseResult, setDiagnoseResult] = useState<DiagnoseResponse | null>(null)
   const [showRecommendation, setShowRecommendation] = useState(false)
   const { data: disease, isLoading: diseaseLoading, isError: diseaseError } = useDisease(selectedDiseaseId)
+  const { data: diagnosisTemplate, isLoading: templateLoading } = useDiagnosisTemplate(selectedDiseaseId)
+  const otherCriteria = diagnosisTemplate?.otherCriteria ?? []
 
   const updateField = <K extends keyof FormValues>(field: K, value: FormValues[K]) => {
     setFormValues((prev) => ({ ...prev, [field]: value }))
@@ -102,6 +100,14 @@ export default function ClinicalFormPage() {
         .filter(([, value]) => value !== "")
         .map(([id]) => id)
 
+      const checkedOtherCriteria: string[] = Object.entries(formValues.otherCriteriaChecked)
+        .filter(([, checked]) => checked)
+        .map(([id]) => id)
+
+      const otherCriteriaNumericWithValues: string[] = Object.entries(formValues.otherCriteriaNumericValues)
+        .filter(([, value]) => value !== "")
+        .map(([id]) => id)
+
       return diagnose({
         diseaseId: selectedDiseaseId,
         confusion: formValues.confusion,
@@ -112,9 +118,7 @@ export default function ClinicalFormPage() {
         age: calculateAge(formValues.dateOfBirth),
         icuHospitalizeCriteria: [...checkedIcuCriteria, ...icuNumericWithValues],
         resistanceRiskFactors: [...checkedResistanceRisks, ...resistanceNumericWithValues],
-        otherCriteria: formValues.otherCriteriaEnabled && formValues.otherCriteria.trim()
-          ? [formValues.otherCriteria.trim()]
-          : [],
+        otherCriteria: [...checkedOtherCriteria, ...otherCriteriaNumericWithValues],
       })
     },
     onSuccess: (data) => {
@@ -145,6 +149,14 @@ export default function ClinicalFormPage() {
         .filter(([, value]) => value !== "")
         .map(([id]) => id)
 
+      const checkedOtherCriteria: string[] = Object.entries(formValues.otherCriteriaChecked)
+        .filter(([, checked]) => checked)
+        .map(([id]) => id)
+
+      const otherCriteriaNumericWithValues: string[] = Object.entries(formValues.otherCriteriaNumericValues)
+        .filter(([, value]) => value !== "")
+        .map(([id]) => id)
+
       return diagnose({
         diseaseId: selectedDiseaseId,
         confusion: formValues.confusion,
@@ -155,9 +167,7 @@ export default function ClinicalFormPage() {
         age: calculateAge(formValues.dateOfBirth),
         icuHospitalizeCriteria: [...checkedIcuCriteria, ...icuNumericWithValues],
         resistanceRiskFactors: [...checkedResistanceRisks, ...resistanceNumericWithValues],
-        otherCriteria: formValues.otherCriteriaEnabled && formValues.otherCriteria.trim()
-          ? [formValues.otherCriteria.trim()]
-          : [],
+        otherCriteria: [...checkedOtherCriteria, ...otherCriteriaNumericWithValues],
       })
     },
     onSuccess: (data) => {
@@ -341,16 +351,24 @@ export default function ClinicalFormPage() {
                 loading={diseaseLoading}
                 risksChecked={formValues.resistanceRisks}
                 numericValues={formValues.resistanceNumericValues}
-                otherCriteriaEnabled={formValues.otherCriteriaEnabled}
-                otherCriteria={formValues.otherCriteria}
                 onRiskCheckChange={(id, checked) =>
                   updateField("resistanceRisks", { ...formValues.resistanceRisks, [id]: checked })
                 }
                 onNumericValueChange={(id, value) =>
                   updateField("resistanceNumericValues", { ...formValues.resistanceNumericValues, [id]: value })
                 }
-                onOtherCriteriaEnabledChange={(v) => updateField("otherCriteriaEnabled", v)}
-                onOtherCriteriaChange={(v) => updateField("otherCriteria", v)}
+              />
+              <OtherCriteriaSection
+                criteria={otherCriteria}
+                loading={templateLoading}
+                checked={formValues.otherCriteriaChecked}
+                numericValues={formValues.otherCriteriaNumericValues}
+                onCheckChange={(id, checked) =>
+                  updateField("otherCriteriaChecked", { ...formValues.otherCriteriaChecked, [id]: checked })
+                }
+                onNumericValueChange={(id, value) =>
+                  updateField("otherCriteriaNumericValues", { ...formValues.otherCriteriaNumericValues, [id]: value })
+                }
               />
             </>
           )}

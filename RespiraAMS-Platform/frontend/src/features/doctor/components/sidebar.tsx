@@ -24,9 +24,9 @@ import {
   History,
   BarChart3,
 } from "lucide-react"
-import AccountSection from "@/features/manager/shared/components/accountSection"
+import AccountSection from "@/features/doctor/components/accountSection"
 import { getUser } from "@/lib/auth"
-import { useSidebarStore } from "@/features/manager/shared/stores/sidebarStore"
+import { useSidebarStore } from "@/features/doctor/components/sidebarStore"
 
 interface NavItem {
   icon: LucideIcon

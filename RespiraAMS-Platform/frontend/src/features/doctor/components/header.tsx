@@ -2,7 +2,7 @@
 
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import AccountSection from "@/features/manager/shared/components/accountSection"
+import AccountSection from "@/features/doctor/components/accountSection"
 import { getUser } from "@/lib/auth"
 
 export function DoctorHeader() {
