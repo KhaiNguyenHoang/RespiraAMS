@@ -27,7 +27,6 @@
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Domain\Domain.csproj" />
-    <ProjectReference Include="..\..\RespiraAMS-Platform.ServiceDefaults\RespiraAMS-Platform.ServiceDefaults.csproj" />
     <ProjectReference Include="..\..\RespiraAMS-Platform.Shared\RespiraAMS-Platform.Shared.csproj" />
   </ItemGroup>
 

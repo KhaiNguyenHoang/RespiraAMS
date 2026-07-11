@@ -23,12 +23,12 @@ namespace Infrastructure.Services
             _logger = logger;
             var smtpSection = configuration.GetSection("SmtpSettings");
             _host = smtpSection.GetValue<string>("Host") ?? string.Empty;
-            _port = smtpSection.GetValue<int>("Port", 587);
+            _port = smtpSection.GetValue("Port", 587);
             _username = smtpSection.GetValue<string>("Username") ?? string.Empty;
             _password = smtpSection.GetValue<string>("Password") ?? string.Empty;
             _senderName = smtpSection.GetValue<string>("SenderName") ?? "RespiraAMS Support";
             _senderEmail = smtpSection.GetValue<string>("SenderEmail") ?? string.Empty;
-            _enableSsl = smtpSection.GetValue<bool>("EnableSsl", false);
+            _enableSsl = smtpSection.GetValue("EnableSsl", false);
         }
 
         public async Task SendEmailAsync(string to, string subject, string body)
@@ -44,7 +44,7 @@ namespace Infrastructure.Services
             using var client = new SmtpClient();
             try
             {
-                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+                client.ServerCertificateValidationCallback = (_, _, _, _) => true;
 
                 var secureSocketOptions = _enableSsl
                     ? SecureSocketOptions.SslOnConnect

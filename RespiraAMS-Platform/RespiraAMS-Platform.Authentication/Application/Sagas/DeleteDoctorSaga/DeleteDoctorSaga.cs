@@ -201,7 +201,7 @@ namespace Application.Sagas.DeleteDoctorSaga
             /*
             if (!string.IsNullOrEmpty(OldMediaFileName))
             {
-                // Non-blocking physical file clean-up in cloud storage
+                // Non-blocking physical file cleanup in cloud storage
                 await bus.PublishAsync(new CleanDeleteMediaCommand(OldMediaFileName, OldMediaBucketName));
             }
             */

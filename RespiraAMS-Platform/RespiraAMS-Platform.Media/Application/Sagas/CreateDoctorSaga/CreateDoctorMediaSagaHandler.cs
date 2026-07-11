@@ -15,17 +15,13 @@ namespace Application.Sagas.CreateDoctorSaga
         IConfiguration configuration
     )
     {
-        private readonly IMediaDbContext _dbContext = dbContext;
-        private readonly ICacheService _cacheService = cacheService;
-        private readonly IStorageService _storageService = storageService;
-        private readonly IValidator<CreateMediaCommand> _validator = validator;
         private readonly string _bucketName = configuration["R2:BucketName"] ?? "avatars";
 
         public async Task<object> Handle(CreateMediaCommand command)
         {
             try
             {
-                var validationResult = await _validator.ValidateAsync(command);
+                var validationResult = await validator.ValidateAsync(command);
                 if (!validationResult.IsValid)
                 {
                     string errors = string.Join(
@@ -41,7 +37,7 @@ namespace Application.Sagas.CreateDoctorSaga
                 string mediaUrl = string.Empty;
                 if (command.Avatar?.Length > 0)
                 {
-                    mediaUrl = await _storageService.UploadAsync(
+                    mediaUrl = await storageService.UploadAsync(
                         command.Avatar,
                         fileName,
                         contentType,
@@ -61,10 +57,10 @@ namespace Application.Sagas.CreateDoctorSaga
                     CreatedAt = DateTimeOffset.UtcNow,
                 };
 
-                _dbContext.MediaAssets.Add(mediaAsset);
-                await _dbContext.SaveChangesAsync();
+                dbContext.MediaAssets.Add(mediaAsset);
+                await dbContext.SaveChangesAsync();
 
-                await _cacheService.SetAsync($"media:id:{mediaAsset.Id}", mediaAsset);
+                await cacheService.SetAsync($"media:id:{mediaAsset.Id}", mediaAsset);
 
                 return new MediaCreated(command.Id, mediaAsset.Id, mediaAsset.Url ?? string.Empty);
             }
@@ -76,22 +72,22 @@ namespace Application.Sagas.CreateDoctorSaga
 
         public async Task Handle(RollbackMediaCommand command)
         {
-            var mediaAsset = await _dbContext.MediaAssets.FindAsync(command.Id);
+            var mediaAsset = await dbContext.MediaAssets.FindAsync(command.Id);
             if (mediaAsset != null)
             {
                 if (!string.IsNullOrEmpty(mediaAsset.FileName))
                 {
-                    await _storageService.DeleteAsync(
+                    await storageService.DeleteAsync(
                         mediaAsset.FileName,
                         mediaAsset.BucketName ?? _bucketName
                     );
                 }
 
-                _dbContext.MediaAssets.Remove(mediaAsset);
-                await _dbContext.SaveChangesAsync();
+                dbContext.MediaAssets.Remove(mediaAsset);
+                await dbContext.SaveChangesAsync();
             }
 
-            await _cacheService.RemoveAsync($"media:id:{command.Id}");
+            await cacheService.RemoveAsync($"media:id:{command.Id}");
         }
     }
 }

@@ -13,40 +13,33 @@ namespace Application.Sagas.DeleteDoctorSaga
         ILogger<DeleteDoctorSagaHandler> logger
     )
     {
-        private readonly IDoctorDbContext _dbContext = dbContext;
-        private readonly ICacheService _cacheService = cacheService;
-        private readonly ILogger<DeleteDoctorSagaHandler> _logger = logger;
-
         private List<DegreeEnum> ParseDegrees(ICollection<string> degrees)
         {
             var degreeStrings = new List<string>();
-            if (degrees != null)
+            foreach (var d in degrees)
             {
-                foreach (var d in degrees)
-                {
-                    if (string.IsNullOrWhiteSpace(d))
-                        continue;
+                if (string.IsNullOrWhiteSpace(d))
+                    continue;
 
-                    var trimmed = d.Trim();
-                    if (trimmed.StartsWith('[') && trimmed.EndsWith(']'))
+                var trimmed = d.Trim();
+                if (trimmed.StartsWith('[') && trimmed.EndsWith(']'))
+                {
+                    try
                     {
-                        try
+                        var parsed = JsonSerializer.Deserialize<List<string>>(trimmed);
+                        if (parsed != null)
                         {
-                            var parsed = JsonSerializer.Deserialize<List<string>>(trimmed);
-                            if (parsed != null)
-                            {
-                                degreeStrings.AddRange(parsed);
-                            }
-                        }
-                        catch
-                        {
-                            degreeStrings.Add(trimmed);
+                            degreeStrings.AddRange(parsed);
                         }
                     }
-                    else
+                    catch
                     {
                         degreeStrings.Add(trimmed);
                     }
+                }
+                else
+                {
+                    degreeStrings.Add(trimmed);
                 }
             }
             return degreeStrings.Select(d => Enum.Parse<DegreeEnum>(d.Trim(), true)).ToList();
@@ -56,10 +49,10 @@ namespace Application.Sagas.DeleteDoctorSaga
         {
             try
             {
-                var doctor = await _dbContext.Doctors.FindAsync(command.DoctorId);
+                var doctor = await dbContext.Doctors.FindAsync(command.DoctorId);
                 if (doctor?.IsDeleted != false)
                 {
-                    _logger.LogWarning(
+                    logger.LogWarning(
                         "DeleteDoctorCommand failed: Doctor with ID {DoctorId} not found or already deleted.",
                         command.DoctorId
                     );
@@ -82,12 +75,12 @@ namespace Application.Sagas.DeleteDoctorSaga
 
                 doctor.IsDeleted = true;
                 doctor.DeletedAt = DateTimeOffset.UtcNow;
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 // Remove from cache
-                await _cacheService.RemoveAsync($"doctor:id:{command.DoctorId}");
+                await cacheService.RemoveAsync($"doctor:id:{command.DoctorId}");
 
-                _logger.LogInformation(
+                logger.LogInformation(
                     "Doctor profile soft-deleted successfully for Doctor ID {DoctorId}",
                     command.DoctorId
                 );
@@ -107,7 +100,7 @@ namespace Application.Sagas.DeleteDoctorSaga
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "DeleteDoctorCommand failed for Doctor ID {DoctorId}",
                     command.DoctorId
@@ -120,15 +113,15 @@ namespace Application.Sagas.DeleteDoctorSaga
         {
             try
             {
-                var existing = await _dbContext.Doctors.FindAsync(command.DoctorId);
+                var existing = await dbContext.Doctors.FindAsync(command.DoctorId);
                 if (existing != null)
                 {
                     existing.IsDeleted = false;
                     existing.DeletedAt = null;
-                    await _dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
 
-                    await _cacheService.SetAsync($"doctor:id:{existing.Id}", existing);
-                    _logger.LogInformation(
+                    await cacheService.SetAsync($"doctor:id:{existing.Id}", existing);
+                    logger.LogInformation(
                         "Restored (un-deleted) Doctor profile during rollback for Doctor ID {DoctorId}",
                         command.DoctorId
                     );
@@ -159,11 +152,11 @@ namespace Application.Sagas.DeleteDoctorSaga
                         DeletedAt = null,
                     };
 
-                    _dbContext.Doctors.Add(doctor);
-                    await _dbContext.SaveChangesAsync();
+                    dbContext.Doctors.Add(doctor);
+                    await dbContext.SaveChangesAsync();
 
-                    await _cacheService.SetAsync($"doctor:id:{doctor.Id}", doctor);
-                    _logger.LogInformation(
+                    await cacheService.SetAsync($"doctor:id:{doctor.Id}", doctor);
+                    logger.LogInformation(
                         "Restored Doctor profile during rollback for Doctor ID {DoctorId}",
                         command.DoctorId
                     );
@@ -171,7 +164,7 @@ namespace Application.Sagas.DeleteDoctorSaga
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "Failed to restore Doctor profile for Doctor ID {DoctorId} in rollback",
                     command.DoctorId

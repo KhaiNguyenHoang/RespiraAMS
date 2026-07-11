@@ -1,5 +1,7 @@
 using Application.DTOs;
-using Application.Features.Profile;
+using Application.Features.Profile.GetDoctorByEmail;
+using Application.Features.Profile.GetDoctorById;
+using Application.Features.Profile.GetPagedDoctor;
 using Application.Sagas.CreateDoctorSaga;
 using Application.Sagas.DeleteDoctorSaga;
 using Application.Sagas.UpdateDoctorSaga;
@@ -21,8 +23,6 @@ namespace Controllers
         IValidator<UpdateDoctorDto> updateValidator
     ) : ControllerBase
     {
-        private readonly IMessageBus _bus = bus;
-
         [HttpPost("create/doctor")]
         [MapToApiVersion("1.0")]
         [Consumes("multipart/form-data")]
@@ -32,7 +32,7 @@ namespace Controllers
             if (!validationResult.IsValid)
             {
                 var message = string.Join("; ", validationResult.Errors.Select(x => x.ErrorMessage));
-                return BadRequest(ApiResponse<object>.Fail(message, 400));
+                return BadRequest(ApiResponse<object>.Fail(message, StatusCodes.Status400BadRequest));
             }
 
             byte[]? avatarBytes = null;
@@ -62,7 +62,7 @@ namespace Controllers
                 avatarBytes
             );
 
-            await _bus.PublishAsync(command);
+            await bus.PublishAsync(command);
             var response = new SagaResponseDto
             {
                 SagaId = id,
@@ -86,7 +86,7 @@ namespace Controllers
             if (!validationResult.IsValid)
             {
                 var message = string.Join("; ", validationResult.Errors.Select(x => x.ErrorMessage));
-                return BadRequest(ApiResponse<object>.Fail(message, 400));
+                return BadRequest(ApiResponse<object>.Fail(message, StatusCodes.Status400BadRequest));
             }
 
             byte[]? avatarBytes = null;
@@ -113,7 +113,7 @@ namespace Controllers
                 avatarBytes
             );
 
-            await _bus.PublishAsync(command);
+            await bus.PublishAsync(command);
             var response = new SagaResponseDto
             {
                 SagaId = id,
@@ -134,7 +134,7 @@ namespace Controllers
         {
             var command = new StartDeleteDoctorSaga(id);
 
-            await _bus.PublishAsync(command);
+            await bus.PublishAsync(command);
             var response = new SagaResponseDto
             {
                 SagaId = id,
@@ -154,7 +154,7 @@ namespace Controllers
         public async Task<IActionResult> GetDoctorById(Guid id)
         {
             var query = new GetDoctorByIdQuery(id);
-            var response = await _bus.InvokeAsync<DoctorResponseDto?>(query);
+            var response = await bus.InvokeAsync<DoctorResponseDto?>(query);
 
             if (response == null)
             {
@@ -174,7 +174,7 @@ namespace Controllers
         public async Task<IActionResult> GetDoctorByEmail(string email)
         {
             var query = new GetDoctorByEmailQuery(email);
-            var response = await _bus.InvokeAsync<DoctorResponseDto?>(query);
+            var response = await bus.InvokeAsync<DoctorResponseDto?>(query);
 
             if (response == null)
             {
@@ -201,8 +201,8 @@ namespace Controllers
             int limit = take ?? pageSize ?? 10;
             int offset = skip ?? (((page ?? 1) - 1) * limit);
 
-            var query = new GetDoctorsPagedQuery(offset, limit);
-            var result = await _bus.InvokeAsync<PagedDoctorsResult>(query);
+            var query = new GetPagedDoctorQuery(offset, limit);
+            var result = await bus.InvokeAsync<PagedDoctorsResult>(query);
 
             return Ok(
                 ApiResponse<PagedDoctorsResult>.Ok(result, "Doctor list retrieved successfully.")

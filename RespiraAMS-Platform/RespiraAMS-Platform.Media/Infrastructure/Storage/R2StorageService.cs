@@ -12,8 +12,6 @@ namespace Infrastructure.Storage
         ILogger<R2StorageService> logger
     ) : IStorageService
     {
-        private readonly IAmazonS3 _s3Client = s3Client;
-        private readonly ILogger<R2StorageService> _logger = logger;
         private readonly string? _publicUrl = configuration["R2:PublicUrl"];
 
         public async Task<string> UploadAsync(
@@ -36,14 +34,14 @@ namespace Infrastructure.Storage
                     DisablePayloadSigning = true,
                 };
 
-                await _s3Client.PutObjectAsync(putRequest, cancellationToken);
+                await s3Client.PutObjectAsync(putRequest, cancellationToken);
 
                 if (!string.IsNullOrEmpty(_publicUrl))
                 {
                     return $"{_publicUrl.TrimEnd('/')}/{fileName}";
                 }
 
-                var serviceUrl = _s3Client.Config.ServiceURL;
+                var serviceUrl = s3Client.Config.ServiceURL;
                 if (!string.IsNullOrEmpty(serviceUrl))
                 {
                     return $"{serviceUrl.TrimEnd('/')}/{bucketName}/{fileName}";
@@ -53,7 +51,7 @@ namespace Infrastructure.Storage
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "Failed to upload file {FileName} to Cloudflare R2 bucket {BucketName}",
                     fileName,
@@ -77,11 +75,11 @@ namespace Infrastructure.Storage
                     Key = objectKey,
                 };
 
-                await _s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
+                await s3Client.DeleteObjectAsync(deleteRequest, cancellationToken);
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "Failed to delete file {ObjectKey} from Cloudflare R2 bucket {BucketName}",
                     objectKey,

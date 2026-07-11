@@ -14,38 +14,33 @@ namespace Application.Sagas.DeleteDoctorSaga
         ILogger<DeleteDoctorSagaHandler> logger
     )
     {
-        private readonly IAuthDbContext _dbContext = dbContext;
-        private readonly IMessageBus _bus = bus;
-        private readonly ICacheService _cache = cache;
-        private readonly ILogger<DeleteDoctorSagaHandler> _logger = logger;
-
         public async Task Handle(DeleteAuthDoctorCommand command)
         {
             try
             {
-                var authDoctor = await _dbContext.AuthDoctors.FindAsync(command.DoctorId);
+                var authDoctor = await dbContext.AuthDoctors.FindAsync(command.DoctorId);
                 if (authDoctor == null)
                 {
-                    await _bus.PublishAsync(new DeleteAuthDoctorFailed(command.Id, "Doctor credentials not found."));
+                    await bus.PublishAsync(new DeleteAuthDoctorFailed(command.Id, "Doctor credentials not found."));
                     return;
                 }
 
                 authDoctor.IsDeleted = true;
                 authDoctor.DeletedAt = DateTimeOffset.UtcNow;
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 var guidKey = "user:id:" + command.DoctorId;
                 var emailKey = "user:email:" + authDoctor.Email;
-                await _cache.RemoveAsync(guidKey);
-                await _cache.RemoveAsync(emailKey);
+                await cache.RemoveAsync(guidKey);
+                await cache.RemoveAsync(emailKey);
 
-                await _bus.PublishAsync(new DeleteAuthDoctorCompleted(command.Id));
-                _logger.LogInformation("Soft-deleted AuthDoctor credentials successfully for Doctor ID {DoctorId}", command.DoctorId);
+                await bus.PublishAsync(new DeleteAuthDoctorCompleted(command.Id));
+                logger.LogInformation("Soft-deleted AuthDoctor credentials successfully for Doctor ID {DoctorId}", command.DoctorId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to soft-delete AuthDoctor credentials for Doctor ID {DoctorId}", command.DoctorId);
-                await _bus.PublishAsync(new DeleteAuthDoctorFailed(command.Id, ex.Message));
+                logger.LogError(ex, "Failed to soft-delete AuthDoctor credentials for Doctor ID {DoctorId}", command.DoctorId);
+                await bus.PublishAsync(new DeleteAuthDoctorFailed(command.Id, ex.Message));
             }
         }
 
@@ -53,19 +48,19 @@ namespace Application.Sagas.DeleteDoctorSaga
         {
             try
             {
-                var existing = await _dbContext.AuthDoctors.FindAsync(command.DoctorId);
+                var existing = await dbContext.AuthDoctors.FindAsync(command.DoctorId);
                 if (existing != null)
                 {
                     existing.IsDeleted = false;
                     existing.DeletedAt = null;
-                    await _dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
 
                     var guidKey = "user:id:" + existing.Id;
                     var emailKey = "user:email:" + existing.Email;
-                    await _cache.SetAsync(guidKey, existing);
-                    await _cache.SetAsync(emailKey, existing);
+                    await cache.SetAsync(guidKey, existing);
+                    await cache.SetAsync(emailKey, existing);
 
-                    _logger.LogInformation("Restored (un-deleted) AuthDoctor credentials during rollback for Doctor ID {DoctorId}", command.DoctorId);
+                    logger.LogInformation("Restored (un-deleted) AuthDoctor credentials during rollback for Doctor ID {DoctorId}", command.DoctorId);
                 }
                 else
                 {
@@ -83,20 +78,20 @@ namespace Application.Sagas.DeleteDoctorSaga
                         DeletedAt = null
                     };
 
-                    await _dbContext.AuthDoctors.AddAsync(authDoctor);
-                    await _dbContext.SaveChangesAsync();
+                    await dbContext.AuthDoctors.AddAsync(authDoctor);
+                    await dbContext.SaveChangesAsync();
 
                     var guidKey = "user:id:" + authDoctor.Id;
                     var emailKey = "user:email:" + authDoctor.Email;
-                    await _cache.SetAsync(guidKey, authDoctor);
-                    await _cache.SetAsync(emailKey, authDoctor);
+                    await cache.SetAsync(guidKey, authDoctor);
+                    await cache.SetAsync(emailKey, authDoctor);
 
-                    _logger.LogInformation("Restored (re-created) AuthDoctor credentials during rollback for Doctor ID {DoctorId}", command.DoctorId);
+                    logger.LogInformation("Restored (re-created) AuthDoctor credentials during rollback for Doctor ID {DoctorId}", command.DoctorId);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to restore AuthDoctor credentials for Doctor ID {DoctorId} in rollback", command.DoctorId);
+                logger.LogError(ex, "Failed to restore AuthDoctor credentials for Doctor ID {DoctorId} in rollback", command.DoctorId);
             }
         }
     }

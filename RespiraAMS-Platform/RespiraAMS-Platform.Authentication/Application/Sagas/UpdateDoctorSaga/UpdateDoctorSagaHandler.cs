@@ -9,22 +9,17 @@ namespace Application.Sagas.UpdateDoctorSaga
         IAuthDbContext dbContext,
         IMessageBus bus,
         ICacheService cache,
-        ILogger<UpdateDoctorSagaHandler> logger
-    )
+        ILogger<UpdateDoctorSagaHandler> logger)
     {
-        private readonly IAuthDbContext _dbContext = dbContext;
-        private readonly IMessageBus _bus = bus;
-        private readonly ICacheService _cache = cache;
-        private readonly ILogger<UpdateDoctorSagaHandler> _logger = logger;
-
         public async Task Handle(UpdateAuthDoctorCommand command)
         {
             try
             {
-                var authDoctor = await _dbContext.AuthDoctors.FindAsync(command.DoctorId);
+                var authDoctor = await dbContext.AuthDoctors.FindAsync(command.DoctorId);
                 if (authDoctor == null)
                 {
-                    await _bus.PublishAsync(new UpdateAuthDoctorFailed(command.Id, "Doctor not found in authentication database."));
+                    await bus.PublishAsync(new UpdateAuthDoctorFailed(command.Id,
+                        "Doctor not found in authentication database."));
                     return;
                 }
 
@@ -32,7 +27,7 @@ namespace Application.Sagas.UpdateDoctorSaga
                 var oldEmail = authDoctor.Email;
                 if (!string.Equals(oldEmail, command.Email, StringComparison.OrdinalIgnoreCase))
                 {
-                    await _cache.RemoveAsync("user:email:" + oldEmail);
+                    await cache.RemoveAsync("user:email:" + oldEmail);
                 }
 
                 // Update properties
@@ -42,21 +37,23 @@ namespace Application.Sagas.UpdateDoctorSaga
                 authDoctor.PhoneNumber = command.PhoneNumber;
                 authDoctor.UpdatedAt = DateTimeOffset.UtcNow;
 
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 // Update Cache
                 var guidKey = "user:id:" + authDoctor.Id;
                 var emailKey = "user:email:" + authDoctor.Email;
-                await _cache.SetAsync(guidKey, authDoctor);
-                await _cache.SetAsync(emailKey, authDoctor);
+                await cache.SetAsync(guidKey, authDoctor);
+                await cache.SetAsync(emailKey, authDoctor);
 
-                await _bus.PublishAsync(new UpdateAuthDoctorCompleted(command.Id, command.DoctorId));
-                _logger.LogInformation("Auth Doctor credentials updated successfully for Doctor ID {DoctorId}", command.DoctorId);
+                await bus.PublishAsync(new UpdateAuthDoctorCompleted(command.Id, command.DoctorId));
+                logger.LogInformation("Auth Doctor credentials updated successfully for Doctor ID {DoctorId}",
+                    command.DoctorId);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to update Auth Doctor credentials for Doctor ID {DoctorId}", command.DoctorId);
-                await _bus.PublishAsync(new UpdateAuthDoctorFailed(command.Id, ex.Message));
+                logger.LogError(ex, "Failed to update Auth Doctor credentials for Doctor ID {DoctorId}",
+                    command.DoctorId);
+                await bus.PublishAsync(new UpdateAuthDoctorFailed(command.Id, ex.Message));
             }
         }
 
@@ -64,13 +61,13 @@ namespace Application.Sagas.UpdateDoctorSaga
         {
             try
             {
-                var authDoctor = await _dbContext.AuthDoctors.FindAsync(command.DoctorId);
+                var authDoctor = await dbContext.AuthDoctors.FindAsync(command.DoctorId);
                 if (authDoctor != null)
                 {
                     var currentEmail = authDoctor.Email;
                     if (!string.Equals(currentEmail, command.Email, StringComparison.OrdinalIgnoreCase))
                     {
-                        await _cache.RemoveAsync("user:email:" + currentEmail);
+                        await cache.RemoveAsync("user:email:" + currentEmail);
                     }
 
                     authDoctor.FirstName = command.FirstName;
@@ -79,19 +76,21 @@ namespace Application.Sagas.UpdateDoctorSaga
                     authDoctor.PhoneNumber = command.PhoneNumber;
                     authDoctor.UpdatedAt = DateTimeOffset.UtcNow;
 
-                    await _dbContext.SaveChangesAsync();
+                    await dbContext.SaveChangesAsync();
 
                     var guidKey = "user:id:" + authDoctor.Id;
                     var emailKey = "user:email:" + authDoctor.Email;
-                    await _cache.SetAsync(guidKey, authDoctor);
-                    await _cache.SetAsync(emailKey, authDoctor);
+                    await cache.SetAsync(guidKey, authDoctor);
+                    await cache.SetAsync(emailKey, authDoctor);
 
-                    _logger.LogInformation("Auth Doctor credentials rolled back successfully for Doctor ID {DoctorId}", command.DoctorId);
+                    logger.LogInformation("Auth Doctor credentials rolled back successfully for Doctor ID {DoctorId}",
+                        command.DoctorId);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to rollback Auth Doctor credentials for Doctor ID {DoctorId}", command.DoctorId);
+                logger.LogError(ex, "Failed to rollback Auth Doctor credentials for Doctor ID {DoctorId}",
+                    command.DoctorId);
             }
         }
     }

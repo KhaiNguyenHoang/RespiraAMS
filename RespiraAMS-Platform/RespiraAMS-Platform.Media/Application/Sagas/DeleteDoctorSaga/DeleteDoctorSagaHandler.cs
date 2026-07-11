@@ -14,20 +14,16 @@ namespace Application.Sagas.DeleteDoctorSaga
         ILogger<DeleteDoctorSagaHandler> logger
     )
     {
-        private readonly IMediaDbContext _dbContext = dbContext;
-        private readonly ICacheService _cacheService = cacheService;
-        private readonly IStorageService _storageService = storageService;
-        private readonly ILogger<DeleteDoctorSagaHandler> _logger = logger;
         private readonly string _defaultBucketName = configuration["R2:BucketName"] ?? "avatars";
 
         public async Task<object> Handle(DeleteMediaCommand command)
         {
             try
             {
-                var mediaAsset = await _dbContext.MediaAssets.FindAsync(command.MediaId);
+                var mediaAsset = await dbContext.MediaAssets.FindAsync(command.MediaId);
                 if (mediaAsset?.IsDeleted != false)
                 {
-                    _logger.LogWarning(
+                    logger.LogWarning(
                         "DeleteMediaCommand failed: MediaAsset with ID {MediaId} not found or already deleted.",
                         command.MediaId
                     );
@@ -42,12 +38,12 @@ namespace Application.Sagas.DeleteDoctorSaga
 
                 mediaAsset.IsDeleted = true;
                 mediaAsset.DeletedAt = DateTimeOffset.UtcNow;
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
                 // Remove from cache
-                await _cacheService.RemoveAsync($"media:id:{command.MediaId}");
+                await cacheService.RemoveAsync($"media:id:{command.MediaId}");
 
-                _logger.LogInformation(
+                logger.LogInformation(
                     "Media asset database record soft-deleted successfully for Media ID {MediaId}",
                     command.MediaId
                 );
@@ -56,7 +52,7 @@ namespace Application.Sagas.DeleteDoctorSaga
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "DeleteMediaCommand failed for Media ID {MediaId}",
                     command.MediaId
@@ -71,11 +67,11 @@ namespace Application.Sagas.DeleteDoctorSaga
             {
                 if (!string.IsNullOrEmpty(command.FileName))
                 {
-                    await _storageService.DeleteAsync(
+                    await storageService.DeleteAsync(
                         command.FileName,
                         command.BucketName ?? _defaultBucketName
                     );
-                    _logger.LogInformation(
+                    logger.LogInformation(
                         "Physically deleted media file {FileName} from bucket {BucketName}",
                         command.FileName,
                         command.BucketName
@@ -84,7 +80,7 @@ namespace Application.Sagas.DeleteDoctorSaga
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "Failed to physically delete media file {FileName} from bucket {BucketName}",
                     command.FileName,

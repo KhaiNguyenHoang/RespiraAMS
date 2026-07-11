@@ -28,8 +28,4 @@
     <PackageReference Include="Scalar.AspNetCore" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\RespiraAMS-Platform.ServiceDefaults\RespiraAMS-Platform.ServiceDefaults.csproj" />
-  </ItemGroup>
-
 </Project>

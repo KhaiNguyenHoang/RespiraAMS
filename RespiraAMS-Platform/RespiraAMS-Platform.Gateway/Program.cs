@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.ServiceDiscovery;
 using Microsoft.IdentityModel.Tokens;
+using RespiraAMS_Platform.Shared.Extensions;
 using Yarp.ReverseProxy.Transforms;
 
 var builder = WebApplication.CreateBuilder(args);

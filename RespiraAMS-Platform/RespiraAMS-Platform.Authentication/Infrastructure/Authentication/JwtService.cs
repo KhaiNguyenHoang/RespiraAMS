@@ -48,8 +48,7 @@ namespace Infrastructure.Authentication
                 Audience = _jwtSettings.Audience,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature
-                ),
+                    SecurityAlgorithms.HmacSha256Signature),
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -83,31 +82,24 @@ namespace Infrastructure.Authentication
                 ValidateLifetime = false,
                 ValidIssuer = _jwtSettings.Issuer,
                 ValidAudience = _jwtSettings.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_jwtSettings.Secret)
-                ),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret))
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
 
             try
             {
-                var principal = tokenHandler.ValidateToken(
-                    token,
-                    tokenValidationParameters,
-                    out var securityToken
-                );
+                var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
 
                 if (securityToken is not JwtSecurityToken jwtToken)
+                {
                     return null;
+                }
 
-                if (
-                    !jwtToken.Header.Alg.Equals(
-                        SecurityAlgorithms.HmacSha256,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                )
+                if (!jwtToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.OrdinalIgnoreCase))
+                {
                     return null;
+                }
 
                 return principal;
             }
@@ -120,11 +112,11 @@ namespace Infrastructure.Authentication
         public string TokenHash(string token)
         {
             if (string.IsNullOrWhiteSpace(token))
+            {
                 return string.Empty;
+            }
 
-            using var sha256 = SHA256.Create();
-
-            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(token));
+            var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
 
             return Convert.ToBase64String(hashBytes);
         }

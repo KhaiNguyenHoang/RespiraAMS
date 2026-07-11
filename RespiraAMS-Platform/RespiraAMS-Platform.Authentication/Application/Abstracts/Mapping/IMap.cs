@@ -1,6 +1,6 @@
 namespace Application.Abstracts.Mapping
 {
-    public interface IMap<In, Out>
+    public interface IMap<in In, out Out>
     {
         Out Map(In inObject);
     }

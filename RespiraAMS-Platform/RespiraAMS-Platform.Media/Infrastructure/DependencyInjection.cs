@@ -61,7 +61,7 @@ namespace Infrastructure
             );
         }
 
-        public static void ApplyMigrations(this IHost host)
+        public static void ApplyMigrations(this IHost host, bool isDevEnv)
         {
             using var scope = host.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<MediaDbContext>();
@@ -71,7 +71,7 @@ namespace Infrastructure
             }
             catch (Exception)
             {
-                context.Database.EnsureDeleted();
+                if (isDevEnv) context.Database.EnsureDeleted();
                 context.Database.Migrate();
             }
         }

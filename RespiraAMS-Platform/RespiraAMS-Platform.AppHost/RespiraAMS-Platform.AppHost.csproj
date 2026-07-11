@@ -9,12 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RespiraAMS-Platform.App\RespiraAMS-Platform.App.API\RespiraAMS-Platform.App.API.csproj" />
+    <ProjectReference Include="..\RespiraAMS-Platform.Clinical\RespiraAMS-Platform.Clinical.API\RespiraAMS-Platform.Clinical.API.csproj" />
     <ProjectReference Include="..\RespiraAMS-Platform.Authentication\API\RespiraAMS-Platform.Authentication.API.csproj" />
     <ProjectReference Include="..\RespiraAMS-Platform.Doctor\API\RespiraAMS-Platform.Doctor.API.csproj" />
     <ProjectReference Include="..\RespiraAMS-Platform.Media\API\RespiraAMS-Platform.Media.API.csproj" />
     <ProjectReference Include="..\RespiraAMS-Platform.Gateway\RespiraAMS-Platform.Gateway.csproj" />
-    <ProjectReference Include="..\RespiraAMS-Platform.TreatmentDecision\RespiraAMS-Platform.TreatmentDecision.API\RespiraAMS-Platform.TreatmentDecision.API.csproj" />
+    <ProjectReference Include="..\RespiraAMS-Platform.Decision\RespiraAMS-Platform.Decision.API\RespiraAMS-Platform.Decision.API.csproj" />
   </ItemGroup>
 
   <ItemGroup>

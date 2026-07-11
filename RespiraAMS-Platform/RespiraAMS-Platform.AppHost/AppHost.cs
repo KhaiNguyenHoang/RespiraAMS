@@ -43,12 +43,12 @@ var authenticationApi = builder
     .WaitFor(doctorApi);
 
 var appApi = builder
-    .AddProject<Projects.RespiraAMS_Platform_App_API>("app-api")
+    .AddProject<Projects.RespiraAMS_Platform_Clinical_API>("clinical-api")
     .WaitFor(appDb)
     .WithReference(appDb);
 
 var decisionApi = builder
-    .AddProject<Projects.RespiraAMS_Platform_TreatmentDecision_API>("decision-api")
+    .AddProject<Projects.RespiraAMS_Platform_Decision_API>("decision-api")
     .WaitFor(decisionDb)
     .WithReference(decisionDb);
 
@@ -73,8 +73,8 @@ var frontend = builder
 
 if (builder.Environment.IsDevelopment())
 {
-    // Expose frontend port without proxy since NextJS run dev server use HMR (WebSocket internally), and 
-    // Aspire didn't provide configuration on that. When running with production, HMR is disable, then Aspire
+    // Expose frontend port without proxy since Next.js run dev server use HMR (WebSocket internally), and 
+    // Aspire didn't provide configuration on that. When running with production, HMR is disabled, then Aspire
     // will work
     frontend.WithEndpoint("http", e =>
     {

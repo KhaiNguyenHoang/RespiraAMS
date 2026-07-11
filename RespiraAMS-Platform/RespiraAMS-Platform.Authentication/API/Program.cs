@@ -93,5 +93,5 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 app.MapControllers();
-app.ApplyMigrations();
+app.ApplyMigrations(app.Environment.IsDevelopment());
 app.Run();

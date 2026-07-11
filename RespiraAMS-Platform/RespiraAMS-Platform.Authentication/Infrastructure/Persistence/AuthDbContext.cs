@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence
 {
-    public class AuthDbContext(DbContextOptions<AuthDbContext> options)
-        : DbContext(options),
-            IAuthDbContext
+    public class AuthDbContext(DbContextOptions<AuthDbContext> options) : DbContext(options), IAuthDbContext
     {
         public DbSet<AuthDoctor> AuthDoctors => Set<AuthDoctor>();
 

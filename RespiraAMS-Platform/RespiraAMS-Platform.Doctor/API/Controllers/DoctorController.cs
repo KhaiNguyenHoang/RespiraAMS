@@ -1,5 +1,7 @@
 using Application.DTOs;
 using Application.Features.Doctors;
+using Application.Features.Doctors.GetBatchProfiles;
+using Application.Features.Doctors.GetProfile;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Wolverine;

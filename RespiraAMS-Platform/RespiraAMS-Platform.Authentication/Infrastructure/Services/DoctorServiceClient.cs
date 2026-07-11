@@ -7,11 +7,9 @@ namespace Infrastructure.Services
 {
     public class DoctorServiceClient(HttpClient httpClient) : IDoctorServiceClient
     {
-        private readonly HttpClient _httpClient = httpClient;
-
         public async Task<DoctorProfileDto?> GetDoctorProfileAsync(Guid doctorId)
         {
-            var response = await _httpClient.GetAsync($"/api/1.0/doctor/{doctorId}");
+            var response = await httpClient.GetAsync($"/api/1.0/doctor/{doctorId}");
             if (response.StatusCode == HttpStatusCode.NotFound)
             {
                 return null;
@@ -22,7 +20,7 @@ namespace Infrastructure.Services
 
         public async Task<Dictionary<Guid, DoctorProfileDto>> GetDoctorProfilesBatchAsync(IReadOnlyList<Guid> doctorIds)
         {
-            var response = await _httpClient.PostAsJsonAsync("/api/1.0/doctor/batch", doctorIds);
+            var response = await httpClient.PostAsJsonAsync("/api/1.0/doctor/batch", doctorIds);
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadFromJsonAsync<Dictionary<Guid, DoctorProfileDto>>();
             return result ?? [];

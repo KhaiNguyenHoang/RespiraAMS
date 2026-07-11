@@ -11,6 +11,6 @@ namespace Domain.Entities
         public required string Email { get; set; }
         public required string Password { get; set; }
         public required string PhoneNumber { get; set; }
-        public bool IsEmailVerified { get; set; } = false;
+        public bool IsEmailVerified { get; set; }
     }
 }

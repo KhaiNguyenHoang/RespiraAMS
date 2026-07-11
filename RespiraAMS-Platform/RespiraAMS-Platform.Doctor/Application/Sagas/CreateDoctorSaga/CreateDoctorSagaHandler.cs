@@ -15,24 +15,18 @@ namespace Application.Sagas.CreateDoctorSaga
         ILogger<CreateDoctorSagaHandler> logger
     )
     {
-        private readonly IDoctorDbContext _dbContext = dbContext;
-        private readonly ICacheService _cacheService = cacheService;
-        private readonly IMap<CreateDoctorCommand, Doctor> _mapper = mapper;
-        private readonly IValidator<CreateDoctorCommand> _validator = validator;
-        private readonly ILogger<CreateDoctorSagaHandler> _logger = logger;
-
         public async Task<object> Handle(CreateDoctorCommand command)
         {
             try
             {
-                var validationResult = await _validator.ValidateAsync(command);
+                var validationResult = await validator.ValidateAsync(command);
                 if (!validationResult.IsValid)
                 {
                     var errors = string.Join(
                         "; ",
                         validationResult.Errors.Select(e => e.ErrorMessage)
                     );
-                    _logger.LogWarning(
+                    logger.LogWarning(
                         "CreateDoctorCommand validation failed for ID {Id}: {Errors}",
                         command.Id,
                         errors
@@ -40,19 +34,19 @@ namespace Application.Sagas.CreateDoctorSaga
                     return new CreateDoctorFailed(command.Id, errors);
                 }
 
-                var doctor = _mapper.Map(command);
+                var doctor = mapper.Map(command);
                 doctor.Id = command.Id;
 
-                _dbContext.Doctors.Add(doctor);
-                await _dbContext.SaveChangesAsync();
+                dbContext.Doctors.Add(doctor);
+                await dbContext.SaveChangesAsync();
 
-                await _cacheService.SetAsync($"doctor:id:{doctor.Id}", doctor);
+                await cacheService.SetAsync($"doctor:id:{doctor.Id}", doctor);
 
                 return new CreateDoctorCompleted(command.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "CreateDoctorCommand execution failed for ID {Id}: {Message}",
                     command.Id,
@@ -64,24 +58,24 @@ namespace Application.Sagas.CreateDoctorSaga
 
         public async Task Handle(RollbackDoctorCommand command)
         {
-            var doctor = await _dbContext.Doctors.FindAsync(command.Id);
+            var doctor = await dbContext.Doctors.FindAsync(command.Id);
             if (doctor != null)
             {
-                _dbContext.Doctors.Remove(doctor);
-                await _dbContext.SaveChangesAsync();
+                dbContext.Doctors.Remove(doctor);
+                await dbContext.SaveChangesAsync();
             }
 
-            await _cacheService.RemoveAsync($"doctor:id:{command.Id}");
+            await cacheService.RemoveAsync($"doctor:id:{command.Id}");
         }
 
         public async Task<object> Handle(UpdateDoctorMediaCommand command)
         {
             try
             {
-                var doctor = await _dbContext.Doctors.FindAsync(command.Id);
+                var doctor = await dbContext.Doctors.FindAsync(command.Id);
                 if (doctor == null)
                 {
-                    _logger.LogWarning(
+                    logger.LogWarning(
                         "UpdateDoctorMediaCommand failed: Doctor with ID {Id} not found.",
                         command.Id
                     );
@@ -92,15 +86,15 @@ namespace Application.Sagas.CreateDoctorSaga
                 doctor.MediaUrl = command.MediaUrl;
                 doctor.UpdatedAt = DateTimeOffset.UtcNow;
 
-                await _dbContext.SaveChangesAsync();
+                await dbContext.SaveChangesAsync();
 
-                await _cacheService.SetAsync($"doctor:id:{doctor.Id}", doctor);
+                await cacheService.SetAsync($"doctor:id:{doctor.Id}", doctor);
 
                 return new UpdateDoctorMediaCompleted(command.Id);
             }
             catch (Exception ex)
             {
-                _logger.LogError(
+                logger.LogError(
                     ex,
                     "UpdateDoctorMediaCommand failed for ID {Id}: {Message}",
                     command.Id,

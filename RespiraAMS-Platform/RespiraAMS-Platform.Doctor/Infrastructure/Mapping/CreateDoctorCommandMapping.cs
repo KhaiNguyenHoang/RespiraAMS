@@ -11,33 +11,30 @@ namespace Infrastructure.Mapping
         public Doctor Map(CreateDoctorCommand source)
         {
             var degreeStrings = new List<string>();
-            if (source.Degrees != null)
+            foreach (var d in source.Degrees)
             {
-                foreach (var d in source.Degrees)
-                {
-                    if (string.IsNullOrWhiteSpace(d))
-                        continue;
+                if (string.IsNullOrWhiteSpace(d))
+                    continue;
 
-                    var trimmed = d.Trim();
-                    if (trimmed.StartsWith('[') && trimmed.EndsWith(']'))
+                var trimmed = d.Trim();
+                if (trimmed.StartsWith('[') && trimmed.EndsWith(']'))
+                {
+                    try
                     {
-                        try
+                        var parsed = JsonSerializer.Deserialize<List<string>>(trimmed);
+                        if (parsed != null)
                         {
-                            var parsed = JsonSerializer.Deserialize<List<string>>(trimmed);
-                            if (parsed != null)
-                            {
-                                degreeStrings.AddRange(parsed);
-                            }
-                        }
-                        catch
-                        {
-                            degreeStrings.Add(trimmed);
+                            degreeStrings.AddRange(parsed);
                         }
                     }
-                    else
+                    catch
                     {
                         degreeStrings.Add(trimmed);
                     }
+                }
+                else
+                {
+                    degreeStrings.Add(trimmed);
                 }
             }
 

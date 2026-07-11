@@ -45,7 +45,7 @@ namespace Infrastructure
             });
         }
 
-        public static void ApplyMigrations(this IHost host)
+        public static void ApplyMigrations(this IHost host, bool isDevEnv)
         {
             using var scope = host.Services.CreateScope();
             var context = scope.ServiceProvider.GetRequiredService<AuthDbContext>();
@@ -55,7 +55,10 @@ namespace Infrastructure
             }
             catch (Exception)
             {
-                context.Database.EnsureDeleted();
+                if (isDevEnv)
+                {
+                    context.Database.EnsureDeleted();
+                }
                 context.Database.Migrate();
             }
         }
@@ -65,22 +68,16 @@ namespace Infrastructure
             var mappingTypes = typeof(CreateAuthDoctorMapping)
                 .Assembly.GetTypes()
                 .Where(t =>
-                    !t.IsAbstract
-                    && !t.IsInterface
+                    t is { IsAbstract: false, IsInterface: false }
                     && t.GetInterfaces()
-                        .Any(i =>
-                            i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMap<,>)
-                        )
+                        .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMap<,>))
                 );
 
             foreach (var type in mappingTypes)
             {
                 foreach (
                     var @interface in type.GetInterfaces()
-                        .Where(i =>
-                            i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMap<,>)
-                        )
-                )
+                        .Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMap<,>)))
                 {
                     services.AddTransient(@interface, type);
                 }

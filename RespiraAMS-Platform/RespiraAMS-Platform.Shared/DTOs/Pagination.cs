@@ -16,46 +16,8 @@ public class PaginationMetadata
     public int PageSize { get; set; }
 }
 
-public class Pagination<T>
+public class Pagination<T>(PaginationMetadata metadata, IEnumerable<T> items)
 {
-    public PaginationMetadata Metadata { get; set; }
-    public IEnumerable<T> Items { get; set; }
-
-    private Pagination(PaginationMetadata metadata, IEnumerable<T> items)
-    {
-        Metadata = metadata;
-        Items = items;
-    }
-
-    public static Pagination<T> Create(X.PagedList.IPagedList<T> pagedList)
-    {
-        return new Pagination<T>(
-            new PaginationMetadata
-            {
-                CurrentPage = pagedList.PageNumber,
-                HasNextPage = pagedList.HasNextPage,
-                HasPreviousPage = pagedList.HasPreviousPage,
-                PageCount = pagedList.PageCount,
-                PageSize = pagedList.PageSize,
-                TotalItemCount = pagedList.TotalItemCount,
-            },
-            pagedList
-        );
-    }
-    
-    public static Pagination<T> Create(Marten.Pagination.IPagedList<T> pagedList)
-    {
-        return new Pagination<T>(
-            new PaginationMetadata
-            {
-                CurrentPage = (int)pagedList.PageNumber,
-                HasNextPage = pagedList.HasNextPage,
-                HasPreviousPage = pagedList.HasPreviousPage,
-                PageCount = (int)pagedList.PageCount,
-                PageSize = (int)pagedList.PageSize,
-                TotalItemCount = (int)pagedList.TotalItemCount,
-            },
-            pagedList
-        );
-    }
+    public PaginationMetadata Metadata { get; set; } = metadata;
+    public IEnumerable<T> Items { get; set; } = items;
 }

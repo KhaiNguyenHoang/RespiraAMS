@@ -18,7 +18,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RespiraAMS-Platform.ServiceDefaults\RespiraAMS-Platform.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\RespiraAMS-Platform.Shared\RespiraAMS-Platform.Shared.csproj" />
   </ItemGroup>
-
 </Project>

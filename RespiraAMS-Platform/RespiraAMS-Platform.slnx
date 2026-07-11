@@ -1,15 +1,21 @@
 <Solution>
-	<Folder Name="/RespiraAMS-Platform.App/">
-		<Project Path="RespiraAMS-Platform.App/Application/Application.csproj" />
-		<Project Path="RespiraAMS-Platform.App/Domain/Domain.csproj" />
-		<Project Path="RespiraAMS-Platform.App/Infrastructure/Infrastructure.csproj" />
-		<Project Path="RespiraAMS-Platform.App/RespiraAMS-Platform.App.API/RespiraAMS-Platform.App.API.csproj" />
-	</Folder>
 	<Folder Name="/RespiraAMS-Platform.Authentication/">
 		<Project Path="RespiraAMS-Platform.Authentication/API/RespiraAMS-Platform.Authentication.API.csproj" />
 		<Project Path="RespiraAMS-Platform.Authentication/Application/Application.csproj" />
 		<Project Path="RespiraAMS-Platform.Authentication/Domain/Domain.csproj" />
 		<Project Path="RespiraAMS-Platform.Authentication/Infrastructure/Infrastructure.csproj" />
+	</Folder>
+	<Folder Name="/RespiraAMS-Platform.Clinical/">
+		<Project Path="RespiraAMS-Platform.Clinical/Application/Application.csproj" />
+		<Project Path="RespiraAMS-Platform.Clinical/Domain/Domain.csproj" />
+		<Project Path="RespiraAMS-Platform.Clinical/Infrastructure/Infrastructure.csproj" />
+		<Project Path="RespiraAMS-Platform.Clinical/RespiraAMS-Platform.Clinical.API/RespiraAMS-Platform.Clinical.API.csproj" />
+	</Folder>
+	<Folder Name="/RespiraAMS-Platform.Decision/">
+		<Project Path="RespiraAMS-Platform.Decision/Application/Application.csproj" />
+		<Project Path="RespiraAMS-Platform.Decision/Domain/Domain.csproj" />
+		<Project Path="RespiraAMS-Platform.Decision/Infrastructure/Infrastructure.csproj" />
+		<Project Path="RespiraAMS-Platform.Decision/RespiraAMS-Platform.Decision.API/RespiraAMS-Platform.Decision.API.csproj" />
 	</Folder>
 	<Folder Name="/RespiraAMS-Platform.Doctor/">
 		<Project Path="RespiraAMS-Platform.Doctor/API/RespiraAMS-Platform.Doctor.API.csproj" />
@@ -23,14 +29,7 @@
 		<Project Path="RespiraAMS-Platform.Media/Infrastructure/Infrastructure.csproj" />
 		<Project Path="RespiraAMS-Platform.Media/API/RespiraAMS-Platform.Media.API.csproj" />
 	</Folder>
-	<Folder Name="/RespiraAMS-Platform.TreatmentDecision/">
-		<Project Path="RespiraAMS-Platform.TreatmentDecision/Application/Application.csproj" />
-		<Project Path="RespiraAMS-Platform.TreatmentDecision/Domain/Domain.csproj" />
-		<Project Path="RespiraAMS-Platform.TreatmentDecision/Infrastructure/Infrastructure.csproj" />
-		<Project Path="RespiraAMS-Platform.TreatmentDecision/RespiraAMS-Platform.TreatmentDecision.API/RespiraAMS-Platform.TreatmentDecision.API.csproj" />
-	</Folder>
 	<Project Path="RespiraAMS-Platform.AppHost/RespiraAMS-Platform.AppHost.csproj" />
-	<Project Path="RespiraAMS-Platform.ServiceDefaults/RespiraAMS-Platform.ServiceDefaults.csproj" />
 	<Project Path="RespiraAMS-Platform.Shared/RespiraAMS-Platform.Shared.csproj" />
 	<Project Path="RespiraAMS-Platform.Gateway/RespiraAMS-Platform.Gateway.csproj" />
 </Solution>

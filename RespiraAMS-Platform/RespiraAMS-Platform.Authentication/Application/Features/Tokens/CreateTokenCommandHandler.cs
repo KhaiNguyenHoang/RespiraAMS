@@ -5,12 +5,7 @@ namespace Application.Features.Tokens
 {
     public class CreateTokenCommandHandler(IAuthDbContext dbContext)
     {
-        private readonly IAuthDbContext _dbContext = dbContext;
-
-        public async Task<Guid> Handle(
-            CreateTokenCommand command,
-            CancellationToken cancellationToken = default
-        )
+        public async Task<Guid> HandleAsync(CreateTokenCommand command, CancellationToken cancellationToken = default)
         {
             var token = new Token
             {
@@ -22,8 +17,8 @@ namespace Application.Features.Tokens
                 CreatedAt = DateTimeOffset.UtcNow,
             };
 
-            await _dbContext.Tokens.AddAsync(token, cancellationToken);
-            await _dbContext.SaveChangesAsync();
+            await dbContext.Tokens.AddAsync(token, cancellationToken);
+            await dbContext.SaveChangesAsync();
 
             return token.Id;
         }
