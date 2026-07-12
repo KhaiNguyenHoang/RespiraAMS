@@ -14,7 +14,7 @@ public static class DependencyInjection
 {
     public static void AddInfrastructure(this IHostApplicationBuilder builder)
     {
-        builder.AddNpgsqlDbContext<AppDbContext>("appDb");
+        builder.AddNpgsqlDbContext<AppDbContext>("clinicalDb");
         builder.Services.AddScoped<IDbContext, AppDbContext>();
         builder.Services.AddScoped<IPaginationFactory, PaginationFactory>();
     }
@@ -39,12 +39,14 @@ public static class DependencyInjection
     
     public static async Task SeedData(this WebApplication app)
     {
-        // Since this service didn't handle any sensitive/client-specific data, 
-        // it's safe to seed data regardless environment
-        using var scope = app.Services.CreateScope();
-        var provider = scope.ServiceProvider;
-        var context = provider.GetRequiredService<AppDbContext>();
-        var logger = provider.GetRequiredService<ILogger<DbInitializer>>();
-        await DbInitializer.InitializeAsync(context, logger);
+        // Only seed data in dev environment
+        if (app.Environment.IsDevelopment())
+        {
+            using var scope = app.Services.CreateScope();
+            var provider = scope.ServiceProvider;
+            var context = provider.GetRequiredService<AppDbContext>();
+            var logger = provider.GetRequiredService<ILogger<DbInitializer>>();
+            await DbInitializer.InitializeAsync(context, logger);
+        }
     }
 }

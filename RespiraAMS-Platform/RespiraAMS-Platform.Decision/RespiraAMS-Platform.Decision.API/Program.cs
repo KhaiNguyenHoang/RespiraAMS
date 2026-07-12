@@ -21,18 +21,8 @@ if (conn is null)
 {
     throw new InvalidOperationException("No connection string found");
 }
-builder.Services
-    .AddMarten(config =>
-    {
-        // Db connection
-        config.Connection(conn);
-        
-        // Setup schemas
-        config.Schema.For<Analytic>();
-        config.Schema.For<Snapshot>();
-    })
-    .UseLightweightSessions()
-    .IntegrateWithWolverine();
+
+builder.AddDatabase(conn);
 builder.AddCustomSerilog();
 builder.Services.AddOpenApi();
 builder.Services

@@ -19,7 +19,7 @@ using Wolverine.Postgresql;
 var builder = WebApplication.CreateBuilder(args);
 
 // Get connection string
-var conn = builder.Configuration.GetConnectionString("appDb");
+var conn = builder.Configuration.GetConnectionString("clinicalDb");
 if (conn is null)
 {
     throw new InvalidOperationException("No connection string found");
@@ -91,7 +91,7 @@ builder.Host.UseWolverine(opts =>
     opts.RestoreV5Defaults();
     opts.Discovery.IncludeAssembly(typeof(ApplicationMarker).Assembly);
 
-    opts.PersistMessagesWithPostgresql(conn, "appdb");
+    opts.PersistMessagesWithPostgresql(conn, "clinicaldb");
     opts.UseEntityFrameworkCoreTransactions();
 
     opts.UseFluentValidation(RegistrationBehavior.ExplicitRegistration);

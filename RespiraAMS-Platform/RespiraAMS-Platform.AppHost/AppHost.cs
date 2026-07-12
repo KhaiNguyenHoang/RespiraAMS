@@ -9,7 +9,7 @@ var postgres = builder.AddPostgres("postgres").WithPgWeb().WithDataVolume();
 var authDb = postgres.AddDatabase("authDb");
 var doctorDb = postgres.AddDatabase("doctorDb");
 var mediaDb = postgres.AddDatabase("mediaDb");
-var appDb = postgres.AddDatabase("appDb");
+var clinicalDb = postgres.AddDatabase("clinicalDb");
 var decisionDb = postgres.AddDatabase("decisionDb");
 var rabbitmq = builder.AddRabbitMQ("rabbitmq");
 
@@ -44,8 +44,8 @@ var authenticationApi = builder
 
 var appApi = builder
     .AddProject<Projects.RespiraAMS_Platform_Clinical_API>("clinical-api")
-    .WaitFor(appDb)
-    .WithReference(appDb);
+    .WaitFor(clinicalDb)
+    .WithReference(clinicalDb);
 
 var decisionApi = builder
     .AddProject<Projects.RespiraAMS_Platform_Decision_API>("decision-api")
