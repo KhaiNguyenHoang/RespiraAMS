@@ -22,5 +22,6 @@
     <PackageReference Include="Aspire.Hosting.Redis" />
     <PackageReference Include="Aspire.Hosting.PostgreSQL" />
     <PackageReference Include="Aspire.Hosting.RabbitMQ"  />
+    <PackageReference Include="MessagePack" />
   </ItemGroup>
 </Project>

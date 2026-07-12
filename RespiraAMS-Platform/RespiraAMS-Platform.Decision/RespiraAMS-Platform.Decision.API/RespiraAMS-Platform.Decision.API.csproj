@@ -19,7 +19,6 @@
     </ItemGroup>
     
     <ItemGroup>
-      <ProjectReference Include="..\..\RespiraAMS-Platform.ServiceDefaults\RespiraAMS-Platform.ServiceDefaults.csproj" />
       <ProjectReference Include="..\Application\Application.csproj" />
       <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
     </ItemGroup>

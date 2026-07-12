@@ -104,4 +104,11 @@
   <ItemGroup>
     <PackageVersion Include="Riok.Mapperly" Version="5.0.0-next.8" />
   </ItemGroup>
+  <!-- Pinned packages to patch version when libraries used CVE internal dependencies -->
+  <ItemGroup>
+    <!-- Use internally by Microsoft.AspNetCore.OpenApi. See problems at: https://github.com/advisories/GHSA-v5pm-xwqc-g5wc -->
+    <PackageVersion Include="Microsoft.OpenApi" Version="2.7.5" />
+    <!-- Use internally by Aspire. See problems at: https://github.com/advisories/GHSA-wfr3-xj75-pfwh -->
+    <PackageVersion Include="MessagePack" Version="2.5.301" />
+  </ItemGroup>
 </Project>
