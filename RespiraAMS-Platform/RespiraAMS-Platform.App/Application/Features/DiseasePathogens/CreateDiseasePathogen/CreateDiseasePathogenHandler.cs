@@ -33,12 +33,12 @@ public class CreateDiseasePathogenHandler(
             throw new NotFoundException(nameof(Pathogen), command.PathogenId);
         }
         
-        // Check for unique constraints on (DiseaseID, PathogenID)
-        if (await context.DiseasePathogens.Where(x => x.PathogenId == pathogen.Id && x.DiseaseId == command.DiseaseId).AnyAsync(cancellationToken))
-        {
-            logger.LogWarning("Already exists a record for this disease and pathogen");
-            throw new BadRequestException("Already exists a record for this disease and pathogen");
-        }
+        // // Check for unique constraints on (DiseaseID, PathogenID)
+        // if (await context.DiseasePathogens.Where(x => x.PathogenId == pathogen.Id && x.DiseaseId == command.DiseaseId).AnyAsync(cancellationToken))
+        // {
+        //     logger.LogWarning("Already exists a record for this disease and pathogen");
+        //     throw new BadRequestException("Already exists a record for this disease and pathogen");
+        // }
         
         // Map from command to entity
         var diseasePathogen = mapper.ToModel(command);
