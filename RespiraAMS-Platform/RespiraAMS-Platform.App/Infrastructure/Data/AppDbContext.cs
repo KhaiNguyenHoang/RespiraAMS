@@ -222,9 +222,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .HasOne(x => x.Disease)
             .WithMany(x => x.DiseasePathogens)
             .HasForeignKey(x => x.DiseaseId);
-        modelBuilder.Entity<DiseasePathogen>()
-            .HasIndex(x => new { x.DiseaseId, x.PathogenId })
-            .IsUnique();
+        // Since we use soft delete, adding unique constraints should be on the application level,
+        // not database level
+        // modelBuilder.Entity<DiseasePathogen>()
+        //     .HasIndex(x => new { x.DiseaseId, x.PathogenId })
+        //     .IsUnique();
 
         modelBuilder.Entity<Disease>()
             .ToTable("diseases");

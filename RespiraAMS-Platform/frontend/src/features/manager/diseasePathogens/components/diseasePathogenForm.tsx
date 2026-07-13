@@ -57,14 +57,15 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
         setFormErrors({});
     }, [initialData, pathogensList]);
 
-    const existingNames = existingPathogens.map(ep => ep.pathogen);
-    
+    let existingNames = existingPathogens.map(ep => ep.pathogen);
+    existingNames = [];
+
     const filteredPathogens = pathogensList?.filter(p => {
         const matchSearch = p.name.toLowerCase().includes(pathogenSearch.toLowerCase());
-        
+
         const isAlreadyAdded = existingNames.includes(p.name);
         const isCurrentEditItem = isEdit && p.name === initialData?.pathogen;
-        
+
         return matchSearch && (!isAlreadyAdded || isCurrentEditItem);
     }) || [];
 
@@ -104,7 +105,7 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
 
                 <div className="relative" ref={dropdownRef}>
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Pathogen <span className="text-red-500">*</span></label>
-                    <div 
+                    <div
                         className={`flex items-center justify-between w-full border rounded-md py-2 px-3 text-sm transition bg-white 
                             ${formErrors.pathogenId ? "border-red-500" : "border-gray-300"} 
                             ${isPending || isEdit ? "opacity-60 bg-gray-100 cursor-not-allowed" : "cursor-pointer"}
@@ -124,8 +125,8 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
                         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg">
                             <div className="p-2 border-b flex items-center gap-2">
                                 <Search className="w-4 h-4 text-gray-400" />
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     value={pathogenSearch}
                                     onChange={(e) => setPathogenSearch(e.target.value)}
                                     placeholder="Search pathogen..."
@@ -134,8 +135,8 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
                             </div>
                             <ul className="max-h-60 overflow-y-auto p-1">
                                 {filteredPathogens.length > 0 ? filteredPathogens.map(p => (
-                                    <li 
-                                        key={p.id} 
+                                    <li
+                                        key={p.id}
                                         className="px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md cursor-pointer flex justify-between items-center"
                                         onClick={() => {
                                             setPathogenId(p.id);
@@ -158,8 +159,8 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
 
                 <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Severity <span className="text-red-500">*</span></label>
-                    <select 
-                        value={severity} 
+                    <select
+                        value={severity}
                         onChange={(e) => {
                             setSeverity(e.target.value);
                             if (formErrors.severity) setFormErrors(p => ({ ...p, severity: "" }));
@@ -175,8 +176,8 @@ export default function DiseasePathogenForm({ initialData, existingPathogens = [
 
                 <div>
                     <label className="block text-xs font-semibold text-gray-600 mb-1">Treatment Site <span className="text-red-500">*</span></label>
-                    <select 
-                        value={treatmentSite} 
+                    <select
+                        value={treatmentSite}
                         onChange={(e) => {
                             setTreatmentSite(e.target.value);
                             if (formErrors.treatmentSite) setFormErrors(p => ({ ...p, treatmentSite: "" }));
