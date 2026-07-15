@@ -10,7 +10,6 @@ import {
   BarChart, Bar,
 } from "recharts"
 import { useStatistics } from "@/features/doctor/statistics/api"
-import { severityLabels } from "@/features/doctor/lib/mappers"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { getUser } from "@/lib/auth"
 
@@ -47,7 +46,7 @@ export default function StatisticsPage() {
   })
 
   const severityData = totalDecision.map((d, i) => ({
-    name: severityLabels[d.severity] ?? d.severity,
+    name: d.severity,
     value: d.count,
     color: severityColors[i] ?? "#6b7280",
   }))

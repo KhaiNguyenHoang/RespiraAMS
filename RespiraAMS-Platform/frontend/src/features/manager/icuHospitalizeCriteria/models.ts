@@ -1,4 +1,4 @@
-import { Criterion, CreateCriterionDto} from "../diseases/criterionModels"
+import { CreateCriterionDto, Criterion } from "../shared/models";
 
 export interface IcuHospitalizeCriterion {
     id: string;

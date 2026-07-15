@@ -31,7 +31,6 @@ function calculateAge(dob: Date | undefined): string {
 }
 
 import { SeverityBadge } from "@/features/doctor/components/badges"
-import { treatmentSiteLabels } from "@/features/doctor/lib/mappers"
 
 interface FormValues {
   patientName: string
@@ -386,7 +385,7 @@ export default function ClinicalFormPage() {
                   </div>
                   <div className="border rounded-lg p-4">
                     <p className="text-sm text-muted-foreground">Nơi điều trị</p>
-                    <p className="text-lg font-semibold mt-1">{treatmentSiteLabels[diagnoseResult.treatmentSite] ?? diagnoseResult.treatmentSite}</p>
+                    <p className="text-lg font-semibold mt-1">{diagnoseResult.treatmentSite}</p>
                   </div>
                 </div>
                 {diagnoseResult.infectionProbabilities.length > 0 && (

@@ -7,7 +7,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { DiagnoseResponse, TreatmentProtocolItem } from "@/features/doctor/diagnose/types"
 import { SeverityBadge } from "@/features/doctor/components/badges"
-import { treatmentSiteLabels } from "@/features/doctor/lib/mappers"
 
 interface RecommendationViewProps {
   diagnoseResult: DiagnoseResponse
@@ -107,7 +106,7 @@ export function RecommendationView({ diagnoseResult, patientName, diseaseName, o
           </CardHeader>
           <CardContent>
             <p className="text-lg font-semibold">
-              {treatmentSiteLabels[diagnoseResult.treatmentSite] ?? diagnoseResult.treatmentSite}
+              {diagnoseResult.treatmentSite}
             </p>
           </CardContent>
         </Card>

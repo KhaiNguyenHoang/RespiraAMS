@@ -20,7 +20,6 @@ import {
 import { useHistory, useTreatmentDecision } from "@/features/doctor/history/api"
 import { Separator } from "@/components/ui/separator"
 import { SeverityBadge } from "@/features/doctor/components/badges"
-import { treatmentSiteLabels } from "@/features/doctor/lib/mappers"
 import { getUser } from "@/lib/auth"
 import { Loader2 } from "lucide-react"
 
@@ -100,102 +99,102 @@ export default function HistoryPage() {
             </div>
           ) : detail ? (
             <div className="px-4 pb-4 space-y-6">
-                <section className="space-y-3">
-                  <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                    Thông tin chung
-                  </h3>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                    <span className="text-muted-foreground">Bác sĩ</span>
-                    <span>{detail.doctorName}</span>
-                    <span className="text-muted-foreground">Mức độ</span>
-                    <span>
-                      <SeverityBadge severity={detail.severity} />
-                    </span>
-                    <span className="text-muted-foreground">Nơi điều trị</span>
-                    <span>{treatmentSiteLabels[detail.treatmentSite] ?? detail.treatmentSite}</span>
-                  </div>
-                </section>
+              <section className="space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Thông tin chung
+                </h3>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                  <span className="text-muted-foreground">Bác sĩ</span>
+                  <span>{detail.doctorName}</span>
+                  <span className="text-muted-foreground">Mức độ</span>
+                  <span>
+                    <SeverityBadge severity={detail.severity} />
+                  </span>
+                  <span className="text-muted-foreground">Nơi điều trị</span>
+                  <span>{detail.treatmentSite}</span>
+                </div>
+              </section>
 
-                <Separator />
+              <Separator />
 
-                {detail.infectionProbabilities.length > 0 && (
-                  <>
-                    <section className="space-y-3">
-                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                        Xác suất nhiễm khuẩn
-                      </h3>
-                      <div className="space-y-2">
-                        {detail.infectionProbabilities.map((p, i) => (
-                          <div key={i} className="flex items-center justify-between border rounded-lg px-3 py-2">
-                            <span className="text-sm">{p.pathogenName}</span>
-                            <span className="text-sm font-mono">
-                              {(p.infectionProbability * 100).toFixed(1)}%
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                    <Separator />
-                  </>
-                )}
+              {detail.infectionProbabilities.length > 0 && (
+                <>
+                  <section className="space-y-3">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                      Xác suất nhiễm khuẩn
+                    </h3>
+                    <div className="space-y-2">
+                      {detail.infectionProbabilities.map((p, i) => (
+                        <div key={i} className="flex items-center justify-between border rounded-lg px-3 py-2">
+                          <span className="text-sm">{p.pathogenName}</span>
+                          <span className="text-sm font-mono">
+                            {(p.infectionProbability * 100).toFixed(1)}%
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                  <Separator />
+                </>
+              )}
 
-                {detail.criterionItems.length > 0 && (
-                  <>
-                    <section className="space-y-3">
-                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                        Tiêu chí chẩn đoán
-                      </h3>
-                      <div className="space-y-2">
-                        {detail.criterionItems.map((c, i) => (
-                          <div key={i} className="flex items-center justify-between border rounded-lg px-3 py-2">
-                            <span className="text-sm">{c.criterionName}</span>
-                            <span className="text-sm font-mono">{c.value ?? "—"}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </section>
-                    <Separator />
-                  </>
-                )}
+              {detail.criterionItems.length > 0 && (
+                <>
+                  <section className="space-y-3">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                      Tiêu chí chẩn đoán
+                    </h3>
+                    <div className="space-y-2">
+                      {detail.criterionItems.map((c, i) => (
+                        <div key={i} className="flex items-center justify-between border rounded-lg px-3 py-2">
+                          <span className="text-sm">{c.criterionName}</span>
+                          <span className="text-sm font-mono">{c.value ?? "—"}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                  <Separator />
+                </>
+              )}
 
-                <section className="space-y-3">
-                  <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                    Phác đồ đề xuất
-                  </h3>
-                  <div className="border rounded-lg p-3 space-y-1">
-                    <p className="text-sm font-medium">{detail.recommended.treatmentProtocolName}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {detail.recommended.treatmentProtocolIssuer} · v{detail.recommended.treatmentProtocolVersion} ·{" "}
-                      {detail.recommended.treatmentProtocolIssueDate}
-                    </p>
-                  </div>
-                </section>
+              <section className="space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Phác đồ đề xuất
+                </h3>
+                <div className="border rounded-lg p-3 space-y-1">
+                  <p className="text-sm font-medium">{detail.recommended.treatmentProtocolName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {detail.recommended.treatmentProtocolIssuer} · v{detail.recommended.treatmentProtocolVersion} ·{" "}
+                    {detail.recommended.treatmentProtocolIssueDate}
+                  </p>
+                </div>
+              </section>
 
-                <section className="space-y-3">
-                  <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                    Phác đồ đã chọn
-                  </h3>
-                  <div className="border rounded-lg p-3 space-y-1">
-                    <p className="text-sm font-medium">{detail.chosen.treatmentProtocolName}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {detail.chosen.treatmentProtocolIssuer} · v{detail.chosen.treatmentProtocolVersion} ·{" "}
-                      {detail.chosen.treatmentProtocolIssueDate}
-                    </p>
-                  </div>
-                </section>
+              <section className="space-y-3">
+                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                  Phác đồ đã chọn
+                </h3>
+                <div className="border rounded-lg p-3 space-y-1">
+                  <p className="text-sm font-medium">{detail.chosen.treatmentProtocolName}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {detail.chosen.treatmentProtocolIssuer} · v{detail.chosen.treatmentProtocolVersion} ·{" "}
+                    {detail.chosen.treatmentProtocolIssueDate}
+                  </p>
+                </div>
+              </section>
 
-                {detail.reason && (
-                  <>
-                    <Separator />
-                    <section className="space-y-3">
-                      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-                        Lý do chọn phác đồ
-                      </h3>
-                      <p className="text-sm border rounded-lg p-3">{detail.reason}</p>
-                    </section>
-                  </>
-                )}
-              </div>
+              {detail.reason && (
+                <>
+                  <Separator />
+                  <section className="space-y-3">
+                    <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                      Lý do chọn phác đồ
+                    </h3>
+                    <p className="text-sm border rounded-lg p-3">{detail.reason}</p>
+                  </section>
+                </>
+              )}
+            </div>
           ) : (
             <div className="flex items-center justify-center py-12">
               <p className="text-sm text-muted-foreground">Không tìm thấy thông tin.</p>
